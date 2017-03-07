@@ -4,10 +4,11 @@
 #include <cpprest/ws_client.h>
 #include <thread>
 
-#include <rapidjson/document.h>
+#include "common.h"
 
 namespace discord
 {
+  struct bot_data;
   class bot;
 
   class gateway
@@ -33,8 +34,9 @@ namespace discord
     volatile bool m_connected;
     bool m_use_resume;
 
-    //  Owning bot
-    std::weak_ptr<bot> m_bot;
+    //  Owning bot's data
+    bot& m_owner;
+    bot_data& m_bot;
 
     //  Private enumeration for Opcodes
     enum Opcode : uint8_t
@@ -55,13 +57,14 @@ namespace discord
 
     void connect();
     void on_message(web::websockets::client::websocket_incoming_message msg);
-    void handle_dispatch_event(std::string event_name, const rapidjson::Value& data);
+    void handle_dispatch_event(std::string event_name, rapidjson::Value& data);
     void send(Opcode op, rapidjson::Value& packet);
     void send_heartbeat();
     void send_identify();
     void send_resume();
+    void handle_dispatch(std::string event_name, rapidjson::Value& data);
   public:
-    explicit gateway(std::weak_ptr<bot>);
+    explicit gateway(bot& owner, bot_data& data);
 
     void start();
     bool connected() const;

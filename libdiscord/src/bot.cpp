@@ -3,17 +3,11 @@
 
 namespace discord
 {
-  bot::bot(std::string token, std::string prefix) : m_token("Bot " + token), m_prefix(prefix)
+  bot::bot(std::string token, std::string prefix)
   {
-  }
-
-  std::shared_ptr<bot> bot::create(std::string token, std::string prefix)
-  {
-    auto bot_ptr = std::make_shared<bot>(token, prefix);
-
-    bot_ptr->m_gateway = std::make_unique<gateway>(bot_ptr);
-
-    return bot_ptr;
+    m_data.token = token;
+    m_data.prefix = prefix;
+    m_gateway = std::make_unique<gateway>(*this, m_data);
   }
 
   void bot::run(bool async) const
@@ -31,6 +25,6 @@ namespace discord
 
   std::string bot::token() const
   {
-    return m_token;
+    return m_data.token;
   }
 }

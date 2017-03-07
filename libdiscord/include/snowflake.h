@@ -32,17 +32,7 @@ namespace discord
       return m_id < rhs.m_id;
     }
 
-    explicit operator std::string() const
-    {
-      return std::to_string(m_id);
-    }
-
-    explicit operator uint64_t() const
-    {
-      return m_id;
-    }
-
-    uint64_t operator()(snowflake& s) const
+    operator uint64_t() const
     {
       return m_id;
     }
@@ -50,6 +40,14 @@ namespace discord
     std::string to_string() const
     {
       return std::to_string(m_id);
+    }
+  };
+
+  struct snowflake_hasher
+  {
+    uint64_t operator()(const snowflake& obj) const
+    {
+      return obj;
     }
   };
 }
