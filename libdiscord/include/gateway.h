@@ -4,6 +4,8 @@
 #include <cpprest/ws_client.h>
 #include <thread>
 
+#include <rapidjson/document.h>
+
 namespace discord
 {
   class bot;
@@ -51,7 +53,17 @@ namespace discord
       Heartbeat_ACK
     };
 
+    void connect();
+    void on_message(web::websockets::client::websocket_incoming_message msg);
+    void handle_dispatch_event(std::string event_name, const rapidjson::Value& data);
+    void send(Opcode op, rapidjson::Value& packet);
+    void send_heartbeat();
+    void send_identify();
+    void send_resume();
   public:
-    gateway();
+    explicit gateway(std::weak_ptr<bot>);
+
+    void start();
+    bool connected() const;
   };
 }

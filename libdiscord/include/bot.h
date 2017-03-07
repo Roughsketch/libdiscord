@@ -23,6 +23,14 @@ namespace discord
 
     std::unordered_map<snowflake, guild> m_guilds;
     std::unordered_map<snowflake, channel> m_private_channels;
+
+    std::string m_prefix;
+
+    explicit bot(std::string token, std::string prefix = "");
   public:
+    static std::shared_ptr<bot> create(std::string token, std::string prefix = "");
+
+    void run(bool async = false) const;
+    std::string token() const;
   };
 }
