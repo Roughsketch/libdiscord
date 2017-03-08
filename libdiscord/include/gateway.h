@@ -61,7 +61,6 @@ namespace discord
     void send_heartbeat();
     void send_identify();
     void send_resume();
-    void handle_dispatch(std::string event_name, rapidjson::Value& data);
   public:
     explicit gateway(std::string token);
 

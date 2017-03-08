@@ -148,7 +148,7 @@ namespace discord
     }
     else
     {
-      handle_dispatch(event_name, data);
+      m_on_dispatch(event_name, data);
     }
   }
 
