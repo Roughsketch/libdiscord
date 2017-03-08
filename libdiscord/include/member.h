@@ -11,5 +11,7 @@ namespace discord
     std::string m_token;
   public:
     explicit member(std::string token, rapidjson::Value& data);
+
+    user& user() const;
   };
 }

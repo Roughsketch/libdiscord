@@ -197,11 +197,8 @@ namespace discord
   {
     LOG(DEBUG) << "Sending identify packet.";
 
-    //  TODO: Convert this to RapidJSON.
-    /*
-    send(Identify,
-    {
-      { "token", m_bot->token() },
+    auto json = R"({
+      { "token", )" + m_token + R"( },
       {
         "properties",
         {
@@ -213,10 +210,13 @@ namespace discord
         }
       },
       { "compress", true },
-      { "large_threshold", LARGE_SERVER },
-      { "shard", nlohmann::json::array({ 0, 1 }) }
-    });
-    */
+      { "large_threshold", )" + std::to_string(LARGE_SERVER) + R"( },
+      { "shard", [0, 1] }
+    })";
+
+    rapidjson::Document doc;
+    doc.Parse(json);
+    send(Identify, doc);
   }
 
   void gateway::send_resume()

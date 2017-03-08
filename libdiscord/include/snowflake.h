@@ -42,12 +42,4 @@ namespace discord
       return std::to_string(m_id);
     }
   };
-
-  struct snowflake_hasher
-  {
-    uint64_t operator()(const snowflake& obj) const
-    {
-      return obj;
-    }
-  };
 }

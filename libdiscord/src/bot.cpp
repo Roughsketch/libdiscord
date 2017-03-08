@@ -111,6 +111,59 @@ namespace discord
     return m_token;
   }
 
+  user& bot::profile() const
+  {
+    return *m_profile.get();
+  }
+
+
+  void bot::on_message(std::function<void(message_event)> callback)
+  {
+    m_on_message = callback;
+  }
+
+  void bot::on_message_edited(std::function<void(message_event)> callback)
+  {
+    m_on_message_edited = callback;
+  }
+
+  void bot::on_message_deleted(std::function<void(message_deleted_event)> callback)
+  {
+    m_on_message_deleted = callback;
+  }
+
+  void bot::on_emoji_created(std::function<void(emoji)> callback)
+  {
+    m_on_emoji_created = callback;
+  }
+
+  void bot::on_emoji_deleted(std::function<void(emoji)> callback)
+  {
+    m_on_emoji_deleted = callback;
+  }
+
+  void bot::on_emoji_updated(std::function<void(emoji)> callback)
+  {
+    m_on_emoji_updated = callback;
+  }
+
+  void bot::on_presence(std::function<void(presence_event)> callback)
+  {
+    m_on_presence = callback;
+  }
+
+  void bot::on_typing(std::function<void(typing_event)> callback)
+  {
+    m_on_typing = callback;
+  }
+
+  void bot::add_command(std::string name, std::function<void(message_event)> callback)
+  {
+    m_on_message = callback;
+  }
+
+
+
   void bot::on_dispatch(std::string event_name, rapidjson::Value& data)
   {
 
@@ -123,13 +176,13 @@ namespace discord
       for (auto& channel_data : data["private_channels"].GetArray())
       {
         snowflake id(channel_data["id"].GetString());
-        m_private_channels[id] = channel(m_token, channel_data);
+        m_private_channels[id] = channel(m_token, 0, channel_data);
       }
     }
     else if (event_name == "CHANNEL_CREATE")
     {
-      channel chan(m_token, data);
-      auto guild_id = chan.guild_id();
+      auto guild_id = snowflake(data["guild_id"].GetString());
+      channel chan(m_token, guild_id, data);
 
       auto owner = m_guilds.find(guild_id);
 
@@ -144,8 +197,8 @@ namespace discord
     }
     else if (event_name == "CHANNEL_UPDATE")
     {
-      channel chan(m_token, data);
-      auto guild_id = chan.guild_id();
+      auto guild_id = snowflake(data["guild_id"].GetString());
+      channel chan(m_token, guild_id, data);
 
       auto owner = m_guilds.find(guild_id);
 
@@ -160,8 +213,8 @@ namespace discord
     }
     else if (event_name == "CHANNEL_DELETE")
     {
-      channel chan(m_token, data);
-      auto guild_id = chan.guild_id();
+      auto guild_id = snowflake(data["guild_id"].GetString());
+      channel chan(m_token, guild_id, data);
 
       auto owner = m_guilds.find(guild_id);
 
