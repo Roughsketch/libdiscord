@@ -8,9 +8,9 @@ namespace discord
 
   class user : public identifiable
   {
-    bot& m_owner;
+    std::string m_token;
   public:
-    explicit user(bot& owner, rapidjson::Value& data);
+    explicit user(std::string token, rapidjson::Value& data);
 
     std::string name() const;
     std::string discriminator() const;

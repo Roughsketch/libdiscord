@@ -19,6 +19,7 @@ namespace discord
     static const utility::string_t ENCODING;
 
     //  Client variables
+    std::string m_token;
     utility::string_t m_wss_url;
     web::websockets::client::websocket_callback_client m_client;
     std::mutex m_client_mutex;
@@ -34,9 +35,7 @@ namespace discord
     volatile bool m_connected;
     bool m_use_resume;
 
-    //  Owning bot's data
-    bot& m_owner;
-    bot_data& m_bot;
+    std::function<void(std::string, rapidjson::Value&)> m_on_dispatch = nullptr;
 
     //  Private enumeration for Opcodes
     enum Opcode : uint8_t
@@ -64,9 +63,10 @@ namespace discord
     void send_resume();
     void handle_dispatch(std::string event_name, rapidjson::Value& data);
   public:
-    explicit gateway(bot& owner, bot_data& data);
+    explicit gateway(std::string token);
 
     void start();
+    void on_dispatch(std::function<void(std::string, rapidjson::Value&)> callback);
     bool connected() const;
   };
 }

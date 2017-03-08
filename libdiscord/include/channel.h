@@ -8,12 +8,13 @@ namespace discord
 
   class channel : public identifiable
   {
-    bot& m_owner;
+    std::string m_token;
     snowflake m_guild_id;
   public:
-    explicit channel(bot& owner, rapidjson::Value& data);
+    channel();
+    explicit channel(std::string token, rapidjson::Value& data);
 
-    channel(const channel& other);
+    channel& operator=(const channel& other);
 
     snowflake guild_id() const;
   };

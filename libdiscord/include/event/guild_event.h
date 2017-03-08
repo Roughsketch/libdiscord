@@ -7,6 +7,6 @@ namespace discord
   class presence_event : public event
   {
   public:
-    explicit presence_event(bot& owner, rapidjson::Value& data);
-  }
+    explicit presence_event(std::string token, rapidjson::Value& data);
+  };
 }

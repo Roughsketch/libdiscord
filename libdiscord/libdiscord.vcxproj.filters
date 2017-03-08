@@ -72,6 +72,9 @@
     <ClInclude Include="include\member.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\emoji.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\api.cpp">

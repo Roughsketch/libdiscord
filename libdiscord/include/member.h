@@ -8,8 +8,8 @@ namespace discord
 
   class member
   {
-    bot& m_owner;
+    std::string m_token;
   public:
-    explicit member(bot& owner, rapidjson::Value& data);
+    explicit member(std::string token, rapidjson::Value& data);
   };
 }

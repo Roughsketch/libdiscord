@@ -3,11 +3,7 @@
 
 namespace discord
 {
-  channel::channel(bot& owner, rapidjson::Value& data) : m_owner(owner)
-  {
-  }
-
-  channel::channel(const channel& other) : m_owner(other.m_owner)
+  channel::channel(std::string token, rapidjson::Value& data) : m_token(token)
   {
   }
 

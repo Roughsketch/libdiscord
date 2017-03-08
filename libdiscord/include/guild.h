@@ -7,18 +7,22 @@ namespace discord
   class user;
   class bot;
   class channel;
+  class emoji;
   class member;
   class presence_event;
   class role;
 
   class guild : public identifiable
   {
-    bot& m_owner;
+    std::string m_token;
   public:
-    explicit guild(bot& owner, rapidjson::Value& data);
+    guild();
+    explicit guild(std::string token, rapidjson::Value& data);
     guild(const guild& other);
 
     std::string name() const;
+    std::vector<emoji> emojis() const;
+    void set_emojis(std::vector<emoji>& emojis);
 
     void set_unavailable(bool value);
 

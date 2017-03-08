@@ -7,16 +7,9 @@ namespace discord
 {
   class event
   {
-    bot& m_owner;
+    std::string m_token;
 
   public:
-    explicit event(bot& owner);
-
-    bot& get_bot() const;
+    explicit event(std::string token);
   };
-
-  inline bot& event::get_bot() const
-  {
-    return m_owner;
-  }
 }

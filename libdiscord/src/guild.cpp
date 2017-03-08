@@ -3,11 +3,7 @@
 
 namespace discord
 {
-  guild::guild(bot& owner, rapidjson::Value& data) : m_owner(owner)
-  {
-  }
-
-  guild::guild(const guild& other) : m_owner(other.m_owner)
+  guild::guild(std::string token, rapidjson::Value& data) : m_token(token)
   {
   }
 }

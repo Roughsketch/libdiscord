@@ -3,7 +3,7 @@
 
 namespace discord
 {
-  user::user(bot& owner, rapidjson::Value& data) : m_owner(owner)
+  user::user(std::string token, rapidjson::Value& data) : m_token(token)
   {
   }
 }
