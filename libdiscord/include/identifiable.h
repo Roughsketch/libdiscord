@@ -11,6 +11,10 @@ namespace discord
   public:
     identifiable() : m_id(0) {}
     explicit identifiable(snowflake id) : m_id(id) {}
+    explicit identifiable(rapidjson::Value& value)
+    {
+      m_id = snowflake(value.GetString());
+    }
 
     bool operator<(const identifiable& rhs) const
     {

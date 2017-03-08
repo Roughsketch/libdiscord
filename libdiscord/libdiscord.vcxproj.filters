@@ -22,6 +22,9 @@
     <Filter Include="Header Files\event">
       <UniqueIdentifier>{1dac169d-de19-4c1b-baf0-e79bc1e56e05}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\api">
+      <UniqueIdentifier>{88cc0121-530d-426d-a007-0b2847167b49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -72,7 +75,13 @@
     <ClInclude Include="include\member.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\emoji.h">
+    <ClInclude Include="include\discord.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\permission.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\voice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -99,6 +108,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\user.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\permission.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

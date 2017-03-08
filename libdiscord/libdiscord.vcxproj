@@ -137,6 +137,7 @@
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\channel.h" />
     <ClInclude Include="include\common.h" />
+    <ClInclude Include="include\discord.h" />
     <ClInclude Include="include\easylogging++.h" />
     <ClInclude Include="include\event\general.h" />
     <ClInclude Include="include\event\guild_event.h" />
@@ -145,9 +146,11 @@
     <ClInclude Include="include\guild.h" />
     <ClInclude Include="include\identifiable.h" />
     <ClInclude Include="include\member.h" />
+    <ClInclude Include="include\permission.h" />
     <ClInclude Include="include\role.h" />
     <ClInclude Include="include\snowflake.h" />
     <ClInclude Include="include\user.h" />
+    <ClInclude Include="include\voice.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\api.cpp" />
@@ -157,6 +160,7 @@
     <ClCompile Include="src\easylogging++.cpp" />
     <ClCompile Include="src\gateway.cpp" />
     <ClCompile Include="src\guild.cpp" />
+    <ClCompile Include="src\permission.cpp" />
     <ClCompile Include="src\user.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

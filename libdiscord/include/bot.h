@@ -45,8 +45,21 @@ namespace discord
   public:
     explicit bot(std::string token, std::string prefix = "");
 
-    void run(bool async = false) const;
     std::string token() const;
+    user& profile() const;
+
+    void on_message(std::function<void(message_event)> callback);
+    void on_message_edited(std::function<void(message_event)> callback);
+    void on_message_deleted(std::function<void(message_deleted_event)> callback);
+    void on_emoji_created(std::function<void(emoji)> callback);
+    void on_emoji_deleted(std::function<void(emoji)> callback);
+    void on_emoji_updated(std::function<void(emoji)> callback);
+    void on_presence(std::function<void(presence_event)> callback);
+    void on_typing(std::function<void(typing_event)> callback);
+    void add_command(std::string name, std::function<void(message_event)> callback);
+
+    void run(bool async = false) const;
     void on_dispatch(std::string event_name, rapidjson::Value& data);
+
   };
 }
