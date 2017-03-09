@@ -73,7 +73,7 @@ namespace discord
 
     //  Parse our payload as JSON.
     rapidjson::Document payload;
-    payload.Parse(str.c_str());
+    payload.Parse(str.c_str(), str.size());
 
     if (str.size() > 1000)
     {
