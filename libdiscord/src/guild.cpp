@@ -2,7 +2,6 @@
 #include "bot.h"
 #include "channel.h"
 #include "emoji.h"
-#include "event/guild_event.h"
 #include "member.h"
 #include "role.h"
 #include "user.h"
@@ -10,6 +9,59 @@
 
 namespace discord
 {
+  game_status::game_status()
+  {
+    m_type = game_type::Normal;
+  }
+
+  game_status::game_status(rapidjson::Value& data)
+  {
+    set_from_json(m_name, "name", data);
+    set_from_json(m_url, "url", data);
+
+    auto found = data.FindMember("type");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      m_type = static_cast<game_type>(found->value.GetInt());
+    }
+  }
+
+  presence::presence()
+  {
+  }
+
+  presence::presence(const std::string& token, rapidjson::Value& data)
+  {
+    set_from_json(m_guild_id, "guild_id", data);
+    set_from_json(m_status, "status", data);
+
+    auto found = data.FindMember("user");
+    if (found != data.MemberEnd())
+    {
+      m_user = discord::user(token, data["user"]);
+    }
+
+    found = data.FindMember("roles");
+    if (found != data.MemberEnd())
+    {
+      for (auto& role_id : found->value.GetArray())
+      {
+        m_roles.push_back(snowflake(role_id.GetString()));
+      }
+    }
+
+    found = data.FindMember("game");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      m_game = game_status(found->value);
+    }
+  }
+
+  const user& presence::user() const
+  {
+    return m_user;
+  }
+
   guild::guild()
   {
     m_afk_timeout = 0;
@@ -22,63 +74,103 @@ namespace discord
     m_unavailable = false;
   }
 
-  guild::guild(std::string token, rapidjson::Value& data) : identifiable(data["id"]), m_token(token)
+  guild::guild(const std::string& token, rapidjson::Value& data) : identifiable(data["id"]), m_token(token)
   {
-    m_name = data["name"].GetString();
-    m_icon = data["icon"].GetString();
-    m_splash = data["splash"].GetString();
-    m_owner_id = snowflake(data["owner_id"].GetString());
-    m_region = data["region"].GetString();
-    m_afk_channel_id = snowflake(data["afk_channel_id"].GetString());
-    m_afk_timeout = data["afk_timeout"].GetInt();
-    m_embed_enabled = data["embed_enabled"].GetBool();
-    m_embed_channel_id = snowflake(data["embed_channel_id"].GetString());
-    m_verify_level = static_cast<verify_level>(data["verification_level"].GetInt());
-    m_notify_level = static_cast<notify_level>(data["default_message_notifications"].GetInt());
-    m_mfa_level = data["mfa_level"].GetInt();
-    m_joined_at = data["joined_at"].GetString();
-    m_large = data["large"].GetBool();
-    m_member_count = data["member_count"].GetInt();
+    set_from_json(m_name, "name", data);
+    set_from_json(m_icon, "icon", data);
+    set_from_json(m_splash, "splash", data);
+    set_from_json(m_owner_id, "owner_id", data);
+    set_from_json(m_region, "region", data);
+    set_from_json(m_afk_channel_id, "afk_channel_id", data);
+    set_from_json(m_afk_timeout, "afk_timeout", data);
+    set_from_json(m_embed_enabled, "embed_enabled", data);
+    set_from_json(m_embed_channel_id, "embed_channel_id", data);
+    set_from_json(m_mfa_level, "mfa_level", data);
+    set_from_json(m_joined_at, "joined_at", data);
+    set_from_json(m_large, "large", data);
+    set_from_json(m_member_count, "member_count", data);
+    set_from_json(m_unavailable, "unavailable", data);
 
-    for (auto& guild_role : data["roles"].GetArray())
+    auto found = data.FindMember("verification_level");
+    if (found != data.MemberEnd())
     {
-      m_roles.push_back(role(guild_role));
+      m_verify_level = static_cast<verify_level>(found->value.GetInt());
     }
 
-    for (auto& guild_emoji : data["emojis"].GetArray())
+    found = data.FindMember("default_message_notifications");
+    if (found != data.MemberEnd())
     {
-      m_emojis.push_back(emoji(guild_emoji));
+      m_notify_level = static_cast<notify_level>(found->value.GetInt());
+    }
+    
+
+    found = data.FindMember("roles");
+    if (found != data.MemberEnd())
+    {
+      for (auto& role_data : found->value.GetArray())
+      {
+        role guild_role(role_data);
+        m_roles[guild_role.id()] = guild_role;
+      }
     }
 
-    for (auto& guild_feature : data["features"].GetArray())
+    found = data.FindMember("emojis");
+    if (found != data.MemberEnd())
     {
-      m_features.push_back(guild_feature.GetString());
+      for (auto& emoji_data : found->value.GetArray())
+      {
+        emoji guild_emoji(emoji_data);
+        m_emojis[guild_emoji.id()] = guild_emoji;
+      }
     }
 
-    for (auto& guild_voice_state : data["voice_states"].GetArray())
+    found = data.FindMember("features");
+    if (found != data.MemberEnd())
     {
-      m_voice_states.push_back(voice_state(guild_voice_state));
+      for (auto& guild_feature : found->value.GetArray())
+      {
+        m_features.push_back(guild_feature.GetString());
+      }
     }
 
-    for (auto& guild_channel : data["channels"].GetArray())
+    found = data.FindMember("voice_states");
+    if (found != data.MemberEnd())
     {
-      m_channels.push_back(channel(token, m_id, guild_channel));
+      for (auto& guild_voice_state : found->value.GetArray())
+      {
+        m_voice_states.push_back(voice_state(guild_voice_state));
+      }
     }
 
-    for (auto& guild_member : data["members"].GetArray())
+    found = data.FindMember("channels");
+    if (found != data.MemberEnd())
     {
-      member mem(token, guild_member);
-
-      m_members[mem.user().id()] = mem;
+      for (auto& guild_channel : found->value.GetArray())
+      {
+        channel chan(token, m_id, guild_channel);
+        m_channels[chan.id()] = chan;
+      }
     }
 
-    for (auto& guild_presence : data["presences"].GetArray())
+    found = data.FindMember("members");
+    if (found != data.MemberEnd())
     {
-      presence_event presence(token, guild_presence);
-      m_presences[presence.user().id()] = presence;
+      for (auto& guild_member : found->value.GetArray())
+      {
+        member mem(token, guild_member);
+        m_members[mem.user().id()] = mem;
+      }
     }
 
-    m_unavailable = data["unavailable"].GetBool();
+    found = data.FindMember("presences");
+    if (found != data.MemberEnd())
+    {
+      for (auto& guild_presence : found->value.GetArray())
+      {
+        presence presence(token, guild_presence);
+        m_presences[presence.user().id()] = presence;
+      }
+    }
   }
 
   std::string guild::name() const
@@ -88,54 +180,80 @@ namespace discord
 
   std::vector<emoji> guild::emojis() const
   {
-    return m_emojis;
+    std::vector<emoji> emojis;
+
+    for (auto& emoji_kv : m_emojis)
+    {
+      emojis.push_back(emoji_kv.second);
+    }
+
+    return emojis;
   }
 
   void guild::set_emojis(std::vector<emoji>& emojis)
   {
+    for (auto& emoji : emojis)
+    {
+      m_emojis[emoji.id()] = emoji;
+    }
   }
 
   void guild::set_unavailable(bool value)
   {
+    m_unavailable = value;
   }
 
-  void guild::add_channel(channel chan)
+  void guild::add_channel(channel& chan)
   {
+    m_channels[chan.id()] = chan;
   }
 
-  void guild::update_channel(channel chan)
+  void guild::update_channel(channel& chan)
   {
+    m_channels[chan.id()] = chan;
   }
 
-  void guild::remove_channel(channel chan)
+  void guild::remove_channel(channel& chan)
   {
+    m_channels.erase(chan.id());
   }
 
-  void guild::add_member(member mem)
+  void guild::add_member(member& mem)
   {
+    m_members[mem.user().id()] = mem;
   }
 
-  void guild::update_member(std::vector<snowflake> role_ids, user user, std::string nick)
+  void guild::update_member(std::vector<snowflake>& role_ids, user& user, std::string nick)
   {
+    auto mem = m_members[user.id()];
+
+    mem.set_roles(role_ids);
+    mem.set_user(user);
+    mem.set_nick(nick);
   }
 
-  void guild::remove_member(member mem)
+  void guild::remove_member(member& mem)
   {
+    m_members.erase(mem.user().id());
   }
 
-  void guild::add_role(role role)
+  void guild::add_role(role& role)
   {
+    m_roles[role.id()] = role;
   }
 
-  void guild::update_role(role role)
+  void guild::update_role(role& role)
   {
+    m_roles[role.id()] = role;
   }
 
-  void guild::remove_role(role role)
+  void guild::remove_role(role& role)
   {
+    m_roles.erase(role.id());
   }
 
-  void guild::update_presence(presence_event presence)
+  void guild::update_presence(presence& presence)
   {
+    m_presences[presence.user().id()] = presence;
   }
 }
