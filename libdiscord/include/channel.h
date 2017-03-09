@@ -25,13 +25,13 @@ namespace discord
 
     @return The permissions that are allowed.
     */
-    std::shared_ptr<permission> allow() const;
+    permission allow() const;
 
     /** Get the permissions that are denied.
 
     @return The permissions that are denied.
     */
-    std::shared_ptr<permission> deny() const;
+    permission deny() const;
   };
 
   /** Types of channels that can be sent by the API. */
@@ -57,7 +57,6 @@ namespace discord
     const uint32_t MaxUserLimit = 99;
 
     //  All Channels
-    bool m_is_private;
     snowflake m_last_message_id;
 
     //  Guild Channels
@@ -76,7 +75,9 @@ namespace discord
     bool m_is_dm;
   public:
     channel();
-    explicit channel(std::string token, snowflake guild_id, rapidjson::Value& data);
+    explicit channel(const std::string& token, snowflake guild_id, rapidjson::Value& data);
+
+    channel& operator=(const channel& other);
 
     snowflake guild_id() const;
   };

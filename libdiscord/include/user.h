@@ -19,7 +19,7 @@ namespace discord
     std::string m_email;
   public:
     user();
-    explicit user(std::string token, rapidjson::Value& data);
+    explicit user(const std::string& token, rapidjson::Value& data);
 
     std::string name() const;
     std::string discriminator() const;

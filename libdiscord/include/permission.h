@@ -40,6 +40,7 @@ namespace discord
     uint32_t m_permissions;
   public:
     permission();
+    permission(uint32_t bits);
     explicit permission(rapidjson::Value& data);
 
     /** Get the integer value of this object.

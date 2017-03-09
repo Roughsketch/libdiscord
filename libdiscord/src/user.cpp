@@ -10,14 +10,29 @@ namespace discord
     m_verified = false;
   }
 
-  user::user(std::string token, rapidjson::Value& data) : identifiable(data["id"]), m_token(token)
+  user::user(const std::string& token, rapidjson::Value& data) : identifiable(data["id"]), m_token(token)
   {
-    m_username = data["username"].GetString();
-    m_discriminator = data["discriminator"].GetString();
-    m_avatar = data["avatar"].GetString();
-    m_bot = data["bot"].GetBool();
-    m_mfa_enabled = data["mfa_enabled"].GetBool();
-    m_verified = data["verified"].GetBool();
-    m_email = data["email"].GetString();
+    set_from_json(m_username, "username", data);
+    set_from_json(m_discriminator, "discriminator", data);
+    set_from_json(m_avatar, "avatar", data);
+    set_from_json(m_bot, "bot", data);
+    set_from_json(m_mfa_enabled, "mfa_enabled", data);
+    set_from_json(m_verified, "verified", data);
+    set_from_json(m_email, "email", data);
+  }
+
+  std::string user::name() const
+  {
+    return m_username;
+  }
+
+  std::string user::discriminator() const
+  {
+    return m_discriminator;
+  }
+
+  std::string user::distinct() const
+  {
+    return m_username + "#" + m_discriminator;
   }
 }

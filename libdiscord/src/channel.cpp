@@ -3,40 +3,101 @@
 
 namespace discord
 {
+  overwrite::overwrite()
+  {
+  }
+
+  overwrite::overwrite(rapidjson::Value& data) : identifiable(data["id"])
+  {
+    set_from_json(m_type, "type", data);
+
+    auto found = data.FindMember("allow");
+    if (found != data.MemberEnd())
+    {
+      m_allow = permission(found->value.GetInt());
+    }
+
+    found = data.FindMember("deny");
+    if (found != data.MemberEnd())
+    {
+      m_deny = permission(found->value.GetInt());
+    }
+  }
+
+  std::string overwrite::type() const
+  {
+    return m_type;
+  }
+
+  permission overwrite::allow() const
+  {
+    return m_allow;
+  }
+
+  permission overwrite::deny() const
+  {
+    return m_deny;
+  }
+
   channel::channel()
   {
     m_type = Text;
     m_position = 0;
-    m_is_private = false;
     m_bitrate = 0;
     m_user_limit = 0;
     m_is_dm = false;
   }
 
-  channel::channel(std::string token, snowflake guild_id, rapidjson::Value& data)
+  channel::channel(const std::string& token, snowflake guild_id, rapidjson::Value& data)
     : identifiable(data["id"]), m_token(token), m_guild_id(guild_id)
   {
-    m_is_private = data["is_private"].GetBool();
-    m_last_message_id = snowflake(data["last_message_id"].GetString());
-    m_name = data["name"].GetString();
-    m_type = static_cast<channel_type>(data["type"].GetInt());
-    m_position = data["position"].GetInt();
+    set_from_json(m_last_message_id, "last_message_id", data);
+    set_from_json(m_name, "name", data);
+    set_from_json(m_position, "position", data);
+    set_from_json(m_topic, "topic", data);
+    set_from_json(m_bitrate, "bitrate", data);
+    set_from_json(m_user_limit, "user_limit", data);
 
-    for (auto& perm_ow : data["permission_overwrites"].GetArray())
+    auto found = data.FindMember("type");
+    if (found != data.MemberEnd())
     {
-      m_permission_overwrites.push_back(overwrite(perm_ow));
+      m_type = static_cast<channel_type>(found->value.GetInt());
     }
 
-    m_topic = data["topic"].GetString();
-    m_bitrate = data["bitrate"].GetInt();
-    m_user_limit = data["user_limit"].GetInt();
-
-    auto recipient = data.FindMember("recipient");
-    if (recipient != data.MemberEnd())
+    found = data.FindMember("permission_overwrites");
+    if (found != data.MemberEnd())
     {
-      m_recipient = user(token, data["recipient"]);
+      for (auto& perm_ow : data["permission_overwrites"].GetArray())
+      {
+        m_permission_overwrites.push_back(overwrite(perm_ow));
+      }
+    }
+
+    found = data.FindMember("recipient");
+    if (found != data.MemberEnd())
+    {
+      m_recipient = user(token, found->value);
       m_is_dm = true;
     }
+  }
+
+  channel& channel::operator=(const channel& other)
+  {
+    m_token = other.m_token;
+    m_id = other.m_id;
+    m_last_message_id = other.m_last_message_id;
+    m_guild_id = other.m_guild_id;
+    m_name = other.m_name;
+    m_type = other.m_type;
+    m_position = other.m_position;
+    m_permission_overwrites = other.m_permission_overwrites;
+    m_topic = other.m_topic;
+    m_bitrate = other.m_bitrate;
+    m_user_limit = other.m_user_limit;
+    m_recipient = other.m_recipient;
+    m_is_dm = other.m_is_dm;
+
+    return *this;
   }
 
   snowflake channel::guild_id() const

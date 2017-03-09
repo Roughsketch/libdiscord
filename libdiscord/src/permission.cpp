@@ -7,6 +7,11 @@ namespace discord
     m_permissions = 0;
   }
 
+  permission::permission(uint32_t bits)
+  {
+    m_permissions = bits;
+  }
+
   permission::permission(rapidjson::Value& data)
   {
     m_permissions = data.GetInt();
