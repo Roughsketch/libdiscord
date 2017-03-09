@@ -26,9 +26,9 @@ int main()
 {
   auto settings = read_json_file("settings.json");
 
-  auto bot = discord::bot(settings["token"], settings["prefix"]);
+  discord::bot bot(settings["token"], settings["prefix"]);
 
-  bot.add_command("info", [](auto& event)
+  bot.add_command("info", [&bot](auto& event)
   {
     event.respond("I am " + bot.profile().distinct() + "(" + bot.profile().id().to_string() + ")");
   });
