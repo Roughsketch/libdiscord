@@ -1,14 +1,10 @@
-#include "bot.h"
-#include "gateway.h"
-
 #include "api.h"
 #include "bot.h"
 #include "channel.h"
 #include "easylogging++.h"
 #include "emoji.h"
-#include "event/general.h"
-#include "event/guild_event.h"
 #include "event/message_event.h"
+#include "gateway.h"
 #include "guild.h"
 #include "member.h"
 #include "role.h"
@@ -93,6 +89,10 @@ namespace discord
     m_gateway->on_dispatch(std::bind(&bot::on_dispatch, this, std::placeholders::_1, std::placeholders::_2));
   }
 
+  bot::~bot()
+  {
+  }
+
   void bot::run(bool async) const
   {
     m_gateway->start();
@@ -106,68 +106,65 @@ namespace discord
     }
   }
 
-  std::string bot::token() const
+  const std::string& bot::token() const
   {
     return m_token;
   }
 
-  user& bot::profile() const
+  const user& bot::profile() const
   {
     return *m_profile.get();
   }
 
 
-  void bot::on_message(std::function<void(message_event)> callback)
+  void bot::on_message(std::function<void(message_event&)> callback)
   {
     m_on_message = callback;
   }
 
-  void bot::on_message_edited(std::function<void(message_event)> callback)
+  void bot::on_message_edited(std::function<void(message_event&)> callback)
   {
     m_on_message_edited = callback;
   }
 
-  void bot::on_message_deleted(std::function<void(message_deleted_event)> callback)
+  void bot::on_message_deleted(std::function<void(message_deleted_event&)> callback)
   {
     m_on_message_deleted = callback;
   }
 
-  void bot::on_emoji_created(std::function<void(emoji)> callback)
+  void bot::on_emoji_created(std::function<void(emoji&)> callback)
   {
     m_on_emoji_created = callback;
   }
 
-  void bot::on_emoji_deleted(std::function<void(emoji)> callback)
+  void bot::on_emoji_deleted(std::function<void(emoji&)> callback)
   {
     m_on_emoji_deleted = callback;
   }
 
-  void bot::on_emoji_updated(std::function<void(emoji)> callback)
+  void bot::on_emoji_updated(std::function<void(emoji&)> callback)
   {
     m_on_emoji_updated = callback;
   }
 
-  void bot::on_presence(std::function<void(presence_event)> callback)
+  void bot::on_presence(std::function<void(presence&)> callback)
   {
     m_on_presence = callback;
   }
 
-  void bot::on_typing(std::function<void(typing_event)> callback)
+  void bot::on_typing(std::function<void(typing_event&)> callback)
   {
     m_on_typing = callback;
   }
 
-  void bot::add_command(std::string name, std::function<void(message_event)> callback)
+  void bot::add_command(std::string name, std::function<void(message_event&)> callback)
   {
-    m_on_message = callback;
+    m_commands[name] = callback;
   }
-
-
 
   void bot::on_dispatch(std::string event_name, rapidjson::Value& data)
   {
-
-    LOG(INFO) << "Bot.handle_dispatch entered with " << event_name.c_str() << ".";
+    //LOG(INFO) << "Bot.handle_dispatch entered with " << event_name.c_str() << ".";
 
     if (event_name == "READY")
     {
@@ -278,12 +275,14 @@ namespace discord
     else if (event_name == "GUILD_MEMBER_ADD")
     {
       snowflake guild_id(data["guild_id"].GetString());
-      m_guilds[guild_id].add_member(member(m_token, data));
+      member guild_member(m_token, data);
+      m_guilds[guild_id].add_member(guild_member);
     }
     else if (event_name == "GUILD_MEMBER_REMOVE")
     {
-      snowflake guild_id(data["guild_id"].GetString());
-      m_guilds[guild_id].remove_member(member(m_token, data));
+      snowflake guild_id(data["guild_id"].GetString()); 
+      member guild_member(m_token, data);
+      m_guilds[guild_id].remove_member(guild_member);
     }
     else if (event_name == "GUILD_MEMBER_UPDATE")
     {
@@ -307,28 +306,34 @@ namespace discord
 
       for (auto& member_data : data["members"].GetArray())
       {
-        owner.add_member(member(m_token, member_data));
+        member guild_member(m_token, member_data);
+        owner.add_member(guild_member);
       }
     }
     else if (event_name == "GUILD_ROLE_CREATE")
     {
       snowflake guild_id(data["guild_id"].GetString());
-      m_guilds[guild_id].add_role(role(data["role"]));
+      role guild_role(data["role"]);
+      m_guilds[guild_id].add_role(guild_role);
     }
     else if (event_name == "GUILD_ROLE_UPDATE")
     {
       snowflake guild_id(data["guild_id"].GetString());
-      m_guilds[guild_id].update_role(role(data["role"]));
+      role guild_role(data["role"]);
+      m_guilds[guild_id].update_role(guild_role);
     }
     else if (event_name == "GUILD_ROLE_DELETE")
     {
       snowflake guild_id(data["guild_id"].GetString());
-      m_guilds[guild_id].remove_role(role(data["role"]));
+      role guild_role(data["role"]);
+      m_guilds[guild_id].remove_role(guild_role);
     }
     else if (event_name == "MESSAGE_CREATE")
     {
       message_event event(m_token, data);
       auto word = event.content().substr(0, event.content().find_first_of(" \n"));
+
+      LOG(INFO) << "Entering MESSAGE_CREATE With " << event.content() << " - " << word << " - " << m_prefix;
 
       //  If we have a prefix and it's the start of this message and it's a command
       if (!m_prefix.empty() &&
@@ -337,6 +342,7 @@ namespace discord
         m_commands.count(word.substr(m_prefix.size()))
         )
       {
+        LOG(INFO) << "Got into command call with - " << word.substr(m_prefix.size());
         //  Call the command
         m_commands[word.substr(m_prefix.size())](event);
       }
@@ -350,14 +356,16 @@ namespace discord
     {
       if (m_on_message_edited)
       {
-        m_on_message_edited(message_event(m_token, data));
+        message_event event(m_token, data);
+        m_on_message_edited(event);
       }
     }
     else if (event_name == "MESSAGE_DELETE")
     {
       if (m_on_message_deleted)
       {
-        m_on_message_deleted(message_deleted_event(m_token, data));
+        message_deleted_event event(m_token, data);
+        m_on_message_deleted(event);
       }
     }
     else if (event_name == "MESSAGE_DELETE_BULK")
@@ -376,13 +384,14 @@ namespace discord
       {
         for (auto& id : ids)
         {
-          m_on_message_deleted(message_deleted_event(m_token, id, chan_id));
+          message_deleted_event event(m_token, id, chan_id);
+          m_on_message_deleted(event);
         }
       }
     }
     else if (event_name == "PRESENCE_UPDATE")
     {
-      presence_event presence(m_token, data);
+      presence presence(m_token, data);
       snowflake guild_id(data["guild_id"].GetString());
 
       m_guilds[guild_id].update_presence(presence);
@@ -396,7 +405,8 @@ namespace discord
     {
       if (m_on_typing)
       {
-        m_on_typing(typing_event(m_token, data));
+        typing_event event(m_token, data);
+        m_on_typing(event);
       }
     }
     else if (event_name == "VOICE_STATE_UPDATE")
