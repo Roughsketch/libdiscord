@@ -289,15 +289,27 @@ namespace discord
       snowflake guild_id(data["guild_id"].GetString());
 
       std::vector<snowflake> roles;
-      user user(m_token, data["user"]);
-      std::string nick = data["nick"].GetString();
+      std::string nick;
+      user updated_user;
 
-      for (auto& role_id : data["roles"].GetArray())
+      set_from_json(nick, "nick", data);
+      
+      auto found = data.FindMember("user");
+      if (found != data.MemberEnd() && !found->value.IsNull())
       {
-        roles.push_back(snowflake(role_id.GetString()));
+        updated_user = user(m_token, data["user"]);
       }
 
-      m_guilds[guild_id].update_member(roles, user, nick);
+      found = data.FindMember("roles");
+      if (found != data.MemberEnd() && !found->value.IsNull())
+      {
+        for (auto& role_id : found->value.GetArray())
+        {
+          roles.push_back(snowflake(role_id.GetString()));
+        }
+      }
+
+      m_guilds[guild_id].update_member(roles, updated_user, nick);
     }
     else if (event_name == "GUILD_MEMBERS_CHUNK")
     {
