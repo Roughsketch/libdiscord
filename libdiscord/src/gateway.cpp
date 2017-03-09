@@ -110,6 +110,7 @@ namespace discord
         m_heartbeat_thread = std::thread([&]() {
           while (connected())
           {
+            LOG(DEBUG) << "Sending heartbeat.";
             send_heartbeat();
             std::this_thread::sleep_for(std::chrono::milliseconds(m_heartbeat_interval));
           }
@@ -154,16 +155,12 @@ namespace discord
 
   void gateway::send(Opcode op, rapidjson::Value& packet)
   {
-    rapidjson::Document payload;
+    rapidjson::Document payload(rapidjson::kObjectType);
 
-    payload["op"].SetInt(op);
+    payload.AddMember("op", op, payload.GetAllocator());
     payload.AddMember("d", packet, payload.GetAllocator());
 
-    rapidjson::StringBuffer buffer;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-    payload.Accept(writer);
-
-    auto payload_str = buffer.GetString();
+    auto payload_str = json_to_string(payload);
 
     web::websockets::client::websocket_outgoing_message msg;
     msg.set_utf8_message(payload_str);
@@ -189,7 +186,9 @@ namespace discord
 
     LOG(DEBUG) << "Sending heartbeat packet.";
 
-    send(Heartbeat, rapidjson::Value(m_last_seq).Move());
+    rapidjson::Document doc(rapidjson::kNumberType);
+    doc.SetInt(m_last_seq);
+    send(Heartbeat, doc);
     m_recieved_ack = false;
   }
 
@@ -197,21 +196,20 @@ namespace discord
   {
     LOG(DEBUG) << "Sending identify packet.";
 
-    auto json = R"({
-      { "token", )" + m_token + R"( },
+    auto json = R"(
+    {
+      "token": ")" + m_token + R"(",
+      "properties":
       {
-        "properties",
-        {
-          { "$os", "windows" },
-          { "$browser", "Discord" },
-          { "$device", "Discord" },
-          { "$referrer", "" },
-          { "$refferring_domain", "" }
-        }
+        "$os": "windows",
+        "$browser": "Discord",
+        "$device": "Discord",
+        "$referrer": "",
+        "$refferring_domain": ""
       },
-      { "compress", true },
-      { "large_threshold", )" + std::to_string(LARGE_SERVER) + R"( },
-      { "shard", [0, 1] }
+      "compress": true,
+      "large_threshold": )" + std::to_string(LARGE_SERVER) + R"(,
+      "shard": [0, 1]
     })";
 
     rapidjson::Document doc;
@@ -223,15 +221,21 @@ namespace discord
   {
     LOG(DEBUG) << "Sending resume packet.";
 
-    rapidjson::Value payload;
+    rapidjson::Document payload(rapidjson::kObjectType);
+    rapidjson::Value token_value;
+    token_value.SetString(m_token.c_str(), m_token.size());
+    rapidjson::Value session_value;
+    session_value.SetString(m_session_id.c_str(), m_session_id.size());
+    rapidjson::Value seq_value(m_last_seq);
 
-    payload["token"].SetString(m_token.c_str(), m_token.size());
-    payload["sesson_id"].SetString(m_session_id.c_str(), m_session_id.size());
-    payload["seq"].SetInt(m_last_seq);
+    payload.AddMember("token", token_value, payload.GetAllocator());
+    payload.AddMember("sesson_id", session_value, payload.GetAllocator());
+    payload.AddMember("seq", seq_value, payload.GetAllocator());
+
     send(Resume, payload);
   }
 
-  gateway::gateway(std::string token) : m_token(token)
+  gateway::gateway(const std::string& token) : m_token(token)
   {
     m_heartbeat_interval = 0;
     m_recieved_ack = true; // Set true to start because first hearbeat sent doesn't require an ACK.

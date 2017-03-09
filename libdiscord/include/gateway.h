@@ -62,7 +62,7 @@ namespace discord
     void send_identify();
     void send_resume();
   public:
-    explicit gateway(std::string token);
+    explicit gateway(const std::string& token);
 
     void start();
     void on_dispatch(std::function<void(std::string, rapidjson::Value&)> callback);

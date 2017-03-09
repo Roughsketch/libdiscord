@@ -75,10 +75,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>RAPIDJSON_HAS_STDSTRING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>RAPIDJSON_HAS_STDSTRING;ELPP_THREAD_SAFE;ELPP_FORCE_USE_STD_THREAD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\$(PlatformTarget)\$(Configuration);$(SolutionDir)\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\Win32\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zlibd.lib;cpprest140d_2_9.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -87,10 +88,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>RAPIDJSON_HAS_STDSTRING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>RAPIDJSON_HAS_STDSTRING;ELPP_THREAD_SAFE;ELPP_FORCE_USE_STD_THREAD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\$(PlatformTarget)\$(Configuration);$(SolutionDir)\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zlibd.lib;cpprest140d_2_9.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -101,14 +103,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>RAPIDJSON_HAS_STDSTRING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>RAPIDJSON_HAS_STDSTRING;ELPP_THREAD_SAFE;ELPP_FORCE_USE_STD_THREAD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\$(PlatformTarget)\$(Configuration);$(SolutionDir)\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\Win32\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zlib.lib;cpprest140_2_9.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,14 +122,15 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\build\native\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>RAPIDJSON_HAS_STDSTRING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>RAPIDJSON_HAS_STDSTRING;ELPP_THREAD_SAFE;ELPP_FORCE_USE_STD_THREAD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)\include;$(SolutionDir)\packages\cpprestsdk.v140.windesktop.msvcstl.dyn.rt-dyn.2.9.1\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\$(PlatformTarget)\$(Configuration);$(SolutionDir)\packages\zlib.v140.windesktop.msvcstl.dyn.rt-dyn.1.2.8.8\lib\native\v140\windesktop\msvcstl\dyn\rt-dyn\x64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>zlib.lib;cpprest140_2_9.lib</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -138,6 +142,7 @@
     <ClInclude Include="include\channel.h" />
     <ClInclude Include="include\common.h" />
     <ClInclude Include="include\discord.h" />
+    <ClInclude Include="include\discord_exception.h" />
     <ClInclude Include="include\easylogging++.h" />
     <ClInclude Include="include\event\general.h" />
     <ClInclude Include="include\event\guild_event.h" />
@@ -146,6 +151,7 @@
     <ClInclude Include="include\guild.h" />
     <ClInclude Include="include\identifiable.h" />
     <ClInclude Include="include\member.h" />
+    <ClInclude Include="include\message.h" />
     <ClInclude Include="include\permission.h" />
     <ClInclude Include="include\role.h" />
     <ClInclude Include="include\snowflake.h" />
@@ -158,10 +164,16 @@
     <ClCompile Include="src\channel.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\easylogging++.cpp" />
+    <ClCompile Include="src\emoji.cpp" />
+    <ClCompile Include="src\event\message_event.cpp" />
     <ClCompile Include="src\gateway.cpp" />
     <ClCompile Include="src\guild.cpp" />
+    <ClCompile Include="src\member.cpp" />
+    <ClCompile Include="src\message.cpp" />
     <ClCompile Include="src\permission.cpp" />
+    <ClCompile Include="src\role.cpp" />
     <ClCompile Include="src\user.cpp" />
+    <ClCompile Include="src\voice.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

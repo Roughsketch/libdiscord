@@ -25,6 +25,9 @@
     <Filter Include="Header Files\api">
       <UniqueIdentifier>{88cc0121-530d-426d-a007-0b2847167b49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\event">
+      <UniqueIdentifier>{f3f56640-a096-4868-84f0-8dde544a5387}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -84,6 +87,12 @@
     <ClInclude Include="include\voice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\message.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\discord_exception.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\api.cpp">
@@ -111,6 +120,24 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\permission.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\emoji.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\message.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\event\message_event.cpp">
+      <Filter>Source Files\event</Filter>
+    </ClCompile>
+    <ClCompile Include="src\member.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\role.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\voice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
