@@ -7,9 +7,13 @@ namespace discord
 {
   class event
   {
-    std::string m_token;
+    const std::string m_token;
 
   public:
-    explicit event(std::string token);
+    explicit event(const std::string& token);
   };
+
+  inline event::event(const std::string& token) : m_token(token)
+  {
+  }
 }
