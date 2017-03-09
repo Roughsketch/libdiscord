@@ -100,6 +100,24 @@ namespace discord
       m_heartbeat_interval = data["heartbeat_interval"].GetInt();
       LOG(DEBUG) << "Set heartbeat interval to " << m_heartbeat_interval;
 
+      m_heartbeat_thread = std::thread([&]() {
+        while (connected())
+        {
+          LOG(DEBUG) << "Sending heartbeat.";
+          try
+          {
+            send_heartbeat();
+            std::this_thread::sleep_for(std::chrono::milliseconds(m_heartbeat_interval));
+          }
+          catch (const std::exception& e)
+          {
+            LOG(ERROR) << "Could not send a heartbeat: " << e.what();
+          }
+        }
+
+        LOG(DEBUG) << "Disconnected, stopping heartbeats.";
+      });
+
       if (m_use_resume)
       {
         LOG(INFO) << "Connected again, sending Resume packet.";
@@ -107,17 +125,6 @@ namespace discord
       }
       else
       {
-        m_heartbeat_thread = std::thread([&]() {
-          while (connected())
-          {
-            LOG(DEBUG) << "Sending heartbeat.";
-            send_heartbeat();
-            std::this_thread::sleep_for(std::chrono::milliseconds(m_heartbeat_interval));
-          }
-
-          LOG(DEBUG) << "Disconnected, stopping heartbeats.";
-        });
-
         LOG(DEBUG) << "Connected, sending Identify packet.";
         send_identify();
         m_use_resume = true;  //  Next time use Resume
