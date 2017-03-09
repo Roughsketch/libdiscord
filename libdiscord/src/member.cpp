@@ -16,13 +16,13 @@ namespace discord
     set_from_json(m_mute, "mute", data);
 
     auto found = data.FindMember("user");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       m_user = discord::user(token, found->value);
     }
 
     found = data.FindMember("roles");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       for (auto& role_id : found->value.GetArray())
       {

@@ -21,7 +21,7 @@ namespace discord
     set_from_json(m_mentionable, "mentionable", data);
 
     auto found = data.FindMember("permissions");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       m_permissions = permission(data["permissions"].GetInt());
     }

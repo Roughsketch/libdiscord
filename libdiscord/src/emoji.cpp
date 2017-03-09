@@ -15,7 +15,7 @@ namespace discord
     set_from_json(m_managed, "managed", data);
 
     auto found = data.FindMember("roles");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       for (auto& emoji_role : data["roles"].GetArray())
       {

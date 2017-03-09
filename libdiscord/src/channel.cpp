@@ -12,13 +12,13 @@ namespace discord
     set_from_json(m_type, "type", data);
 
     auto found = data.FindMember("allow");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       m_allow = permission(found->value.GetInt());
     }
 
     found = data.FindMember("deny");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       m_deny = permission(found->value.GetInt());
     }
@@ -59,13 +59,13 @@ namespace discord
     set_from_json(m_user_limit, "user_limit", data);
 
     auto found = data.FindMember("type");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       m_type = static_cast<channel_type>(found->value.GetInt());
     }
 
     found = data.FindMember("permission_overwrites");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       for (auto& perm_ow : data["permission_overwrites"].GetArray())
       {
@@ -74,7 +74,7 @@ namespace discord
     }
 
     found = data.FindMember("recipient");
-    if (found != data.MemberEnd())
+    if (found != data.MemberEnd() && !found->value.IsNull())
     {
       m_recipient = user(token, found->value);
       m_is_dm = true;
