@@ -30,13 +30,12 @@ namespace discord
     if (msg.message_type() == web::websockets::client::websocket_message_type::binary_message)
     {
       Concurrency::streams::container_buffer<std::string> strbuf;
-      std::string compressed;
 
       //  Read the entire binary payload and put into a string container
-      compressed = msg.body().read_to_end(strbuf).then([strbuf](size_t bytesRead)
+      auto task = msg.body().read_to_end(strbuf).then([strbuf](size_t bytesRead)
       {
         return strbuf.collection();
-      }).get();
+      });
 
       z_stream zs;
       memset(&zs, 0, sizeof(zs));
@@ -46,6 +45,8 @@ namespace discord
         LOG(ERROR) << "Could not initialize zlib Inflate";
         return;
       }
+
+      std::string compressed = task.get();
 
       zs.next_in = reinterpret_cast<Bytef *>(const_cast<char *>(compressed.data()));
       zs.avail_in = static_cast<uInt>(compressed.size());
