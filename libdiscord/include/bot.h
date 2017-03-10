@@ -48,6 +48,7 @@ namespace discord
 
     const std::string& token() const;
     const user& profile() const;
+    std::vector<guild> guilds() const;
 
     void on_message(std::function<void(message_event&)> callback);
     void on_message_edited(std::function<void(message_event&)> callback);

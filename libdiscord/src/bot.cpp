@@ -116,6 +116,17 @@ namespace discord
     return *m_profile.get();
   }
 
+  std::vector<guild> bot::guilds() const
+  {
+    std::vector<guild> guild_vec;
+
+    for (auto& pair : m_guilds)
+    {
+      guild_vec.push_back(pair.second);
+    }
+
+    return guild_vec;
+  }
 
   void bot::on_message(std::function<void(message_event&)> callback)
   {
