@@ -12,7 +12,14 @@ namespace discord
 
   void gateway::connect()
   {
-    m_client.connect(m_wss_url);
+    try
+    {
+      m_client.connect(m_wss_url);
+    }
+    catch (const std::exception& e)
+    {
+      LOG(ERROR) << "Could not connect to " << m_wss_url << ": " << e.what();
+    }
   }
 
   void gateway::on_message(web::websockets::client::websocket_incoming_message msg)
