@@ -41,5 +41,18 @@ int main()
     event.respond("```Current memory usage: " + std::to_string(current_mb) + "MB\nPeak memory usage:    " + std::to_string(peak_mb) + "MB```");
   });
 
+  bot.add_command("guilds", [&bot](auto& event) {
+    std::string response = "I am currently in the following guilds:\n```";
+
+    for (auto& guild : bot.guilds())
+    {
+      response += guild.name() + ": " + std::to_string(guild.member_count()) + "\n";
+    }
+
+    response += "```";
+
+    event.respond(response);
+  });
+
   bot.run();
 }
