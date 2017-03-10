@@ -44,6 +44,7 @@ namespace discord
       if (inflateInit(&zs) != Z_OK)
       {
         LOG(ERROR) << "Could not initialize zlib Inflate";
+        return;
       }
 
       zs.next_in = reinterpret_cast<Bytef *>(const_cast<char *>(compressed.data()));
@@ -70,6 +71,7 @@ namespace discord
       if (ret != Z_STREAM_END)
       {
         LOG(ERROR) << "Error during zlib decompression: (" << ret << ")";
+        return;
       }
     }
     else
