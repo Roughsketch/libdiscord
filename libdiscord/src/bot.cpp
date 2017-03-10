@@ -12,6 +12,16 @@
 
 namespace discord
 {
+  bot::bot(std::string token, std::string prefix) : m_token("Bot " + token), m_prefix(prefix)
+  {
+    m_gateway = std::make_unique<gateway>(m_token);
+    m_gateway->on_dispatch(std::bind(&bot::on_dispatch, this, std::placeholders::_1, std::placeholders::_2));
+  }
+
+  bot::~bot()
+  {
+  }
+
   void bot::update_emojis(rapidjson::Value& data)
   {
     snowflake guild_id(data["guild_id"].GetString());
@@ -81,16 +91,6 @@ namespace discord
       LOG(TRACE) << "Sending Emoji Updated event with emoji " << emoji.name();
       m_on_emoji_updated(emoji);
     }
-  }
-
-  bot::bot(std::string token, std::string prefix) : m_token("Bot " + token), m_prefix(prefix)
-  {
-    m_gateway = std::make_unique<gateway>(m_token);
-    m_gateway->on_dispatch(std::bind(&bot::on_dispatch, this, std::placeholders::_1, std::placeholders::_2));
-  }
-
-  bot::~bot()
-  {
   }
 
   void bot::run(bool async) const
@@ -249,7 +249,7 @@ namespace discord
     }
     else if (event_name == "GUILD_BAN_ADD")
     {
-      user banned(m_token, data);
+      user banned(m_token, data["user"]);
       snowflake guild_id(data["guild_id"].GetString());
 
       LOG(DEBUG) << "User " << banned.distinct()
@@ -258,7 +258,7 @@ namespace discord
     }
     else if (event_name == "GUILD_BAN_REMOVE")
     {
-      user unbanned(m_token, data);
+      user unbanned(m_token, data["user"]);
       snowflake guild_id(data["guild_id"].GetString());
       LOG(DEBUG) << "User " << unbanned.distinct()
         << " has been unbanned from "
@@ -345,8 +345,6 @@ namespace discord
       message_event event(m_token, data);
       auto word = event.content().substr(0, event.content().find_first_of(" \n"));
 
-      LOG(INFO) << "Entering MESSAGE_CREATE With " << event.content() << " - " << word << " - " << m_prefix;
-
       //  If we have a prefix and it's the start of this message and it's a command
       if (!m_prefix.empty() &&
         word.size() > m_prefix.size() &&
@@ -354,7 +352,6 @@ namespace discord
         m_commands.count(word.substr(m_prefix.size()))
         )
       {
-        LOG(INFO) << "Got into command call with - " << word.substr(m_prefix.size());
         //  Call the command
         m_commands[word.substr(m_prefix.size())](event);
       }
