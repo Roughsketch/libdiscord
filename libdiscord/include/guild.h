@@ -3,15 +3,13 @@
 #include <unordered_map>
 
 #include "common.h"
+#include "emoji.h"
 #include "user.h"
 #include "voice.h"
 
 namespace discord
 {
-  class user;
-  class bot;
   class channel;
-  class emoji;
   class member;
   class presence_event;
   class role;
@@ -99,6 +97,7 @@ namespace discord
 
     std::string name() const;
     std::vector<emoji> emojis() const;
+    uint32_t member_count() const;
     void set_emojis(std::vector<emoji>& emojis);
 
     void set_unavailable(bool value);

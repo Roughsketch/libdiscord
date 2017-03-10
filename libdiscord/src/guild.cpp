@@ -190,6 +190,11 @@ namespace discord
     return emojis;
   }
 
+  uint32_t guild::member_count() const
+  {
+    return m_member_count;
+  }
+
   void guild::set_emojis(std::vector<emoji>& emojis)
   {
     for (auto& emoji : emojis)
@@ -220,21 +225,42 @@ namespace discord
 
   void guild::add_member(member& mem)
   {
+    if (m_members.find(mem.user().id()) == std::end(m_members))
+    {
+      m_member_count++;
+    }
+
     m_members[mem.user().id()] = mem;
   }
 
   void guild::update_member(std::vector<snowflake>& role_ids, user& user, std::string nick)
   {
-    auto mem = m_members[user.id()];
+    auto mem_itr = m_members.find(user.id());
 
-    mem.set_roles(role_ids);
-    mem.set_user(user);
-    mem.set_nick(nick);
+    if (mem_itr == std::end(m_members))
+    {
+      m_member_count++;
+      member mem;
+      mem.set_roles(role_ids);
+      mem.set_user(user);
+      mem.set_nick(nick);
+      m_members[user.id()] = mem;
+    }
+    else
+    {
+      mem_itr->second.set_roles(role_ids);
+      mem_itr->second.set_user(user);
+      mem_itr->second.set_nick(nick);
+    }
   }
 
   void guild::remove_member(member& mem)
   {
-    m_members.erase(mem.user().id());
+    if (m_members.find(mem.user().id()) != std::end(m_members))
+    {
+      m_members.erase(mem.user().id());
+      m_member_count--;
+    }
   }
 
   void guild::add_role(role& role)
