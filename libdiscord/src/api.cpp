@@ -133,11 +133,8 @@ namespace discord
 
         response.status_code = res.status_code();
 
-        LOG(INFO) << "Got Status Code " << response.status_code;
-
         if (res.status_code() == status_codes::OK)
         {
-          LOG(INFO) << "Got into OK body reader.";
           auto bodyStream = res.body();
           container_buffer<std::string> inStringBuffer;
 
@@ -146,7 +143,7 @@ namespace discord
             return inStringBuffer.collection();
           }).then([&response](std::string text)
           {
-            LOG(INFO) << "Got response: " << text;
+            LOG(DEBUG) << "Got API response: " << text;
             response.data.Parse(text.c_str(), text.size());
           }).get();
         }
@@ -200,8 +197,7 @@ namespace discord
             }
           }
         }
-
-        LOG(INFO) << "Returning response.";
+        
         return response;
       });
     }
