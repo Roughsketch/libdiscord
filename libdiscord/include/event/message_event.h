@@ -5,12 +5,12 @@
 
 namespace discord
 {
-  class message_event : public event
+  class message_event : public bot_ownable
   {
     std::stringstream m_stream;
     message m_message;
   public:
-    explicit message_event(const std::string& token, rapidjson::Value& data);
+    explicit message_event(const bot* owner, rapidjson::Value& data);
 
     std::string content() const;
     message respond(std::string content) const;

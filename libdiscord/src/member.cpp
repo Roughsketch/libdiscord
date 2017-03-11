@@ -8,7 +8,7 @@ namespace discord
     m_mute = false;
   }
 
-  member::member(const std::string& token, rapidjson::Value& data)
+  member::member(const bot* owner, rapidjson::Value& data) : bot_ownable(owner)
   {
     set_from_json(m_nick, "nick", data);
     set_from_json(m_joined_at, "joined_at", data);
@@ -18,7 +18,7 @@ namespace discord
     auto found = data.FindMember("user");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_user = discord::user(token, found->value);
+      m_user = discord::user(owner, found->value);
     }
 
     found = data.FindMember("roles");

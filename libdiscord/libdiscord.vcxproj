@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClInclude Include="include\api.h" />
     <ClInclude Include="include\bot.h" />
+    <ClInclude Include="include\bot_ownable.h" />
     <ClInclude Include="include\channel.h" />
     <ClInclude Include="include\common.h" />
     <ClInclude Include="include\discord.h" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClCompile Include="src\api.cpp" />
     <ClCompile Include="src\bot.cpp" />
+    <ClCompile Include="src\bot_ownable.cpp" />
     <ClCompile Include="src\channel.cpp" />
     <ClCompile Include="src\common.cpp" />
     <ClCompile Include="src\easylogging++.cpp" />

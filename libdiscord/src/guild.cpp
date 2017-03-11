@@ -30,7 +30,7 @@ namespace discord
   {
   }
 
-  presence::presence(const std::string& token, rapidjson::Value& data)
+  presence::presence(const bot* owner, rapidjson::Value& data) : bot_ownable(owner)
   {
     set_from_json(m_guild_id, "guild_id", data);
     set_from_json(m_status, "status", data);
@@ -38,7 +38,7 @@ namespace discord
     auto found = data.FindMember("user");
     if (found != data.MemberEnd())
     {
-      m_user = discord::user(token, data["user"]);
+      m_user = discord::user(owner, data["user"]);
     }
 
     found = data.FindMember("roles");
@@ -74,7 +74,7 @@ namespace discord
     m_unavailable = false;
   }
 
-  guild::guild(const std::string& token, rapidjson::Value& data) : identifiable(data["id"]), m_token(token)
+  guild::guild(const bot* owner, rapidjson::Value& data) : identifiable(data["id"]), bot_ownable(owner)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_icon, "icon", data);
@@ -147,7 +147,7 @@ namespace discord
     {
       for (auto& guild_channel : found->value.GetArray())
       {
-        channel chan(token, m_id, guild_channel);
+        channel chan(owner, m_id, guild_channel);
         m_channels[chan.id()] = chan;
       }
     }
@@ -157,7 +157,7 @@ namespace discord
     {
       for (auto& guild_member : found->value.GetArray())
       {
-        member mem(token, guild_member);
+        member mem(owner, guild_member);
         m_members[mem.user().id()] = mem;
       }
     }
@@ -167,7 +167,7 @@ namespace discord
     {
       for (auto& guild_presence : found->value.GetArray())
       {
-        presence presence(token, guild_presence);
+        presence presence(owner, guild_presence);
         m_presences[presence.user().id()] = presence;
       }
     }

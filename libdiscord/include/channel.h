@@ -1,5 +1,6 @@
 #pragma once
 
+#include "bot_ownable.h"
 #include "common.h"
 #include "permission.h"
 #include "user.h"
@@ -43,10 +44,8 @@ namespace discord
     Group
   };
 
-  class channel : public identifiable
+  class channel : public identifiable, public bot_ownable
   {
-    std::string m_token;
-
     //  Constants
     const uint32_t MinNameSize = 2;
     const uint32_t MaxNameSize = 100;
@@ -75,7 +74,7 @@ namespace discord
     bool m_is_dm;
   public:
     channel();
-    explicit channel(const std::string& token, snowflake guild_id, rapidjson::Value& data);
+    explicit channel(const bot* owner, snowflake guild_id, rapidjson::Value& data);
 
     channel& operator=(const channel& other);
 

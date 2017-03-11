@@ -48,8 +48,8 @@ namespace discord
     m_is_dm = false;
   }
 
-  channel::channel(const std::string& token, snowflake guild_id, rapidjson::Value& data)
-    : identifiable(data["id"]), m_token(token), m_guild_id(guild_id)
+  channel::channel(const bot* owner, snowflake guild_id, rapidjson::Value& data)
+    : identifiable(data["id"]), bot_ownable(owner), m_guild_id(guild_id)
   {
     set_from_json(m_last_message_id, "last_message_id", data);
     set_from_json(m_name, "name", data);
@@ -76,14 +76,15 @@ namespace discord
     found = data.FindMember("recipient");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_recipient = user(token, found->value);
+      m_recipient = user(owner, found->value);
       m_is_dm = true;
     }
   }
 
   channel& channel::operator=(const channel& other)
   {
-    m_token = other.m_token;
+    bot_ownable::operator=(other);
+
     m_id = other.m_id;
     m_last_message_id = other.m_last_message_id;
     m_guild_id = other.m_guild_id;

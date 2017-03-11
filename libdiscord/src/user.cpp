@@ -10,7 +10,7 @@ namespace discord
     m_verified = false;
   }
 
-  user::user(const std::string& token, rapidjson::Value& data) : identifiable(data["id"]), m_token(token)
+  user::user(const bot* owner, rapidjson::Value& data) : identifiable(data["id"]), bot_ownable(owner)
   {
     set_from_json(m_username, "username", data);
     set_from_json(m_discriminator, "discriminator", data);

@@ -2,9 +2,9 @@
 
 namespace discord
 {
-  message_event::message_event(const std::string& token, rapidjson::Value& data) : event(token)
+  message_event::message_event(const bot* owner, rapidjson::Value& data) : bot_ownable(owner)
   {
-    m_message = message(token, data);
+    m_message = message(owner, data);
   }
 
   std::string discord::message_event::content() const

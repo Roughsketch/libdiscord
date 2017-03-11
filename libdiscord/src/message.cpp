@@ -11,7 +11,7 @@ namespace discord
     m_pinned = false;
   }
 
-  message::message(const std::string& token, rapidjson::Value& data) : identifiable(data["id"]), m_token(token)
+  message::message(const bot* owner, rapidjson::Value& data) : identifiable(data["id"]), bot_ownable(owner)
   {
     set_from_json(m_channel_id, "channel_id", data);
     set_from_json(m_content, "content", data);
@@ -25,7 +25,7 @@ namespace discord
     auto found = data.FindMember("author");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_author = user(token, data["author"]);
+      m_author = user(owner, data["author"]);
     }
 
     found = data.FindMember("mentions");
@@ -33,7 +33,7 @@ namespace discord
     {
       for (auto& mention : found->value.GetArray())
       {
-        m_mentions.push_back(user(token, mention));
+        m_mentions.push_back(user(owner, mention));
       }
     }
     
@@ -75,10 +75,10 @@ namespace discord
 
     payload.AddMember("content", rapidjson::Value(content.c_str(), content.size()).Move(), payload.GetAllocator());
 
-    auto response = discord::api::request(m_token,
+    auto response = discord::api::request(owner()->token(),
       "/channels/" + m_channel_id.to_string() + "/messages", m_channel_id, web::http::methods::POST,
       payload).get();
 
-    return message(m_token, response.data);
+    return message(owner(), response.data);
   }
 }
