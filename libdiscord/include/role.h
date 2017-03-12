@@ -10,7 +10,7 @@ namespace discord
     std::string m_name;
     uint32_t m_color;
     bool m_hoist;
-    uint32_t m_position;
+    int32_t m_position;
     permission m_permissions;
     bool m_managed;
     bool m_mentionable;
