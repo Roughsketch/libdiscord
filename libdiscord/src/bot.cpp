@@ -348,7 +348,7 @@ namespace discord
     else if (event_name == "GUILD_ROLE_DELETE")
     {
       snowflake guild_id(data["guild_id"].GetString());
-      role guild_role(data["role"]);
+      snowflake guild_role(data["role_id"].GetString());
       m_guilds[guild_id].remove_role(guild_role);
     }
     else if (event_name == "MESSAGE_CREATE")

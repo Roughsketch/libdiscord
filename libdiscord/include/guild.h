@@ -111,7 +111,7 @@ namespace discord
 
     void add_role(role& role);
     void update_role(role& role);
-    void remove_role(role& role);
+    void remove_role(snowflake& role_id);
 
     void update_presence(presence& presence);
   };

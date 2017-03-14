@@ -273,9 +273,9 @@ namespace discord
     m_roles[role.id()] = role;
   }
 
-  void guild::remove_role(role& role)
+  void guild::remove_role(snowflake& role_id)
   {
-    m_roles.erase(role.id());
+    m_roles.erase(role_id);
   }
 
   void guild::update_presence(presence& presence)
