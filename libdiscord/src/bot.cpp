@@ -128,6 +128,11 @@ namespace discord
     return guild_vec;
   }
 
+  void bot::on_ready(std::function<void()> callback)
+  {
+    m_on_ready = callback;
+  }
+
   void bot::on_message(std::function<void(message_event&)> callback)
   {
     m_on_message = callback;
@@ -185,6 +190,11 @@ namespace discord
       {
         snowflake id(channel_data["id"].GetString());
         m_private_channels[id] = channel(m_token, 0, channel_data);
+      }
+
+      if (m_on_ready)
+      {
+        m_on_ready();
       }
     }
     else if (event_name == "CHANNEL_CREATE")
