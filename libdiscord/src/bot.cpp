@@ -189,50 +189,83 @@ namespace discord
     }
     else if (event_name == "CHANNEL_CREATE")
     {
-      auto guild_id = snowflake(data["guild_id"].GetString());
-      channel chan(m_token, guild_id, data);
-
-      auto owner = m_guilds.find(guild_id);
-
-      if (owner == std::end(m_guilds))
+      auto found = data.FindMember("guild_id");
+      if (found != data.MemberEnd() && !found->value.IsNull())
       {
-        LOG(ERROR) << "Tried to add a channel from a non-existent guild.";
+        //  This is a Guild Channel object, add it to its respective guild.
+        auto guild_id = snowflake(data["guild_id"].GetString());
+        channel chan(m_token, guild_id, data);
+
+        auto owner = m_guilds.find(guild_id);
+
+        if (owner == std::end(m_guilds))
+        {
+          LOG(ERROR) << "Tried to add a channel from a non-existent guild.";
+        }
+        else
+        {
+          owner->second.add_channel(chan);
+        }
       }
       else
       {
-        owner->second.add_channel(chan);
+        //  This is a DM channel object. Add it to the bot's private channels.
+        channel chan(m_token, 0, data);
+        m_private_channels[chan.id()] = chan;
       }
     }
     else if (event_name == "CHANNEL_UPDATE")
     {
-      auto guild_id = snowflake(data["guild_id"].GetString());
-      channel chan(m_token, guild_id, data);
-
-      auto owner = m_guilds.find(guild_id);
-
-      if (owner == std::end(m_guilds))
+      auto found = data.FindMember("guild_id");
+      if (found != data.MemberEnd() && !found->value.IsNull())
       {
-        LOG(ERROR) << "Tried to add a channel from a non-existent guild.";
+        //  This is a Guild Channel object, update it inside its respective guild.
+        auto guild_id = snowflake(data["guild_id"].GetString());
+        channel chan(m_token, guild_id, data);
+
+        auto owner = m_guilds.find(guild_id);
+
+        if (owner == std::end(m_guilds))
+        {
+          LOG(ERROR) << "Tried to add a channel from a non-existent guild.";
+        }
+        else
+        {
+          owner->second.update_channel(chan);
+        }
       }
       else
       {
-        owner->second.update_channel(chan);
+        //  This is a DM channel object. Update it in the private channels list.
+        channel chan(m_token, 0, data);
+        m_private_channels[chan.id()] = chan;
       }
     }
     else if (event_name == "CHANNEL_DELETE")
     {
-      auto guild_id = snowflake(data["guild_id"].GetString());
-      channel chan(m_token, guild_id, data);
-
-      auto owner = m_guilds.find(guild_id);
-
-      if (owner == std::end(m_guilds))
+      auto found = data.FindMember("guild_id");
+      if (found != data.MemberEnd() && !found->value.IsNull())
       {
-        LOG(ERROR) << "Tried to remove a channel from a non-existent guild.";
+        //  This is a Guild Channel object, remove it from its respective guild.
+        auto guild_id = snowflake(data["guild_id"].GetString());
+        channel chan(m_token, guild_id, data);
+
+        auto owner = m_guilds.find(guild_id);
+
+        if (owner == std::end(m_guilds))
+        {
+          LOG(ERROR) << "Tried to remove a channel from a non-existent guild.";
+        }
+        else
+        {
+          owner->second.remove_channel(chan);
+        }
       }
       else
       {
-        owner->second.remove_channel(chan);
+        //  This is a DM channel object. Remove it from the private channels list.
+        channel chan(m_token, 0, data);
+        m_private_channels.erase(chan.id());
       }
     }
     else if (event_name == "GUILD_CREATE")
