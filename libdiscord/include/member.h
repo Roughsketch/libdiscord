@@ -5,10 +5,8 @@
 
 namespace discord
 {
-  class member
+  class member : public bot_ownable
   {
-    std::string m_token;
-
     user m_user;
     std::string m_nick;
     std::vector<snowflake> m_roles;
@@ -17,7 +15,7 @@ namespace discord
     bool m_mute;
   public:
     member();
-    explicit member(const std::string& token, rapidjson::Value& data);
+    explicit member(const bot* owner, rapidjson::Value& data);
 
     const user& user() const;
 

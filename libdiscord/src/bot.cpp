@@ -179,18 +179,18 @@ namespace discord
 
     if (event_name == "READY")
     {
-      m_profile = std::make_unique<user>(m_token, data["user"]);
+      m_profile = std::make_unique<user>(this, data["user"]);
 
       for (auto& channel_data : data["private_channels"].GetArray())
       {
         snowflake id(channel_data["id"].GetString());
-        m_private_channels[id] = channel(m_token, 0, channel_data);
+        m_private_channels[id] = channel(this, 0, channel_data);
       }
     }
     else if (event_name == "CHANNEL_CREATE")
     {
       auto guild_id = snowflake(data["guild_id"].GetString());
-      channel chan(m_token, guild_id, data);
+      channel chan(this, guild_id, data);
 
       auto owner = m_guilds.find(guild_id);
 
@@ -206,7 +206,7 @@ namespace discord
     else if (event_name == "CHANNEL_UPDATE")
     {
       auto guild_id = snowflake(data["guild_id"].GetString());
-      channel chan(m_token, guild_id, data);
+      channel chan(this, guild_id, data);
 
       auto owner = m_guilds.find(guild_id);
 
@@ -222,7 +222,7 @@ namespace discord
     else if (event_name == "CHANNEL_DELETE")
     {
       auto guild_id = snowflake(data["guild_id"].GetString());
-      channel chan(m_token, guild_id, data);
+      channel chan(this, guild_id, data);
 
       auto owner = m_guilds.find(guild_id);
 
@@ -237,12 +237,12 @@ namespace discord
     }
     else if (event_name == "GUILD_CREATE")
     {
-      guild new_guild(m_token, data);
+      guild new_guild(this, data);
       m_guilds[new_guild.id()] = new_guild;
     }
     else if (event_name == "GUILD_UPDATE")
     {
-      guild updated(m_token, data);
+      guild updated(this, data);
       m_guilds[updated.id()] = updated;
     }
     else if (event_name == "GUILD_DELETE")
@@ -260,7 +260,7 @@ namespace discord
     }
     else if (event_name == "GUILD_BAN_ADD")
     {
-      user banned(m_token, data["user"]);
+      user banned(this, data["user"]);
       snowflake guild_id(data["guild_id"].GetString());
 
       LOG(DEBUG) << "User " << banned.distinct()
@@ -269,7 +269,7 @@ namespace discord
     }
     else if (event_name == "GUILD_BAN_REMOVE")
     {
-      user unbanned(m_token, data["user"]);
+      user unbanned(this, data["user"]);
       snowflake guild_id(data["guild_id"].GetString());
       LOG(DEBUG) << "User " << unbanned.distinct()
         << " has been unbanned from "
@@ -286,13 +286,13 @@ namespace discord
     else if (event_name == "GUILD_MEMBER_ADD")
     {
       snowflake guild_id(data["guild_id"].GetString());
-      member guild_member(m_token, data);
+      member guild_member(this, data);
       m_guilds[guild_id].add_member(guild_member);
     }
     else if (event_name == "GUILD_MEMBER_REMOVE")
     {
       snowflake guild_id(data["guild_id"].GetString()); 
-      member guild_member(m_token, data);
+      member guild_member(this, data);
       m_guilds[guild_id].remove_member(guild_member);
     }
     else if (event_name == "GUILD_MEMBER_UPDATE")
@@ -308,7 +308,7 @@ namespace discord
       auto found = data.FindMember("user");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
-        updated_user = user(m_token, data["user"]);
+        updated_user = user(this, data["user"]);
       }
 
       found = data.FindMember("roles");
@@ -329,7 +329,7 @@ namespace discord
 
       for (auto& member_data : data["members"].GetArray())
       {
-        member guild_member(m_token, member_data);
+        member guild_member(this, member_data);
         owner.add_member(guild_member);
       }
     }
@@ -353,7 +353,7 @@ namespace discord
     }
     else if (event_name == "MESSAGE_CREATE")
     {
-      message_event event(m_token, data);
+      message_event event(this, data);
       auto word = event.content().substr(0, event.content().find_first_of(" \n"));
 
       //  If we have a prefix and it's the start of this message and it's a command
@@ -376,7 +376,7 @@ namespace discord
     {
       if (m_on_message_edited)
       {
-        message_event event(m_token, data);
+        message_event event(this, data);
         m_on_message_edited(event);
       }
     }
@@ -411,7 +411,7 @@ namespace discord
     }
     else if (event_name == "PRESENCE_UPDATE")
     {
-      presence presence(m_token, data);
+      presence presence(this, data);
       snowflake guild_id(data["guild_id"].GetString());
 
       m_guilds[guild_id].update_presence(presence);

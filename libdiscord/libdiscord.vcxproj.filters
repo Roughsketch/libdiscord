@@ -93,6 +93,9 @@
     <ClInclude Include="include\discord_exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\bot_ownable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\api.cpp">
@@ -138,6 +141,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\voice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bot_ownable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

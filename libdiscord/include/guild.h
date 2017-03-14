@@ -6,6 +6,7 @@
 #include "emoji.h"
 #include "user.h"
 #include "voice.h"
+#include "bot_ownable.h"
 
 namespace discord
 {
@@ -48,7 +49,7 @@ namespace discord
     
   };
 
-  class presence
+  class presence : bot_ownable
   {
     user m_user;
     std::vector<snowflake> m_roles;
@@ -58,15 +59,13 @@ namespace discord
 
   public:
     presence();
-    explicit presence(const std::string& token, rapidjson::Value& data);
+    explicit presence(const bot* owner, rapidjson::Value& data);
 
     const user& user() const;
   };
 
-  class guild : public identifiable
+  class guild : public identifiable, public bot_ownable
   {
-    std::string m_token;
-
     std::string m_name;
     std::string m_icon;
     std::string m_splash;
@@ -93,7 +92,7 @@ namespace discord
     bool m_unavailable;
   public:
     guild();
-    explicit guild(const std::string& token, rapidjson::Value& data);
+    explicit guild(const bot* owner, rapidjson::Value& data);
 
     std::string name() const;
     std::vector<emoji> emojis() const;
