@@ -97,6 +97,9 @@ namespace discord
     std::string name() const;
     std::vector<emoji> emojis() const;
     uint32_t member_count() const;
+    const channel& find_channel(snowflake id) const;
+    const member& find_member(snowflake id) const;
+
     void set_emojis(std::vector<emoji>& emojis);
 
     void set_unavailable(bool value);

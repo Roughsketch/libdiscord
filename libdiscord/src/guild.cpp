@@ -195,6 +195,26 @@ namespace discord
     return m_member_count;
   }
 
+  const channel& guild::find_channel(snowflake id) const
+  {
+    if (m_channels.find(id) != std::end(m_channels))
+    {
+      return m_channels.at(id);
+    }
+
+    return channel();
+  }
+
+  const member& guild::find_member(snowflake id) const
+  {
+    if (m_members.find(id) != std::end(m_members))
+    {
+      return m_members.at(id);
+    }
+
+    return member();
+  }
+
   void guild::set_emojis(std::vector<emoji>& emojis)
   {
     for (auto& emoji : emojis)
