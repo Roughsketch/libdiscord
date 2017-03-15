@@ -31,6 +31,7 @@ namespace discord
     std::string m_prefix;
 
     //  Event callbacks
+    std::function<void()> m_on_ready;
     std::function<void(message_event&)> m_on_message;
     std::function<void(message_event&)> m_on_message_edited;
     std::function<void(message_deleted_event&)> m_on_message_deleted;
@@ -50,6 +51,7 @@ namespace discord
     const user& profile() const;
     std::vector<guild> guilds() const;
 
+    void on_ready(std::function<void()> callback);
     void on_message(std::function<void(message_event&)> callback);
     void on_message_edited(std::function<void(message_event&)> callback);
     void on_message_deleted(std::function<void(message_deleted_event&)> callback);
