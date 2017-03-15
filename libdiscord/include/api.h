@@ -9,6 +9,7 @@ namespace discord
 {
   namespace api
   {
+    /** Struct for holding API responses. Includes status code and JSON data. */
     struct api_response
     {
       rapidjson::Document data;
@@ -33,6 +34,7 @@ namespace discord
       }
     };
 
+    /** Responses that the Discord API can send. */
     enum response_code : uint32_t
     {
       UnknownAccount = 10001,
@@ -78,7 +80,20 @@ namespace discord
       ReactionBlocked = 90001
     };
 
+    /** Make a request to the Discord API. Returns a task that must be synced to get a value. 
+     *
+     * @param token The token of the bot or user that is calling the API.
+     * @param endpoint The endpoint to query.
+     * @param major The major parameter of the API call.
+     * @param type The method to use when connecting to the API.
+     * @param data The JSON payload to attach.
+     */
     pplx::task<api_response> request(std::string token, std::string endpoint, snowflake major, web::http::method type, const rapidjson::Value& data = rapidjson::Value());
+
+    /** Get a secure websocket URL from Discord. *
+     *
+     * @return A WSS URL that can be used to connect to the Discord gateway.
+     */
     std::string get_wss_url();
   }
 }

@@ -14,6 +14,12 @@ namespace discord
   std::string json_to_string(rapidjson::Value& data);
   std::string json_to_string(const rapidjson::Value& data);
 
+  /** A convenience method that avoids boilerplate when assigning primitive types from JSON values.
+  *
+  * @param value A value to assign to.
+  * @param key The key to read the data from.
+  * @param data The data to read from.
+  */
   template <typename Type, typename Key>
   void set_from_json(Type& value, Key key, rapidjson::Value& data)
   {
@@ -29,6 +35,12 @@ namespace discord
     }
   }
 
+  /** Specialized set_from_json for snowflakes. 
+   *
+   * @param value A snowflake value to assign to.
+   * @param key The key to read the data from.
+   * @param data The data to read from.
+   */
   template <typename Key>
   void set_from_json(snowflake& value, Key key, rapidjson::Value& data)
   {
