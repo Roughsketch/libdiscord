@@ -128,6 +128,16 @@ namespace discord
     return guild_vec;
   }
 
+  const guild& bot::find_guild(snowflake id) const
+  {
+    if (m_guilds.find(id) != std::end(m_guilds))
+    {
+      return m_guilds.at(id);
+    }
+
+    return guild();
+  }
+
   void bot::on_ready(std::function<void()> callback)
   {
     m_on_ready = callback;
