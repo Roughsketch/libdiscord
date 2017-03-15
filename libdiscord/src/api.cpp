@@ -156,18 +156,33 @@ namespace discord
 
           if (code_member != response.data.MemberEnd())
           {
-            //  We got a response code from the request.
-            auto name_member = response.data.FindMember("name");
-            if (name_member != response.data.MemberEnd())
+            //  Try to find a name member which holds error data.
+            auto found = response.data.FindMember("name");
+
+            //  If the name member isn't found, try to find the content member instead.
+            if (found == response.data.MemberEnd())
             {
-              for (auto& name : name_member->value.GetArray())
+              found = response.data.FindMember("content");
+            }
+
+            //  If we found either name or content, then concatenate their messages and throw an exception.
+            if (found != response.data.MemberEnd())
+            {
+              std::string messages;
+              for (auto& content : found->value.GetArray())
               {
-                throw discord_exception(name.GetString());
+                messages += std::string(content.GetString()) + "\n";
+              }
+
+              if (messages.size() > 0)
+              {
+                throw discord_exception(messages);
               }
 
               throw discord_exception("API call failed and response was null.");
             }
 
+            //  Didn't find name or content member, throw based off error code instead.
             auto code = code_member->value.GetInt();
             std::string message = response.data["message"].GetString();
 
@@ -193,6 +208,7 @@ namespace discord
             case InvalidAuthToken:
               throw authorization_exception(message);
             default:
+              //  No specially handled codes left, throw a default exception
               throw discord_exception(message);
             }
           }
