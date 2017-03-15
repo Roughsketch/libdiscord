@@ -1,6 +1,7 @@
 #include "message.h"
 #include "user.h"
 #include "api.h"
+#include "discord_exception.h"
 
 namespace discord
 {
@@ -71,6 +72,11 @@ namespace discord
 
   message message::respond(std::string content) const
   {
+    if (content.size() > 2000)
+    {
+      throw discord_exception("Messages must be fewer than 2000 characters.");
+    }
+
     rapidjson::Document payload(rapidjson::kObjectType);
 
     payload.AddMember("content", rapidjson::Value(content.c_str(), content.size()).Move(), payload.GetAllocator());
