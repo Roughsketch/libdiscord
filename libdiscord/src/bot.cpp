@@ -204,7 +204,7 @@ namespace discord
       {
         //  This is a Guild Channel object, add it to its respective guild.
         auto guild_id = snowflake(data["guild_id"].GetString());
-        channel chan(m_token, guild_id, data);
+        channel chan(this, guild_id, data);
 
         auto owner = m_guilds.find(guild_id);
 
@@ -220,7 +220,7 @@ namespace discord
       else
       {
         //  This is a DM channel object. Add it to the bot's private channels.
-        channel chan(m_token, 0, data);
+        channel chan(this, 0, data);
         m_private_channels[chan.id()] = chan;
       }
     }
@@ -231,7 +231,7 @@ namespace discord
       {
         //  This is a Guild Channel object, update it inside its respective guild.
         auto guild_id = snowflake(data["guild_id"].GetString());
-        channel chan(m_token, guild_id, data);
+        channel chan(this, guild_id, data);
 
         auto owner = m_guilds.find(guild_id);
 
@@ -247,7 +247,7 @@ namespace discord
       else
       {
         //  This is a DM channel object. Update it in the private channels list.
-        channel chan(m_token, 0, data);
+        channel chan(this, 0, data);
         m_private_channels[chan.id()] = chan;
       }
     }
@@ -258,7 +258,7 @@ namespace discord
       {
         //  This is a Guild Channel object, remove it from its respective guild.
         auto guild_id = snowflake(data["guild_id"].GetString());
-        channel chan(m_token, guild_id, data);
+        channel chan(this, guild_id, data);
 
         auto owner = m_guilds.find(guild_id);
 
@@ -274,7 +274,7 @@ namespace discord
       else
       {
         //  This is a DM channel object. Remove it from the private channels list.
-        channel chan(m_token, 0, data);
+        channel chan(this, 0, data);
         m_private_channels.erase(chan.id());
       }
     }
