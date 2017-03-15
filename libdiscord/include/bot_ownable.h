@@ -24,25 +24,11 @@ namespace discord
      */
     const bot* owner() const;
 
-    /** A convinience method to get find a channel from the bot without first calling owner.
-    *
-    *  @param id The id of the channel to find.
-    *  @return The channel that was found, or an empty channel if not found.
-    */
-    const channel& find_channel(snowflake id);
-
     /** A convinience method to get find a guild from the bot without first calling owner.
     *
     *  @param id The id of the guild to find.
     *  @return The guild that was found, or an empty guild if not found.
     */
-    const channel& find_guild(snowflake id);
-
-    /** A convinience method to get find a user from the bot without first calling owner.
-    *
-    *  @param id The id of the user to find.
-    *  @return The user that was found, or an empty user if not found.
-    */
-    const channel& find_user(snowflake id);
+    const guild& find_guild(snowflake id) const;
   };
 }
