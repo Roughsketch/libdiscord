@@ -105,6 +105,10 @@ namespace discord
     case Reconnect:
       send_resume();
       break;
+    case Invalidate_Session:
+      LOG(INFO) << "Session was invalidated, sending identify packet again.";
+      send_identify();
+      break;
     case Hello:
       m_connected = true;
       m_heartbeat_interval = data["heartbeat_interval"].GetInt();
