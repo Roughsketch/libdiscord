@@ -5,7 +5,7 @@
 
 namespace discord
 {
-  class member : public bot_ownable
+  class member : public connection_object
   {
     user m_user;
     std::string m_nick;
@@ -15,7 +15,7 @@ namespace discord
     bool m_mute;
   public:
     member();
-    explicit member(const bot* owner, rapidjson::Value& data);
+    explicit member(connection_state* owner, rapidjson::Value& data);
 
     const user& user() const;
 

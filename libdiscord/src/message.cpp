@@ -2,6 +2,7 @@
 #include "user.h"
 #include "api.h"
 #include "discord_exception.h"
+#include "connection_state.h"
 
 namespace discord
 {
@@ -12,7 +13,7 @@ namespace discord
     m_pinned = false;
   }
 
-  message::message(const bot* owner, rapidjson::Value& data) : identifiable(data["id"]), bot_ownable(owner)
+  message::message(connection_state* owner, rapidjson::Value& data) : identifiable(data["id"]), connection_object(owner)
   {
     set_from_json(m_channel_id, "channel_id", data);
     set_from_json(m_content, "content", data);
@@ -81,8 +82,9 @@ namespace discord
 
     payload.AddMember("content", rapidjson::Value(content.c_str(), content.size()).Move(), payload.GetAllocator());
 
-    auto response = discord::api::request(owner()->token(),
-      "/channels/" + m_channel_id.to_string() + "/messages", m_channel_id, web::http::methods::POST,
+    auto response = owner()->request(
+      "/channels/" + m_channel_id.to_string() + "/messages", m_channel_id,
+      method::POST,
       payload).get();
 
     return message(owner(), response.data);

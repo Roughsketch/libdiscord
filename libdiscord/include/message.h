@@ -5,7 +5,7 @@
 
 namespace discord
 {
-  class message : identifiable, bot_ownable
+  class message : identifiable, connection_object
   {
     snowflake m_channel_id;
     user m_author;
@@ -24,7 +24,7 @@ namespace discord
     std::string m_webhook_id;
   public:
     message();
-    explicit message(const bot* owner, rapidjson::Value& data);
+    explicit message(connection_state* owner, rapidjson::Value& data);
 
     std::string content() const;
 

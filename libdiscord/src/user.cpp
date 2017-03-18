@@ -1,5 +1,5 @@
 #include "user.h"
-#include "bot.h"
+#include "connection_state.h"
 
 namespace discord
 {
@@ -10,7 +10,7 @@ namespace discord
     m_verified = false;
   }
 
-  user::user(const bot* owner, rapidjson::Value& data) : identifiable(data["id"]), bot_ownable(owner)
+  user::user(connection_state* owner, rapidjson::Value& data) : identifiable(data["id"]), connection_object(owner)
   {
     set_from_json(m_username, "username", data);
     set_from_json(m_discriminator, "discriminator", data);

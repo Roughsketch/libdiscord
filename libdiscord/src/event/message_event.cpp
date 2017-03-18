@@ -2,7 +2,7 @@
 
 namespace discord
 {
-  message_event::message_event(const bot* owner, rapidjson::Value& data) : bot_ownable(owner)
+  message_event::message_event(connection_state* owner, rapidjson::Value& data) : connection_object(owner)
   {
     m_message = message(owner, data);
   }

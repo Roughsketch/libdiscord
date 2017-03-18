@@ -93,7 +93,13 @@
     <ClInclude Include="include\discord_exception.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\bot_ownable.h">
+    <ClInclude Include="include\connection_state.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\connection_object.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\emoji.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -143,7 +149,10 @@
     <ClCompile Include="src\voice.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\bot_ownable.cpp">
+    <ClCompile Include="src\connection_state.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\connection_object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

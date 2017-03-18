@@ -11,6 +11,18 @@
 
 namespace discord
 {
+  /** A wrapper for cpprestsdk's method values. Using this avoids library users 
+   *  having to include cpprestsdk's headers in their project.
+   */
+  enum class method
+  {
+    GET,
+    POST,
+    PUT,
+    PATCH,
+    DEL
+  };
+
   std::string json_to_string(rapidjson::Value& data);
   std::string json_to_string(const rapidjson::Value& data);
 

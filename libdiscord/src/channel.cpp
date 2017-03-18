@@ -1,5 +1,6 @@
 #include "channel.h"
 #include "bot.h"
+#include "connection_object.h"
 
 namespace discord
 {
@@ -48,8 +49,8 @@ namespace discord
     m_is_dm = false;
   }
 
-  channel::channel(const bot* owner, snowflake guild_id, rapidjson::Value& data)
-    : identifiable(data["id"]), bot_ownable(owner), m_guild_id(guild_id)
+  channel::channel(connection_state* owner, snowflake guild_id, rapidjson::Value& data)
+    : identifiable(data["id"]), connection_object(owner), m_guild_id(guild_id)
   {
     set_from_json(m_last_message_id, "last_message_id", data);
     set_from_json(m_name, "name", data);
@@ -83,7 +84,7 @@ namespace discord
 
   channel& channel::operator=(const channel& other)
   {
-    bot_ownable::operator=(other);
+    connection_object::operator=(other);
 
     m_id = other.m_id;
     m_last_message_id = other.m_last_message_id;

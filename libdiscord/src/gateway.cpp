@@ -226,7 +226,7 @@ namespace discord
       },
       "compress": true,
       "large_threshold": )" + std::to_string(LARGE_SERVER) + R"(,
-      "shard": [0, 1]
+      "shard": [)" + std::to_string(m_shard) + ", " + std::to_string(m_total_shards) + R"(]
     })";
 
     rapidjson::Document doc;
@@ -252,7 +252,8 @@ namespace discord
     send(Resume, payload);
   }
 
-  gateway::gateway(const std::string& token) : m_token(token)
+  gateway::gateway(utility::string_t wss_url, const std::string& token, int shard, int total_shards)
+    : m_token(token), m_wss_url(wss_url), m_shard(shard), m_total_shards(total_shards)
   {
     m_heartbeat_interval = 0;
     m_recieved_ack = true; // Set true to start because first hearbeat sent doesn't require an ACK.
@@ -263,30 +264,6 @@ namespace discord
 
   void gateway::start()
   {
-    web::uri_builder builder(U(""));
-    builder.append_query(U("v"), VERSION);
-    builder.append_query(U("encoding"), ENCODING);
-
-    if (m_wss_url.empty())
-    {
-      do
-      {
-        try
-        {
-          //  Attempt to get the Gateway URL.
-          m_wss_url = utility::conversions::to_string_t(api::get_wss_url());
-        }
-        catch (const web::http::http_exception& e)
-        {
-          LOG(ERROR) << "Exception getting gateway URL: " << e.what();
-          LOG(ERROR) << "Sleeping for 5 seconds and trying again.";
-          std::this_thread::sleep_for(std::chrono::seconds(5));
-        }
-      } while (m_wss_url.empty());  //  Keep trying until we get it.
-
-      m_wss_url += builder.to_string();
-    }
-
     m_client.set_message_handler([&](web::websockets::client::websocket_incoming_message msg)
     {
       try

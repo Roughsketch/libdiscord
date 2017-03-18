@@ -1,13 +1,11 @@
 #pragma once
 
 #include "common.h"
-#include "bot_ownable.h"
+#include "connection_object.h"
 
 namespace discord
 {
-  class bot;
-
-  class user : public identifiable, public bot_ownable
+  class user : public identifiable, public connection_object
   {
     std::string m_username;
     std::string m_discriminator;
@@ -18,7 +16,7 @@ namespace discord
     std::string m_email;
   public:
     user();
-    explicit user(const bot* owner, rapidjson::Value& data);
+    explicit user(connection_state* owner, rapidjson::Value& data);
 
     std::string name() const;
     std::string discriminator() const;

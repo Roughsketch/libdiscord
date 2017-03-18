@@ -13,11 +13,6 @@ namespace discord
 
   class gateway
   {
-    //  Constants
-    static const uint8_t LARGE_SERVER;
-    static const utility::string_t VERSION;
-    static const utility::string_t ENCODING;
-
     //  Client variables
     std::string m_token;
     utility::string_t m_wss_url;
@@ -34,6 +29,8 @@ namespace discord
     std::string m_session_id;
     volatile bool m_connected;
     bool m_use_resume;
+    int m_shard;
+    int m_total_shards;
 
     std::function<void(std::string, rapidjson::Value&)> m_on_dispatch = nullptr;
 
@@ -62,7 +59,12 @@ namespace discord
     void send_identify();
     void send_resume();
   public:
-    explicit gateway(const std::string& token);
+    //  Constants
+    static const uint8_t LARGE_SERVER;
+    static const utility::string_t VERSION;
+    static const utility::string_t ENCODING;
+
+    explicit gateway(utility::string_t wss_url, const std::string& token, int shard = 0, int total_shards = 1);
 
     void start();
     void on_dispatch(std::function<void(std::string, rapidjson::Value&)> callback);

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -8,7 +7,10 @@
 
 namespace discord
 {
+  enum event_type;
+
   class channel;
+  class connection_state;
   class emoji;
   class gateway;
   class guild;
@@ -21,12 +23,7 @@ namespace discord
 
   class bot
   {
-    std::unique_ptr<gateway> m_gateway;
-
-    const std::string m_token;
-    std::unique_ptr<user> m_profile;
-    std::unordered_map<uint64_t, guild> m_guilds;
-    std::unordered_map<uint64_t, channel> m_private_channels;
+    std::unique_ptr<connection_state> m_conn_state;
 
     std::string m_prefix;
 
@@ -42,9 +39,9 @@ namespace discord
     std::function<void(typing_event&)> m_on_typing;
     std::unordered_map<std::string, std::function<void(message_event&)>> m_commands;
 
-    void update_emojis(rapidjson::Value& data);
+    void on_event(event_type type, rapidjson::Value& data);
   public:
-    explicit bot(std::string token, std::string prefix = "");
+    explicit bot(std::string token, std::string prefix = "", int shards = 1);
     ~bot();
 
     /** Get the bot's current token. *
@@ -137,9 +134,6 @@ namespace discord
      *
      * @param async Whether to run the bot asynchronously or not. Default will block.
      */
-    void run(bool async = false) const;
-
-    /** A callback that receives events from the gateway. Do not use this. */
-    void on_dispatch(std::string event_name, rapidjson::Value& data);
+    void run(bool async = false);
   };
 }

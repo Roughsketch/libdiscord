@@ -1,6 +1,6 @@
 #include "guild.h"
-#include "bot.h"
 #include "channel.h"
+#include "connection_state.h"
 #include "emoji.h"
 #include "member.h"
 #include "role.h"
@@ -30,7 +30,7 @@ namespace discord
   {
   }
 
-  presence::presence(const bot* owner, rapidjson::Value& data) : bot_ownable(owner)
+  presence::presence(connection_state* owner, rapidjson::Value& data) : connection_object(owner)
   {
     set_from_json(m_guild_id, "guild_id", data);
     set_from_json(m_status, "status", data);
@@ -72,9 +72,10 @@ namespace discord
     m_large = false;
     m_member_count = 0;
     m_unavailable = false;
+    m_empty = true;
   }
 
-  guild::guild(const bot* owner, rapidjson::Value& data) : identifiable(data["id"]), bot_ownable(owner)
+  guild::guild(connection_state* owner, rapidjson::Value& data) : identifiable(data["id"]), connection_object(owner)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_icon, "icon", data);
@@ -171,6 +172,8 @@ namespace discord
         m_presences[presence.user().id()] = presence;
       }
     }
+
+    m_empty = false;
   }
 
   std::string guild::name() const
@@ -221,6 +224,17 @@ namespace discord
     {
       m_emojis[emoji.id()] = emoji;
     }
+  }
+
+  bool guild::find_emoji(snowflake emoji_id, emoji& dest)
+  {
+    if (m_emojis.count(emoji_id))
+    {
+      dest = m_emojis[emoji_id];
+      return true;
+    }
+
+    return false;
   }
 
   void guild::set_unavailable(bool value)
@@ -301,5 +315,10 @@ namespace discord
   void guild::update_presence(presence& presence)
   {
     m_presences[presence.user().id()] = presence;
+  }
+
+  bool guild::empty()
+  {
+    return m_empty;
   }
 }

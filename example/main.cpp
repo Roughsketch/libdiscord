@@ -47,11 +47,17 @@ int main()
   });
 
   bot.add_command("guilds", [&bot](auto& event) {
-    std::string response = "I am currently in the following guilds:\n```";
+    auto guilds = bot.guilds();
+    auto response = "I am currently in " + std::to_string(guilds.size()) + " guilds. Top guilds by member count:\n```";
 
-    for (auto& guild : bot.guilds())
+    std::sort(std::begin(guilds), std::end(guilds), [](auto& a, auto& b)
     {
-      response += guild.name() + ": " + std::to_string(guild.member_count()) + "\n";
+      return a.member_count() > b.member_count();
+    });
+
+    for (auto i = 0; i < 25 && i < guilds.size(); ++i)
+    {
+      response += guilds[i].name() + ": " + std::to_string(guilds[i].member_count()) + "\n";
     }
 
     response += "```";

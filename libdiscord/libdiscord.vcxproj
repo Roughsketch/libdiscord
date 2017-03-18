@@ -139,12 +139,14 @@
   <ItemGroup>
     <ClInclude Include="include\api.h" />
     <ClInclude Include="include\bot.h" />
-    <ClInclude Include="include\bot_ownable.h" />
+    <ClInclude Include="include\connection_object.h" />
     <ClInclude Include="include\channel.h" />
     <ClInclude Include="include\common.h" />
+    <ClInclude Include="include\connection_state.h" />
     <ClInclude Include="include\discord.h" />
     <ClInclude Include="include\discord_exception.h" />
     <ClInclude Include="include\easylogging++.h" />
+    <ClInclude Include="include\emoji.h" />
     <ClInclude Include="include\event\general.h" />
     <ClInclude Include="include\event\guild_event.h" />
     <ClInclude Include="include\event\message_event.h" />
@@ -162,9 +164,10 @@
   <ItemGroup>
     <ClCompile Include="src\api.cpp" />
     <ClCompile Include="src\bot.cpp" />
-    <ClCompile Include="src\bot_ownable.cpp" />
+    <ClCompile Include="src\connection_object.cpp" />
     <ClCompile Include="src\channel.cpp" />
     <ClCompile Include="src\common.cpp" />
+    <ClCompile Include="src\connection_state.cpp" />
     <ClCompile Include="src\easylogging++.cpp" />
     <ClCompile Include="src\emoji.cpp" />
     <ClCompile Include="src\event\message_event.cpp" />

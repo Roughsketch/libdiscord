@@ -22,6 +22,9 @@ namespace discord
         m_roles.push_back(snowflake(emoji_role.GetString()));
       }
     }
+
+    //  Make sure roles are sorted by id to make comparisons easier.
+    std::sort(std::begin(m_roles), std::end(m_roles));
   }  
   
   std::string emoji::name() const

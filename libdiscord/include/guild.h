@@ -6,11 +6,12 @@
 #include "emoji.h"
 #include "user.h"
 #include "voice.h"
-#include "bot_ownable.h"
+#include "connection_object.h"
 
 namespace discord
 {
   class channel;
+  class connection_state;
   class member;
   class presence_event;
   class role;
@@ -49,7 +50,7 @@ namespace discord
     
   };
 
-  class presence : bot_ownable
+  class presence : connection_object
   {
     user m_user;
     std::vector<snowflake> m_roles;
@@ -59,12 +60,12 @@ namespace discord
 
   public:
     presence();
-    explicit presence(const bot* owner, rapidjson::Value& data);
+    explicit presence(connection_state* owner, rapidjson::Value& data);
 
     const user& user() const;
   };
 
-  class guild : public identifiable, public bot_ownable
+  class guild : public identifiable, public connection_object
   {
     std::string m_name;
     std::string m_icon;
@@ -88,11 +89,12 @@ namespace discord
     std::unordered_map<uint64_t, member> m_members;
     std::unordered_map<uint64_t, channel> m_channels;
     std::unordered_map<uint64_t, presence> m_presences;
-
     bool m_unavailable;
+
+    bool m_empty;
   public:
     guild();
-    explicit guild(const bot* owner, rapidjson::Value& data);
+    explicit guild(connection_state* owner, rapidjson::Value& data);
 
     std::string name() const;
     std::vector<emoji> emojis() const;
@@ -101,6 +103,7 @@ namespace discord
     const member& find_member(snowflake id) const;
 
     void set_emojis(std::vector<emoji>& emojis);
+    bool find_emoji(snowflake emoji_id, emoji& dest);
 
     void set_unavailable(bool value);
 
@@ -117,5 +120,11 @@ namespace discord
     void remove_role(snowflake& role_id);
 
     void update_presence(presence& presence);
+
+    /** Whether or not this object is considered empty.
+     *
+     * @return True if this guild has no meaningful data.
+     */
+    bool empty();
   };
 }

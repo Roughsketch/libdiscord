@@ -8,7 +8,7 @@ namespace discord
     m_mute = false;
   }
 
-  member::member(const bot* owner, rapidjson::Value& data) : bot_ownable(owner)
+  member::member(connection_state* owner, rapidjson::Value& data) : connection_object(owner)
   {
     set_from_json(m_nick, "nick", data);
     set_from_json(m_joined_at, "joined_at", data);
