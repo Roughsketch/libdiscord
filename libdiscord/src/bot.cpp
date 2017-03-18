@@ -67,20 +67,23 @@ namespace discord
       }
     case MessagesBulkDeleted:
       {
-        std::vector<snowflake> ids;
-        snowflake chan_id(data["channel_id"].GetString());
-
-        for (auto& id : data["ids"].GetArray())
+        if (m_on_message_deleted)
         {
-          ids.push_back(snowflake(id.GetString()));
-        }
+          std::vector<snowflake> ids;
+          snowflake chan_id(data["channel_id"].GetString());
 
-        LOG(DEBUG) << "Sending out " << ids.size() << " MessageDeletedEvents";
+          for (auto& id : data["ids"].GetArray())
+          {
+            ids.push_back(snowflake(id.GetString()));
+          }
 
-        for (auto& id : ids)
-        {
-          message_deleted_event event(m_conn_state.get(), id, chan_id);
-          m_on_message_deleted(event);
+          LOG(DEBUG) << "Sending out " << ids.size() << " MessageDeletedEvents";
+
+          for (auto& id : ids)
+          {
+            message_deleted_event event(m_conn_state.get(), id, chan_id);
+            m_on_message_deleted(event);
+          }
         }
       }
     case Presence:
