@@ -345,4 +345,12 @@ namespace discord
   {
     return m_fields;
   }
+
+  bool embed::empty() const
+  {
+    return  m_title.empty() && m_description.empty() &&
+            m_footer.empty() && m_image.empty() &&
+            m_thumbnail.empty() && m_video.empty() &&
+            m_provider.empty() && m_author.empty() && m_fields.size() == 0;
+  }
 }
