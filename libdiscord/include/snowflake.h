@@ -41,5 +41,10 @@ namespace discord
     {
       return std::to_string(m_id);
     }
+
+    uint64_t id() const
+    {
+      return m_id;
+    }
   };
 }
