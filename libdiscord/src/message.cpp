@@ -89,14 +89,20 @@ namespace discord
       throw discord_exception("Messages must be fewer than 2000 characters.");
     }
 
-    rapidjson::Document payload(rapidjson::kObjectType);
+    rapidjson::StringBuffer sb;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
 
-    payload.AddMember("content", rapidjson::Value(content.c_str(), content.size()).Move(), payload.GetAllocator());
+    writer.StartObject();
+
+    writer.String("content");
+    writer.String(content);
+
+    writer.EndObject();
 
     auto response = owner()->request(
       "/channels/" + m_channel_id.to_string() + "/messages", m_channel_id,
       method::POST,
-      payload).get();
+      sb.GetString()).get();
 
     return message(owner(), response.data);
   }

@@ -80,9 +80,9 @@ namespace discord
     }
   }
 
-  pplx::task<api_response> connection_state::request(std::string endpoint, snowflake major, method type, const rapidjson::Value& data)
+  pplx::task<api_response> connection_state::request(std::string endpoint, snowflake major, method type, std::string&& data)
   {
-    LOG(DEBUG) << "Request: " << endpoint << " - " << major.to_string() << " - " << json_to_string(data);
+    LOG(DEBUG) << "Request: " << endpoint << " - " << major.to_string() << " - " << data;
     auto map_key = std::hash<std::string>()(m_token + endpoint + major.to_string());
     auto mutex_it = m_api_mutex.find(map_key);
 
@@ -135,38 +135,18 @@ namespace discord
     request.headers().add(U("Authorization"), utility::conversions::to_string_t(m_token));
     request.headers().add(U("Content-Type"), U("application/json"));
 
-    if (!data.IsNull())
+    if (!data.empty())
     {
       //  If there's data and the method is GET, then add data as query parameters.
       if (method == web::http::methods::GET)
       {
-        LOG(DEBUG) << "Setting query parameters.";
-        web::uri_builder builder(utility::conversions::to_string_t(endpoint));
-
-        for (auto& param : data.GetObjectA())
-        {
-          std::string value;
-
-          if (param.value.IsString())
-          {
-            value = param.value.GetString();
-          }
-          else if (param.value.IsInt())
-          {
-            value = std::to_string(param.value.GetInt());
-          }
-
-          builder.append_query(utility::conversions::to_string_t(param.name.GetString()),
-            utility::conversions::to_string_t(value));
-        }
-
-        request.set_request_uri(builder.to_string());
+        LOG(DEBUG) << "Setting query parameters: " << (endpoint + data);
+        request.set_request_uri(utility::conversions::to_string_t(endpoint + data));
       }
       else
       {
-        auto body = json_to_string(data);
-        LOG(DEBUG) << "Setting request data: " << body;
-        request.set_body(body);
+        LOG(DEBUG) << "Setting request data.";
+        request.set_body(data);
       }
     }
 
