@@ -12,14 +12,12 @@ namespace discord
     std::string m_text;
     std::string m_icon_url;
     std::string m_proxy_icon_url;
+  public:
+    explicit embed_footer(connection_state* owner, rapidjson::Value& data);
+    explicit embed_footer(std::string text = "", std::string icon_url = "", std::string proxy_icon_url = "");
 
-  protected:
     template <typename Writer>
     void Serialize(Writer& writer) const;
-
-  public:
-    explicit embed_footer(const discord::connection_state* owner, rapidjson::Value& data);
-    explicit embed_footer(std::string text = "", std::string icon_url = "", std::string proxy_icon_url = "");
 
     /** Get the text from this footer.
      *
@@ -56,14 +54,12 @@ namespace discord
     std::string m_proxy_url;
     uint32_t m_height;
     uint32_t m_width;
+  public:
+    explicit embed_image(connection_state* owner, rapidjson::Value& data);
+    explicit embed_image(std::string url = "", uint32_t width = 0, uint32_t height = 0, std::string proxy_url = "");
 
-  protected:
     template <typename Writer>
     void Serialize(Writer& writer) const;
-
-  public:
-    explicit embed_image(const connection_state* owner, rapidjson::Value& data);
-    explicit embed_image(std::string url = "", uint32_t width = 0, uint32_t height = 0, std::string proxy_url = "");
 
     /** Get the URL of the image.
      *
@@ -108,14 +104,12 @@ namespace discord
     std::string m_url;
     uint32_t m_height;
     uint32_t m_width;
+  public:
+    explicit embed_video(connection_state* owner, rapidjson::Value& data);
+    explicit embed_video(std::string url = "", uint32_t width = 0, uint32_t height = 0);
 
-  protected:
     template <typename Writer>
     void Serialize(Writer& writer) const;
-
-  public:
-    explicit embed_video(const connection_state* owner, rapidjson::Value& data);
-    explicit embed_video(std::string url = "", uint32_t width = 0, uint32_t height = 0);
 
     /** Get the URL of the video.
      *
@@ -150,14 +144,12 @@ namespace discord
   {
     std::string m_name;
     std::string m_url;
+  public:
+    explicit embed_provider(connection_state* owner, rapidjson::Value& data);
+    explicit embed_provider(std::string name = "", std::string url = "");
 
-  protected:
     template <typename Writer>
     void Serialize(Writer& writer) const;
-
-  public:
-    explicit embed_provider(const connection_state* owner, rapidjson::Value& data);
-    explicit embed_provider(std::string name = "", std::string url = "");
 
     /** Get the name of the provider.
      *
@@ -188,14 +180,12 @@ namespace discord
     std::string m_url;
     std::string m_icon_url;
     std::string m_proxy_icon_url;
+  public:
+    explicit embed_author(connection_state* owner, rapidjson::Value& data);
+    explicit embed_author(std::string name = "", std::string url = "", std::string icon_url = "", std::string proxy_icon_url = "");
 
-  protected:
     template <typename Writer>
     void Serialize(Writer& writer) const;
-
-  public:
-    explicit embed_author(const connection_state* owner, rapidjson::Value& data);
-    explicit embed_author(std::string name = "", std::string url = "", std::string icon_url = "", std::string proxy_icon_url = "");
 
     /** Get the name of the author.
      *
@@ -237,15 +227,13 @@ namespace discord
     std::string m_name;
     std::string m_value;
     bool m_inline;
-
-  protected:
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
-
   public:
     embed_field();
-    explicit embed_field(const connection_state* owner, rapidjson::Value& data);
+    explicit embed_field(connection_state* owner, rapidjson::Value& data);
     explicit embed_field(std::string name = "", std::string value = "", bool is_inline = false);
+
+    template <typename Writer>
+    void Serialize(Writer& writer) const;
 
     /** Get the name of the field.
      *
@@ -291,14 +279,12 @@ namespace discord
     embed_provider m_provider;
     embed_author m_author;
     std::vector<embed_field> m_fields;
-
-  protected:
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
-
   public:
     embed();
-    explicit embed(const connection_state* owner, rapidjson::Value& data);
+    explicit embed(connection_state* owner, rapidjson::Value& data);
+
+    template <typename Writer>
+    void Serialize(Writer& writer) const;
 
     /** Sets the title of the embed.
      *
@@ -373,6 +359,8 @@ namespace discord
     embed_provider& provider();
     embed_author& author();
     std::vector<embed_field>& fields();
+
+    bool empty() const;
   };
 
   /******************************************

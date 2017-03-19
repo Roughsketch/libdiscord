@@ -3,7 +3,7 @@
 
 namespace discord
 {
-  embed_footer::embed_footer(const connection_state* owner, rapidjson::Value& data)
+  embed_footer::embed_footer(connection_state* owner, rapidjson::Value& data)
   {
     set_from_json(m_text, "text", data);
     set_from_json(m_icon_url, "icon_url", data);
@@ -30,7 +30,7 @@ namespace discord
     return m_proxy_icon_url;
   }
 
-  embed_image::embed_image(const connection_state* owner, rapidjson::Value& data)
+  embed_image::embed_image(connection_state* owner, rapidjson::Value& data)
   {
     set_from_json(m_url, "url", data);
     set_from_json(m_proxy_url, "proxy_url", data);
@@ -63,7 +63,7 @@ namespace discord
     return m_height;
   }
 
-  embed_video::embed_video(const connection_state* owner, rapidjson::Value& data)
+  embed_video::embed_video(connection_state* owner, rapidjson::Value& data)
   {
     set_from_json(m_url, "url", data);
     set_from_json(m_height, "height", data);
@@ -90,7 +90,7 @@ namespace discord
     return m_height;
   }
 
-  embed_provider::embed_provider(const connection_state* owner, rapidjson::Value& data)
+  embed_provider::embed_provider(connection_state* owner, rapidjson::Value& data)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_url, "url", data);
@@ -111,7 +111,7 @@ namespace discord
     return m_url;
   }
 
-  embed_author::embed_author(const connection_state* owner, rapidjson::Value& data)
+  embed_author::embed_author(connection_state* owner, rapidjson::Value& data)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_url, "url", data);
@@ -149,7 +149,7 @@ namespace discord
     m_inline = false;
   }
 
-  embed_field::embed_field(const connection_state* owner, rapidjson::Value& data)
+  embed_field::embed_field(connection_state* owner, rapidjson::Value& data)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_value, "value", data);
@@ -181,7 +181,7 @@ namespace discord
     m_color = 0;
   }
 
-  embed::embed(const connection_state* owner, rapidjson::Value& data)
+  embed::embed(connection_state* owner, rapidjson::Value& data)
   {
     set_from_json(m_title, "title", data);
     set_from_json(m_type, "type", data);
