@@ -13,6 +13,7 @@ namespace discord
    *  have a connection_state object to get the cache from. */
   class connection_object
   {
+  protected:
     connection_state* m_owner;
   public:
     connection_object();
@@ -29,6 +30,6 @@ namespace discord
     *  @param id The id of the guild to find.
     *  @return The guild that was found, or an empty guild if not found.
     */
-    const guild& find_guild(snowflake id) const;
+    guild find_guild(snowflake id) const;
   };
 }
