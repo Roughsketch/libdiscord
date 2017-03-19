@@ -5,15 +5,11 @@
 
 namespace discord
 {
-  class message_event : public connection_object
+  class message_event : public message
   {
     std::stringstream m_stream;
-    message m_message;
   public:
     explicit message_event(connection_state* owner, rapidjson::Value& data);
-
-    std::string content() const;
-    message respond(std::string content) const;
   };
 
   class message_deleted_event : public connection_object
