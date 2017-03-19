@@ -1,8 +1,9 @@
 #include "message.h"
-#include "user.h"
 #include "api.h"
-#include "discord_exception.h"
 #include "connection_state.h"
+#include "discord_exception.h"
+#include "guild.h"
+#include "user.h"
 
 namespace discord
 {
@@ -69,6 +70,16 @@ namespace discord
   const user& message::author() const
   {
     return m_author;
+  }
+
+  channel message::channel() const
+  {
+    return m_owner->find_channel(m_channel_id);
+  }
+
+  guild message::guild() const
+  {
+    return m_owner->find_guild_from_channel(m_channel_id);
   }
 
   message message::respond(std::string content) const

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common.h"
+#include "channel.h"
 #include "user.h"
 
 namespace discord
@@ -29,6 +30,10 @@ namespace discord
     std::string content() const;
 
     const user& author() const;
+
+    channel channel() const;
+
+    guild guild() const;
 
     message respond(std::string content) const;
   };
