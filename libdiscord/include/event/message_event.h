@@ -10,6 +10,22 @@ namespace discord
     std::stringstream m_stream;
   public:
     explicit message_event(connection_state* owner, rapidjson::Value& data);
+
+    ~message_event() {
+      auto str = m_stream.str();
+
+      if (!str.empty())
+      {
+        respond(m_stream.str());
+      }
+    }
+
+    template <typename U>
+    message_event& operator<<(U& obj)
+    {
+      m_stream << obj;
+      return *this;
+    }
   };
 
   class message_deleted_event : public connection_object
