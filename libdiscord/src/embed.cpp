@@ -189,13 +189,51 @@ namespace discord
     set_from_json(m_url, "url", data);
     set_from_json(m_timestamp, "timestamp", data);
     set_from_json(m_color, "color", data);
-    set_from_json(m_footer, "footer", data);
-    set_from_json(m_image, "image;", data);
-    set_from_json(m_thumbnail, "thumbnail;", data);
-    set_from_json(m_video, "video;", data);
-    set_from_json(m_provider, "provider;", data);
-    set_from_json(m_author, "author", data);
-    set_from_json(m_fields, "fields", data);
+
+    auto found = data.FindMember("footer");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      m_footer = embed_footer(owner, data);
+    }
+
+    found = data.FindMember("image");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      m_image = embed_image(owner, data);
+    }
+
+    found = data.FindMember("thumbnail");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      m_thumbnail = embed_thumbnail(owner, data);
+    }
+
+    found = data.FindMember("video");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      m_video = embed_video(owner, data);
+    }
+
+    found = data.FindMember("provider");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      m_provider = embed_provider(owner, data);
+    }
+
+    found = data.FindMember("author");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      m_author = embed_author(owner, data);
+    }
+
+    found = data.FindMember("fields");
+    if (found != data.MemberEnd() && !found->value.IsNull())
+    {
+      for (auto& field : found->value.GetArray())
+      {
+        m_fields.push_back(embed_field(owner, field));
+      }
+    }
   }
 
   void embed::set_title(std::string title)
