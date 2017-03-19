@@ -57,17 +57,23 @@ namespace discord
     const user& profile() const;
 
     /** Get a list of guilds that this bot is currently in.
-     *
-     * @return A list of guilds this bot is in.
-     */
+    *
+    * @return A list of guilds this bot is in.
+    */
     std::vector<guild> guilds() const;
+
+    /** Get a list of channels that this bot can currently see.
+     *
+     * @return A list of channels this bot can see.
+     */
+    std::vector<channel> channels() const;
 
     /** Find a guild by its id.
      *
      * @param id The guild's id.
      * @return The guild that was found or an empty guild if not found.
      */
-    const guild& find_guild(snowflake id) const;
+    guild find_guild(snowflake id) const;
 
     /** Triggered when the bot is finished receiving the READY packet from the gateway.
      *

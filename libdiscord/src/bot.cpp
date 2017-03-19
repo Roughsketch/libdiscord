@@ -144,7 +144,22 @@ namespace discord
     return m_conn_state->guilds();
   }
 
-  const guild& bot::find_guild(snowflake id) const
+  std::vector<channel> bot::channels() const
+  {
+    std::vector<channel> channels;
+
+    for (auto& guild : guilds())
+    {
+      for (auto& chan : guild.channels())
+      {
+        channels.push_back(chan);
+      }
+    }
+
+    return channels;
+  }
+
+  guild bot::find_guild(snowflake id) const
   {
     return m_conn_state->find_guild(id);
   }

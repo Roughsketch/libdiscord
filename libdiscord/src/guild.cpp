@@ -148,8 +148,9 @@ namespace discord
     {
       for (auto& guild_channel : found->value.GetArray())
       {
-        channel chan(owner, m_id, guild_channel);
+        channel chan(owner, guild_channel);
         m_channels[chan.id()] = chan;
+        m_owner->cache_channel_id(m_id, chan.id());
       }
     }
 
@@ -198,7 +199,27 @@ namespace discord
     return m_member_count;
   }
 
-  const channel& guild::find_channel(snowflake id) const
+  std::vector<channel> guild::channels() const
+  {
+    std::vector<channel> values;
+
+    std::transform(std::begin(m_channels), std::end(m_channels), std::back_inserter(values),
+      [](auto& pair) { return pair.second; });
+
+    return values;
+  }
+
+  std::vector<uint64_t> guild::channel_ids() const
+  {
+    std::vector<uint64_t> keys;
+
+    std::transform(std::begin(m_channels), std::end(m_channels), std::back_inserter(keys),
+      [](auto& pair) { return pair.first; });
+
+    return keys;
+  }
+
+  channel guild::find_channel(snowflake id) const
   {
     if (m_channels.find(id) != std::end(m_channels))
     {
@@ -208,7 +229,7 @@ namespace discord
     return channel();
   }
 
-  const member& guild::find_member(snowflake id) const
+  member guild::find_member(snowflake id) const
   {
     if (m_members.find(id) != std::end(m_members))
     {

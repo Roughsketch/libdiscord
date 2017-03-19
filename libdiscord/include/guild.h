@@ -3,18 +3,18 @@
 #include <unordered_map>
 
 #include "common.h"
+#include "connection_object.h"
 #include "emoji.h"
+#include "member.h"
+#include "role.h"
 #include "user.h"
 #include "voice.h"
-#include "connection_object.h"
 
 namespace discord
 {
   class channel;
   class connection_state;
-  class member;
   class presence_event;
-  class role;
 
   enum class verify_level
   {
@@ -99,8 +99,11 @@ namespace discord
     std::string name() const;
     std::vector<emoji> emojis() const;
     uint32_t member_count() const;
-    const channel& find_channel(snowflake id) const;
-    const member& find_member(snowflake id) const;
+
+    std::vector<channel> channels() const;
+    std::vector<uint64_t> channel_ids() const;
+    channel find_channel(snowflake id) const;
+    member find_member(snowflake id) const;
 
     void set_emojis(std::vector<emoji>& emojis);
     bool find_emoji(snowflake emoji_id, emoji& dest);
