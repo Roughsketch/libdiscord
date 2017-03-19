@@ -2,6 +2,7 @@
 
 #include "getRSS.h"
 #include "json.hpp"
+#include <mutex>
 
 nlohmann::json read_json_file(std::string file)
 {
@@ -31,9 +32,8 @@ int main()
 
   bot.on_ready([]()
   {
-    std::cout << "Ready.";
+    std::cout << "Ready.\n";
   });
-
   bot.add_command("info", [&bot](auto& event)
   {
     event.respond("I am " + bot.profile().distinct() + "(" + bot.profile().id().to_string() + ")");
@@ -55,7 +55,7 @@ int main()
       return a.member_count() > b.member_count();
     });
 
-    for (auto i = 0; i < 25 && i < guilds.size(); ++i)
+    for (size_t i = 0; i < 25 && i < guilds.size(); ++i)
     {
       response += guilds[i].name() + ": " + std::to_string(guilds[i].member_count()) + "\n";
     }
