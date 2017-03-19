@@ -1,6 +1,8 @@
 #include "channel.h"
 #include "bot.h"
 #include "connection_object.h"
+#include "connection_state.h"
+#include "guild.h"
 
 namespace discord
 {
@@ -49,8 +51,8 @@ namespace discord
     m_is_dm = false;
   }
 
-  channel::channel(connection_state* owner, snowflake guild_id, rapidjson::Value& data)
-    : identifiable(data["id"]), connection_object(owner), m_guild_id(guild_id)
+  channel::channel(connection_state* owner, rapidjson::Value& data)
+    : identifiable(data["id"]), connection_object(owner)
   {
     set_from_json(m_last_message_id, "last_message_id", data);
     set_from_json(m_name, "name", data);
@@ -82,28 +84,38 @@ namespace discord
     }
   }
 
-  channel& channel::operator=(const channel& other)
+  std::string channel::name() const
   {
-    connection_object::operator=(other);
-
-    m_id = other.m_id;
-    m_last_message_id = other.m_last_message_id;
-    m_guild_id = other.m_guild_id;
-    m_name = other.m_name;
-    m_type = other.m_type;
-    m_position = other.m_position;
-    m_permission_overwrites = other.m_permission_overwrites;
-    m_topic = other.m_topic;
-    m_bitrate = other.m_bitrate;
-    m_user_limit = other.m_user_limit;
-    m_recipient = other.m_recipient;
-    m_is_dm = other.m_is_dm;
-
-    return *this;
+    return m_name;
   }
 
-  snowflake channel::guild_id() const
+  channel_type channel::type() const
   {
-    return m_guild_id;
+    return m_type;
+  }
+
+  int32_t channel::position() const
+  {
+    return m_position;
+  }
+
+  uint32_t channel::bitrate() const
+  {
+    return m_bitrate;
+  }
+
+  uint32_t channel::user_limit() const
+  {
+    return m_user_limit;
+  }
+
+  std::string channel::topic() const
+  {
+    return m_topic;
+  }
+
+  guild channel::guild() const
+  {
+    return m_owner->find_guild_from_channel(m_id);
   }
 }
