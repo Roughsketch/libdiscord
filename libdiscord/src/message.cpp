@@ -4,6 +4,7 @@
 #include "discord_exception.h"
 #include "guild.h"
 #include "user.h"
+#include "api/channel_api.h"
 
 namespace discord
 {
@@ -89,21 +90,6 @@ namespace discord
       throw discord_exception("Messages must be fewer than 2000 characters.");
     }
 
-    rapidjson::StringBuffer sb;
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-
-    writer.StartObject();
-
-    writer.String("content");
-    writer.String(content);
-
-    writer.EndObject();
-
-    auto response = owner()->request(
-      "/channels/" + m_channel_id.to_string() + "/messages", m_channel_id,
-      method::POST,
-      sb.GetString()).get();
-
-    return message(owner(), response.data);
+    return api::channel::create_message(m_owner, m_channel_id, content);
   }
 }

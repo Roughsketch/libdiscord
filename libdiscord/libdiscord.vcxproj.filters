@@ -28,6 +28,9 @@
     <Filter Include="Source Files\event">
       <UniqueIdentifier>{f3f56640-a096-4868-84f0-8dde544a5387}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\api">
+      <UniqueIdentifier>{e3b95dc4-c1df-4e25-8e00-29d5f6d1531c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -102,6 +105,12 @@
     <ClInclude Include="include\emoji.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\api\channel_api.h">
+      <Filter>Header Files\api</Filter>
+    </ClInclude>
+    <ClInclude Include="include\embed.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\api.cpp">
@@ -154,6 +163,12 @@
     </ClCompile>
     <ClCompile Include="src\connection_object.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\embed.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\api\channel_api.cpp">
+      <Filter>Source Files\api</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

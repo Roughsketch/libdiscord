@@ -4,6 +4,8 @@
 #include "connection_state.h"
 #include "guild.h"
 
+#include "api/channel_api.h"
+
 namespace discord
 {
   overwrite::overwrite()
@@ -117,5 +119,10 @@ namespace discord
   guild channel::guild() const
   {
     return m_owner->find_guild_from_channel(m_id);
+  }
+
+  channel channel::remove() const
+  {
+    return api::channel::remove(m_owner, m_id);
   }
 }

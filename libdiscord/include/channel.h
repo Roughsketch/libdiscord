@@ -129,5 +129,14 @@ namespace discord
      * @return The guild that owns this channel, or an empty guild if the channel is a DM.
      */
     guild guild() const;
+
+
+    // ///////////////// //
+    // Start API Methods //
+    // ///////////////// //
+
+
+    /** Removes this channel. Cannot be undone. */
+    channel remove() const;
   };
 }
