@@ -317,7 +317,8 @@ namespace discord
       for (auto& channel_data : data["private_channels"].GetArray())
       {
         snowflake id(channel_data["id"].GetString());
-        m_private_channels[id] = channel(this, 0, channel_data);
+        channel chan(this, channel_data);
+        m_private_channels[id] = chan;
       }
 
       //  Pass dummy to avoid compatibility problems with default values for references
@@ -326,12 +327,14 @@ namespace discord
     }
     else if (event_name == "CHANNEL_CREATE")
     {
+      channel chan(this, data);
       auto found = data.FindMember("guild_id");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
         //  This is a Guild Channel object, add it to its respective guild.
         auto guild_id = snowflake(data["guild_id"].GetString());
-        channel chan(this, guild_id, data);
+
+        m_channel_guilds[chan.id()] = guild_id;
 
         auto owner = m_guilds.find(guild_id);
 
@@ -347,18 +350,19 @@ namespace discord
       else
       {
         //  This is a DM channel object. Add it to the bot's private channels.
-        channel chan(this, 0, data);
         m_private_channels[chan.id()] = chan;
       }
     }
     else if (event_name == "CHANNEL_UPDATE")
     {
+      channel chan(this, data);
       auto found = data.FindMember("guild_id");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
         //  This is a Guild Channel object, update it inside its respective guild.
         auto guild_id = snowflake(data["guild_id"].GetString());
-        channel chan(this, guild_id, data);
+
+        m_channel_guilds[chan.id()] = guild_id;
 
         auto owner = m_guilds.find(guild_id);
 
@@ -374,18 +378,19 @@ namespace discord
       else
       {
         //  This is a DM channel object. Update it in the private channels list.
-        channel chan(this, 0, data);
         m_private_channels[chan.id()] = chan;
       }
     }
     else if (event_name == "CHANNEL_DELETE")
     {
+      channel chan(this, data);
       auto found = data.FindMember("guild_id");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
         //  This is a Guild Channel object, remove it from its respective guild.
         auto guild_id = snowflake(data["guild_id"].GetString());
-        channel chan(this, guild_id, data);
+
+        m_channel_guilds.erase(chan.id());
 
         auto owner = m_guilds.find(guild_id);
 
@@ -401,7 +406,6 @@ namespace discord
       else
       {
         //  This is a DM channel object. Remove it from the private channels list.
-        channel chan(this, 0, data);
         m_private_channels.erase(chan.id());
       }
     }
@@ -425,6 +429,14 @@ namespace discord
       }
       else
       {
+        auto guild = m_guilds.at(id);
+        auto channel_ids = guild.channel_ids();
+
+        for (auto& chan_id : channel_ids)
+        {
+          m_channel_guilds.erase(chan_id);
+        }
+
         m_guilds.erase(id);
       }
     }
@@ -616,7 +628,7 @@ namespace discord
     return guild_vec;
   }
 
-  const guild& connection_state::find_guild(snowflake id) const
+  guild connection_state::find_guild(snowflake id) const
   {
     if (m_guilds.count(id))
     {
@@ -624,5 +636,45 @@ namespace discord
     }
 
     return guild();
+  }
+
+  channel connection_state::find_channel(snowflake id) const
+  {
+    if (m_channel_guilds.count(id))
+    {
+      auto guild_id = m_channel_guilds.at(id);
+      if (m_guilds.count(guild_id))
+      {
+        auto guild = m_guilds.at(guild_id);
+
+        return guild.find_channel(id);
+      }
+    }
+    else if (m_private_channels.count(id))
+    {
+      return m_private_channels.at(id);
+    }
+
+    return channel();
+  }
+
+  guild connection_state::find_guild_from_channel(snowflake id) const
+  {
+    if (m_channel_guilds.count(id))
+    {
+      auto guild_id = m_channel_guilds.at(id);
+
+      if (m_guilds.count(guild_id))
+      {
+        return m_guilds.at(guild_id);
+      }
+    }
+
+    return guild();
+  }
+
+  void connection_state::cache_channel_id(snowflake guild_id, snowflake channel_id)
+  {
+    m_channel_guilds[channel_id] = guild_id;
   }
 }
