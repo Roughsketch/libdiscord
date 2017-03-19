@@ -159,6 +159,7 @@
     <ClInclude Include="include\message.h" />
     <ClInclude Include="include\permission.h" />
     <ClInclude Include="include\role.h" />
+    <ClInclude Include="include\serializable.h" />
     <ClInclude Include="include\snowflake.h" />
     <ClInclude Include="include\user.h" />
     <ClInclude Include="include\voice.h" />

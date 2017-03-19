@@ -1,13 +1,14 @@
 #pragma once
 
 #include "common.h"
+#include "serializable.h"
 
 namespace discord
 {
   class connection_state;
 
   /** The footer object of an embed. */
-  class embed_footer
+  class embed_footer : serializable
   {
     std::string m_text;
     std::string m_icon_url;
@@ -16,8 +17,7 @@ namespace discord
     explicit embed_footer(connection_state* owner, rapidjson::Value& data);
     explicit embed_footer(std::string text = "", std::string icon_url = "", std::string proxy_icon_url = "");
 
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
     /** Get the text from this footer.
      *
@@ -48,7 +48,7 @@ namespace discord
   };
 
   /** An image object of an embed. */
-  class embed_image
+  class embed_image : serializable
   {
     std::string m_url;
     std::string m_proxy_url;
@@ -58,8 +58,7 @@ namespace discord
     explicit embed_image(connection_state* owner, rapidjson::Value& data);
     explicit embed_image(std::string url = "", uint32_t width = 0, uint32_t height = 0, std::string proxy_url = "");
 
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
     /** Get the URL of the image.
      *
@@ -99,7 +98,7 @@ namespace discord
   typedef embed_image embed_thumbnail;
 
   /** A video object of an embed. */
-  class embed_video
+  class embed_video : serializable
   {
     std::string m_url;
     uint32_t m_height;
@@ -108,8 +107,7 @@ namespace discord
     explicit embed_video(connection_state* owner, rapidjson::Value& data);
     explicit embed_video(std::string url = "", uint32_t width = 0, uint32_t height = 0);
 
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
     /** Get the URL of the video.
      *
@@ -140,7 +138,7 @@ namespace discord
   };
 
   /** Wraps embed provider information */
-  class embed_provider
+  class embed_provider : serializable
   {
     std::string m_name;
     std::string m_url;
@@ -148,8 +146,7 @@ namespace discord
     explicit embed_provider(connection_state* owner, rapidjson::Value& data);
     explicit embed_provider(std::string name = "", std::string url = "");
 
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
     /** Get the name of the provider.
      *
@@ -174,7 +171,7 @@ namespace discord
   };
 
   /** Holds information on the listed author of an embed. */
-  class embed_author
+  class embed_author : serializable
   {
     std::string m_name;
     std::string m_url;
@@ -184,8 +181,7 @@ namespace discord
     explicit embed_author(connection_state* owner, rapidjson::Value& data);
     explicit embed_author(std::string name = "", std::string url = "", std::string icon_url = "", std::string proxy_icon_url = "");
 
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
     /** Get the name of the author.
      *
@@ -222,7 +218,7 @@ namespace discord
   };
 
   /** Represents a field of an embed. */
-  class embed_field
+  class embed_field : serializable
   {
     std::string m_name;
     std::string m_value;
@@ -232,8 +228,7 @@ namespace discord
     explicit embed_field(connection_state* owner, rapidjson::Value& data);
     explicit embed_field(std::string name = "", std::string value = "", bool is_inline = false);
 
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
     /** Get the name of the field.
      *
@@ -264,7 +259,7 @@ namespace discord
   };
 
   /** Represents a Discord embed object. */
-  class embed
+  class embed : serializable
   {
     std::string m_title;
     std::string m_type;
@@ -283,8 +278,7 @@ namespace discord
     embed();
     explicit embed(connection_state* owner, rapidjson::Value& data);
 
-    template <typename Writer>
-    void Serialize(Writer& writer) const;
+    void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
     /** Sets the title of the embed.
      *
@@ -362,223 +356,4 @@ namespace discord
 
     bool empty() const;
   };
-
-  /******************************************
-   * Start RapidJSON Serialization methods. *
-   ******************************************/
-
-  template <typename Writer>
-  void embed_footer::Serialize(Writer& writer) const
-  {
-    writer.StartObject();
-
-    writer.String("text");
-    writer.String(m_text);
-
-    if (!m_icon_url.empty())
-    {
-      writer.String("icon_url");
-      writer.String(m_icon_url);
-    }
-
-    if (!m_proxy_icon_url.empty())
-    {
-      writer.String("proxy_icon_url");
-      writer.String(m_proxy_icon_url);
-    }
-
-    writer.EndObject();
-  }
-
-  template <typename Writer>
-  void embed_image::Serialize(Writer& writer) const
-  {
-    writer.StartObject();
-
-    writer.String("url");
-    writer.String(m_url);
-
-    if (m_width > 0)
-    {
-      writer.String("width");
-      writer.Uint(m_width);
-    }
-
-    if (m_height > 0)
-    {
-      writer.String("height");
-      writer.Uint(m_height);
-    }
-
-    if (!m_proxy_url.empty())
-    {
-      writer.String("proxy_url");
-      writer.String(m_proxy_url);
-    }
-
-    writer.EndObject();
-  }
-
-  template <typename Writer>
-  void embed_video::Serialize(Writer& writer) const
-  {
-    writer.StartObject();
-
-    writer.String("url");
-    writer.String(m_url);
-
-    if (m_width > 0)
-    {
-      writer.String("width");
-      writer.Uint(m_width);
-    }
-
-    if (m_height > 0)
-    {
-      writer.String("height");
-      writer.Uint(m_height);
-    }
-
-    writer.EndObject();
-  }
-
-  template <typename Writer>
-  void embed_provider::Serialize(Writer& writer) const
-  {
-    writer.StartObject();
-
-    writer.String("name");
-    writer.String(m_name);
-
-    if (!m_url.empty())
-    {
-      writer.String("url");
-      writer.String(m_url);
-    }
-
-    writer.EndObject();
-  }
-
-  template <typename Writer>
-  void embed_author::Serialize(Writer& writer) const
-  {
-    writer.StartObject();
-
-    writer.String("name");
-    writer.String(m_name);
-
-    if (!m_url.empty())
-    {
-      writer.String("url");
-      writer.String(m_url);
-    }
-
-    if (!m_icon_url.empty())
-    {
-      writer.String("icon_url");
-      writer.String(m_icon_url);
-    }
-
-    if (!m_proxy_icon_url.empty())
-    {
-      writer.String("proxy_icon_url");
-      writer.String(m_proxy_icon_url);
-    }
-
-    writer.EndObject();
-  }
-
-  template <typename Writer>
-  void embed_field::Serialize(Writer& writer) const
-  {
-    writer.StartObject();
-
-    writer.String("name");
-    writer.String(m_name);
-
-    writer.String("value");
-    writer.String(m_value);
-
-    writer.String("inline");
-    writer.Bool(m_inline);
-
-    writer.EndObject();
-  }
-
-  template <typename Writer>
-  void embed::Serialize(Writer& writer) const
-  {
-    writer.StartObject();
-
-    if (!m_title.empty())
-    {
-      writer.String("title");
-      writer.String(m_title);
-    }
-
-    if (!m_description.empty())
-    {
-      writer.String("description");
-      writer.String(m_description);
-    }
-
-    if (!m_url.empty())
-    {
-      writer.String("url");
-      writer.String(m_url);
-    }
-
-    if (m_color != 0)
-    {
-      writer.String("color");
-      writer.Uint(m_color);
-    }
-
-    if (!m_footer.empty())
-    {
-      writer.String("footer");
-      m_footer.Serialize(writer);
-    }
-
-    if (!m_image.empty())
-    {
-      writer.String("image");
-      m_image.Serialize(writer);
-    }
-
-    if (!m_thumbnail.empty())
-    {
-      writer.String("thumbnail");
-      m_thumbnail.Serialize(writer);
-    }
-
-    if (!m_video.empty())
-    {
-      writer.String("video");
-      m_video.Serialize(writer);
-    }
-
-    if (!m_author.empty())
-    {
-      writer.String("author");
-      m_author.Serialize(writer);
-    }
-
-    if (m_fields.size() > 0)
-    {
-      writer.String("fields");
-      writer.StartArray();
-      for (auto& field : m_fields)
-      {
-        //  Check empty to avoid adding fields that aren't initialized correctly.
-        if (!field.empty()) 
-        {
-          field.Serialize(writer);
-        }
-      }
-      writer.EndArray();
-    }
-
-    writer.EndObject();
-  }
 }

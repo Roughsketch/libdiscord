@@ -353,4 +353,216 @@ namespace discord
             m_thumbnail.empty() && m_video.empty() &&
             m_provider.empty() && m_author.empty() && m_fields.size() == 0;
   }
+
+  /******************************************
+  * Start RapidJSON Serialization methods. *
+  ******************************************/
+
+  void embed_footer::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  {
+    writer.StartObject();
+
+    writer.String("text");
+    writer.String(m_text);
+
+    if (!m_icon_url.empty())
+    {
+      writer.String("icon_url");
+      writer.String(m_icon_url);
+    }
+
+    if (!m_proxy_icon_url.empty())
+    {
+      writer.String("proxy_icon_url");
+      writer.String(m_proxy_icon_url);
+    }
+
+    writer.EndObject();
+  }
+
+  void embed_image::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  {
+    writer.StartObject();
+
+    writer.String("url");
+    writer.String(m_url);
+
+    if (m_width > 0)
+    {
+      writer.String("width");
+      writer.Uint(m_width);
+    }
+
+    if (m_height > 0)
+    {
+      writer.String("height");
+      writer.Uint(m_height);
+    }
+
+    if (!m_proxy_url.empty())
+    {
+      writer.String("proxy_url");
+      writer.String(m_proxy_url);
+    }
+
+    writer.EndObject();
+  }
+
+  void embed_video::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  {
+    writer.StartObject();
+
+    writer.String("url");
+    writer.String(m_url);
+
+    if (m_width > 0)
+    {
+      writer.String("width");
+      writer.Uint(m_width);
+    }
+
+    if (m_height > 0)
+    {
+      writer.String("height");
+      writer.Uint(m_height);
+    }
+
+    writer.EndObject();
+  }
+
+  void embed_provider::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  {
+    writer.StartObject();
+
+    writer.String("name");
+    writer.String(m_name);
+
+    if (!m_url.empty())
+    {
+      writer.String("url");
+      writer.String(m_url);
+    }
+
+    writer.EndObject();
+  }
+
+  void embed_author::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  {
+    writer.StartObject();
+
+    writer.String("name");
+    writer.String(m_name);
+
+    if (!m_url.empty())
+    {
+      writer.String("url");
+      writer.String(m_url);
+    }
+
+    if (!m_icon_url.empty())
+    {
+      writer.String("icon_url");
+      writer.String(m_icon_url);
+    }
+
+    if (!m_proxy_icon_url.empty())
+    {
+      writer.String("proxy_icon_url");
+      writer.String(m_proxy_icon_url);
+    }
+
+    writer.EndObject();
+  }
+
+  void embed_field::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  {
+    writer.StartObject();
+
+    writer.String("name");
+    writer.String(m_name);
+
+    writer.String("value");
+    writer.String(m_value);
+
+    writer.String("inline");
+    writer.Bool(m_inline);
+
+    writer.EndObject();
+  }
+
+  void embed::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  {
+    writer.StartObject();
+
+    if (!m_title.empty())
+    {
+      writer.String("title");
+      writer.String(m_title);
+    }
+
+    if (!m_description.empty())
+    {
+      writer.String("description");
+      writer.String(m_description);
+    }
+
+    if (!m_url.empty())
+    {
+      writer.String("url");
+      writer.String(m_url);
+    }
+
+    if (m_color != 0)
+    {
+      writer.String("color");
+      writer.Uint(m_color);
+    }
+
+    if (!m_footer.empty())
+    {
+      writer.String("footer");
+      m_footer.Serialize(writer);
+    }
+
+    if (!m_image.empty())
+    {
+      writer.String("image");
+      m_image.Serialize(writer);
+    }
+
+    if (!m_thumbnail.empty())
+    {
+      writer.String("thumbnail");
+      m_thumbnail.Serialize(writer);
+    }
+
+    if (!m_video.empty())
+    {
+      writer.String("video");
+      m_video.Serialize(writer);
+    }
+
+    if (!m_author.empty())
+    {
+      writer.String("author");
+      m_author.Serialize(writer);
+    }
+
+    if (m_fields.size() > 0)
+    {
+      writer.String("fields");
+      writer.StartArray();
+      for (auto& field : m_fields)
+      {
+        //  Check empty to avoid adding fields that aren't initialized correctly.
+        if (!field.empty())
+        {
+          field.Serialize(writer);
+        }
+      }
+      writer.EndArray();
+    }
+
+    writer.EndObject();
+  }
 }
