@@ -103,6 +103,10 @@ namespace discord
           m_on_typing(event);
         }
       }
+    case EmojiCreated: break;
+    case EmojiDeleted: break;
+    case EmojiEdited: break;
+    default: ;
     }
   }
 
@@ -116,7 +120,7 @@ namespace discord
   {
   }
 
-  void bot::run(bool async)
+  void bot::run(bool async) const
   {
     m_conn_state->connect();
 

@@ -57,9 +57,9 @@ namespace discord
     const user& profile() const;
 
     /** Get a list of guilds that this bot is currently in.
-    *
-    * @return A list of guilds this bot is in.
-    */
+     *
+     * @return A list of guilds this bot is in.
+     */
     std::vector<guild> guilds() const;
 
     /** Get a list of channels that this bot can currently see.
@@ -82,64 +82,64 @@ namespace discord
     void on_ready(std::function<void()> callback);
 
     /** Triggered when a message is sent to any channel.
-    *
-    * @param callback The callback to trigger.
-    */
+     *
+     * @param callback The callback to trigger.
+     */
     void on_message(std::function<void(message_event&)> callback);
 
     /** Triggered when a message is edited.
-    *
-    * @param callback The callback to trigger.
-    */
+     *
+     * @param callback The callback to trigger.
+     */
     void on_message_edited(std::function<void(message_event&)> callback);
 
     /** Triggered when a message is deleted.
-    *
-    * @param callback The callback to trigger.
-    */
+     *
+     * @param callback The callback to trigger.
+     */
     void on_message_deleted(std::function<void(message_deleted_event&)> callback);
 
     /** Triggered when an emoji is added to a guild.
-    *
-    * @param callback The callback to trigger.
-    */
+     *
+     * @param callback The callback to trigger.
+     */
     void on_emoji_created(std::function<void(emoji&)> callback);
 
     /** Triggered when an emoji is removed from a guild.
-    *
-    * @param callback The callback to trigger.
-    */
+     *
+     * @param callback The callback to trigger.
+     */
     void on_emoji_deleted(std::function<void(emoji&)> callback);
 
     /** Triggered when an emoji is updated in a guild.
-    *
-    * @param callback The callback to trigger.
-    */
+     *
+     * @param callback The callback to trigger.
+     */
     void on_emoji_updated(std::function<void(emoji&)> callback);
 
     /** Triggered when a presence event is received.
-    *
-    * @param callback The callback to trigger.
-    */
+     *
+     * @param callback The callback to trigger.
+     */
     void on_presence(std::function<void(presence&)> callback);
 
     /** Triggered when a typing event is received.
-    *
-    * @param callback The callback to trigger.
-    */
+     *
+     * @param callback The callback to trigger.
+     */
     void on_typing(std::function<void(typing_event&)> callback);
 
     /** Adds a command to the bot that will fire when the bot's prefix is followed by the given name.
-    *
-    * @param name The name of the command to add.
-    * @param callback The callback to trigger when the command is received.
-    */
+     *
+     * @param name The name of the command to add.
+     * @param callback The callback to trigger when the command is received.
+     */
     void add_command(std::string name, std::function<void(message_event&)> callback);
 
     /** Runs the bot.
      *
      * @param async Whether to run the bot asynchronously or not. Default will block.
      */
-    void run(bool async = false);
+    void run(bool async = false) const;
   };
 }
