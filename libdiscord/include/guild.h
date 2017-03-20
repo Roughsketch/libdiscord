@@ -107,6 +107,7 @@ namespace discord
 
     void set_emojis(std::vector<emoji>& emojis);
     bool find_emoji(snowflake emoji_id, emoji& dest);
+    bool find_emoji(std::string name, emoji& dest);
 
     void set_unavailable(bool value);
 
