@@ -139,6 +139,8 @@
   <ItemGroup>
     <ClInclude Include="include\api.h" />
     <ClInclude Include="include\api\channel_api.h" />
+    <ClInclude Include="include\api\guild_api.h" />
+    <ClInclude Include="include\api\user_api.h" />
     <ClInclude Include="include\bot.h" />
     <ClInclude Include="include\connection_object.h" />
     <ClInclude Include="include\channel.h" />
@@ -155,6 +157,7 @@
     <ClInclude Include="include\gateway.h" />
     <ClInclude Include="include\guild.h" />
     <ClInclude Include="include\identifiable.h" />
+    <ClInclude Include="include\integration.h" />
     <ClInclude Include="include\member.h" />
     <ClInclude Include="include\message.h" />
     <ClInclude Include="include\permission.h" />
@@ -167,6 +170,8 @@
   <ItemGroup>
     <ClCompile Include="src\api.cpp" />
     <ClCompile Include="src\api\channel_api.cpp" />
+    <ClCompile Include="src\api\guild_api.cpp" />
+    <ClCompile Include="src\api\user_api.cpp" />
     <ClCompile Include="src\bot.cpp" />
     <ClCompile Include="src\connection_object.cpp" />
     <ClCompile Include="src\channel.cpp" />
@@ -178,6 +183,7 @@
     <ClCompile Include="src\event\message_event.cpp" />
     <ClCompile Include="src\gateway.cpp" />
     <ClCompile Include="src\guild.cpp" />
+    <ClCompile Include="src\integration.cpp" />
     <ClCompile Include="src\member.cpp" />
     <ClCompile Include="src\message.cpp" />
     <ClCompile Include="src\permission.cpp" />
