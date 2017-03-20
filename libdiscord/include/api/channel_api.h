@@ -74,7 +74,7 @@ namespace discord
        * @param emoji The emoji to react with.
        * @return Success status.
        */
-      bool create_reaction(connection_state* conn, snowflake channel_id, snowflake message_id, emoji emoji);
+      bool create_reaction(connection_state* conn, snowflake channel_id, snowflake message_id, std::string emoji);
 
       /** Deletes a reaction that the bot has made.
        *

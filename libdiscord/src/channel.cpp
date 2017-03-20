@@ -159,6 +159,11 @@ namespace discord
 
   std::future<bool> channel::create_reaction(snowflake message_id, emoji emoji)
   {
+    return std::async(std::launch::async, api::channel::create_reaction, m_owner, m_id, message_id, emoji.name() + ":" + emoji.id().to_string());
+  }
+
+  std::future<bool> channel::create_reaction(snowflake message_id, std::string emoji)
+  {
     return std::async(std::launch::async, api::channel::create_reaction, m_owner, m_id, message_id, emoji);
   }
 

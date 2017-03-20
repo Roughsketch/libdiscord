@@ -150,7 +150,16 @@ namespace discord
       bool create_reaction(connection_state* conn, snowflake channel_id, snowflake message_id, emoji emoji)
       {
         auto response = conn->request(
-          "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string() + "/reactions/" + emoji.name(),
+          "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string() + "/reactions/" + emoji.id().to_string() + "/@me",
+          channel_id, method::PUT).get();
+
+        return response.status_code == 204;
+      }
+
+      bool create_reaction(connection_state* conn, snowflake channel_id, snowflake message_id, std::string emoji)
+      {
+        auto response = conn->request(
+          "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string() + "/reactions/" + emoji + "/@me",
           channel_id, method::PUT).get();
 
         return response.status_code == 204;

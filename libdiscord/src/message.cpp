@@ -93,4 +93,14 @@ namespace discord
 
     return std::async(std::launch::async, api::channel::create_message, m_owner, m_channel_id, content, tts, embed);
   }
+
+  std::future<bool> message::react(emoji reaction) const
+  {
+    return channel().create_reaction(m_id, reaction);
+  }
+
+  std::future<bool> message::react(std::string reaction) const
+  {
+    return channel().create_reaction(m_id, reaction);
+  }
 }

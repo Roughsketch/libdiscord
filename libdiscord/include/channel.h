@@ -180,12 +180,20 @@ namespace discord
     std::future<message> get_message(snowflake message_id);
 
     /** Creates a reaction on a message.
-    *
-    * @param message_id The message to react to.
-    * @param emoji The emoji to react with.
-    * @return Success status.
-    */
+     *
+     * @param message_id The message to react to.
+     * @param emoji The emoji to react with.
+     * @return Success status.
+     */
     std::future<bool> create_reaction(snowflake message_id, emoji emoji);
+
+    /** Creates a reaction on a message.
+     *
+     * @param message_id The message to react to.
+     * @param emoji The emoji to react with.
+     * @return Success status.
+     */
+    std::future<bool> create_reaction(snowflake message_id, std::string emoji);
 
     /** Deletes a reaction that a user or bot has made.
     *
