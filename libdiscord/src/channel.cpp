@@ -122,123 +122,124 @@ namespace discord
     return m_owner->find_guild_from_channel(m_id);
   }
 
-  std::future<channel> channel::modify(std::string name, int32_t position, std::string topic)
+  pplx::task<channel> channel::modify(std::string name, int32_t position, std::string topic) const
   {
     if (m_type != Text)
     {
       throw discord_exception("Cannot modify text channel attributes on a non-text channel.");
     }
 
-    return std::async(std::launch::async, api::channel::modify_text_channel, m_owner, m_id, name, position, topic);
+    return api::channel::modify_text_channel(m_owner, m_id, name, position, topic);
   }
 
-  std::future<channel> channel::modify(std::string name, int32_t position, uint32_t bitrate, uint32_t user_limit)
+  pplx::task<channel> channel::modify(std::string name, int32_t position, uint32_t bitrate, uint32_t user_limit) const
   {
     if (m_type != Voice)
     {
       throw discord_exception("Cannot modify voice channel attributes on a non-voice channel.");
     }
 
-    return std::async(std::launch::async, api::channel::modify_voice_channel, m_owner, m_id, name, position, bitrate, user_limit);
+    return api::channel::modify_voice_channel(m_owner, m_id, name, position, bitrate, user_limit);
   }
 
-  std::future<channel> channel::remove() const
+  pplx::task<channel> channel::remove() const
   {
-    return std::async(std::launch::async, api::channel::remove, m_owner, m_id);
+    return api::channel::remove(m_owner, m_id);
   }
 
-  std::future<std::vector<message>> channel::get_messages(int32_t limit, search_method method, snowflake pivot)
+  pplx::task<std::vector<message>> channel::get_messages(int32_t limit, search_method method, snowflake pivot) const
   {
-    return std::async(std::launch::async, api::channel::get_messages, m_owner, m_id, limit, method, pivot);
+
+    return api::channel::get_messages(m_owner, m_id, limit, method, pivot);
   }
 
-  std::future<message> channel::get_message(snowflake message_id)
+  pplx::task<message> channel::get_message(snowflake message_id) const
   {
-    return std::async(std::launch::async, api::channel::get_message, m_owner, m_id, message_id);
+    return api::channel::get_message(m_owner, m_id, message_id);
   }
 
-  std::future<bool> channel::create_reaction(snowflake message_id, emoji emoji)
+  pplx::task<bool> channel::create_reaction(snowflake message_id, emoji emoji) const
   {
-    return std::async(std::launch::async, api::channel::create_reaction, m_owner, m_id, message_id, emoji.name() + ":" + emoji.id().to_string());
+    return api::channel::create_reaction(m_owner, m_id, message_id, emoji.name() + ":" + emoji.id().to_string());
   }
 
-  std::future<bool> channel::create_reaction(snowflake message_id, std::string emoji)
+  pplx::task<bool> channel::create_reaction(snowflake message_id, std::string emoji) const
   {
-    return std::async(std::launch::async, api::channel::create_reaction, m_owner, m_id, message_id, emoji);
+    return api::channel::create_reaction(m_owner, m_id, message_id, emoji);
   }
 
-  std::future<bool> channel::remove_reaction(snowflake message_id, emoji emoji, snowflake user_id)
+  pplx::task<bool> channel::remove_reaction(snowflake message_id, emoji emoji, snowflake user_id) const
   {
     if (user_id.id() == 0)
     {
-      return std::async(std::launch::async, api::channel::remove_own_reaction, m_owner, m_id, message_id, emoji);
+      return api::channel::remove_own_reaction(m_owner, m_id, message_id, emoji);
     }
 
-    return std::async(std::launch::async, api::channel::remove_user_reaction, m_owner, m_id, message_id, emoji, user_id);
+    return api::channel::remove_user_reaction(m_owner, m_id, message_id, emoji, user_id);
   }
 
-  std::future<std::vector<user>> channel::get_reactions(snowflake message_id, emoji emoji)
+  pplx::task<std::vector<user>> channel::get_reactions(snowflake message_id, emoji emoji) const
   {
-    return std::async(std::launch::async, api::channel::get_reactions, m_owner, m_id, message_id, emoji);
+    return api::channel::get_reactions(m_owner, m_id, message_id, emoji);
   }
 
-  std::future<void> channel::remove_all_reactions(snowflake message_id)
+  pplx::task<void> channel::remove_all_reactions(snowflake message_id) const
   {
-    return std::async(std::launch::async, api::channel::remove_all_reactions, m_owner, m_id, message_id);
+    return api::channel::remove_all_reactions(m_owner, m_id, message_id);
   }
 
-  std::future<message> channel::edit_message(snowflake message_id, std::string new_content)
+  pplx::task<message> channel::edit_message(snowflake message_id, std::string new_content) const
   {
-    return std::async(std::launch::async, api::channel::edit_message, m_owner, m_id, message_id, new_content);
+    return api::channel::edit_message(m_owner, m_id, message_id, new_content);
   }
 
-  std::future<bool> channel::remove_message(snowflake message_id)
+  pplx::task<bool> channel::remove_message(snowflake message_id) const
   {
-    return std::async(std::launch::async, api::channel::remove_message, m_owner, m_id, message_id);
+    return api::channel::remove_message(m_owner, m_id, message_id);
   }
 
-  std::future<bool> channel::bulk_remove_messages(std::vector<snowflake> message_ids)
+  pplx::task<bool> channel::bulk_remove_messages(std::vector<snowflake> message_ids) const
   {
-    return std::async(std::launch::async, api::channel::bulk_remove_messages, m_owner, m_id, message_ids);
+    return api::channel::bulk_remove_messages(m_owner, m_id, message_ids);
   }
 
-  std::future<bool> channel::edit_permissions(overwrite overwrite, uint32_t allow, uint32_t deny, std::string type)
+  pplx::task<bool> channel::edit_permissions(overwrite overwrite, uint32_t allow, uint32_t deny, std::string type) const
   {
-    return std::async(std::launch::async, api::channel::edit_permissions, m_owner, m_id, overwrite, allow, deny, type);
+    return api::channel::edit_permissions(m_owner, m_id, overwrite, allow, deny, type);
   }
 
-  std::future<bool> channel::remove_permission(overwrite overwrite)
+  pplx::task<bool> channel::remove_permission(overwrite overwrite) const
   {
-    return std::async(std::launch::async, api::channel::remove_permission, m_owner, m_id, overwrite);
+    return api::channel::remove_permission(m_owner, m_id, overwrite);
   }
 
-  std::future<bool> channel::start_typing()
+  pplx::task<bool> channel::start_typing() const
   {
-    return std::async(std::launch::async, api::channel::trigger_typing_indicator, m_owner, m_id);
+    return api::channel::trigger_typing_indicator(m_owner, m_id);
   }
 
-  std::future<std::vector<message>> channel::get_pinned_messages()
+  pplx::task<std::vector<message>> channel::get_pinned_messages() const
   {
-    return std::async(std::launch::async, api::channel::get_pinned_messages, m_owner, m_id);
+    return api::channel::get_pinned_messages(m_owner, m_id);
   }
 
-  std::future<bool> channel::pin(snowflake message_id)
+  pplx::task<bool> channel::pin(snowflake message_id) const
   {
-    return std::async(std::launch::async, api::channel::add_pinned_message, m_owner, m_id, message_id);
+    return api::channel::add_pinned_message(m_owner, m_id, message_id);
   }
 
-  std::future<bool> channel::unpin(snowflake message_id)
+  pplx::task<bool> channel::unpin(snowflake message_id) const
   {
-    return std::async(std::launch::async, api::channel::remove_pinned_message, m_owner, m_id, message_id);
+    return api::channel::remove_pinned_message(m_owner, m_id, message_id);
   }
 
-  std::future<void> channel::add_recipient(snowflake user_id, std::string access_token, std::string nickname)
+  pplx::task<void> channel::add_recipient(snowflake user_id, std::string access_token, std::string nickname) const
   {
-    return std::async(std::launch::async, api::channel::group_dm_add_recipient, m_owner, m_id, user_id, access_token, nickname);
+    return api::channel::group_dm_add_recipient(m_owner, m_id, user_id, access_token, nickname);
   }
 
-  std::future<void> channel::remove_recipient(snowflake user_id)
+  pplx::task<void> channel::remove_recipient(snowflake user_id) const
   {
-    return std::async(std::launch::async, api::channel::group_dm_remove_recipient, m_owner, m_id, user_id);
+    return api::channel::group_dm_remove_recipient(m_owner, m_id, user_id);
   }
 }

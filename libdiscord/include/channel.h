@@ -1,6 +1,6 @@
 #pragma once
 
-#include <future>
+#include <cpprest/http_client.h>
 
 #include "common.h"
 #include "permission.h"
@@ -147,7 +147,7 @@ namespace discord
     * @param topic The new topic of the channel. Must be 1024 characters or less.
     * @return The channel that was modified.
     */
-    std::future<channel> modify(std::string name = "", int32_t position = 0, std::string topic = "");
+    pplx::task<channel> modify(std::string name = "", int32_t position = 0, std::string topic = "") const;
 
     /** Modify a voice channel's attributes.
     *
@@ -157,11 +157,11 @@ namespace discord
     * @param user_limit The new user limit for the channel. Must be between 1 and 99 inclusive.
     * @return The channel that was modified.
     */
-    std::future<channel> modify(std::string name = "", int32_t position = 0, uint32_t bitrate = 0, uint32_t user_limit = 0);
+    pplx::task<channel> modify(std::string name = "", int32_t position = 0, uint32_t bitrate = 0, uint32_t user_limit = 0) const;
 
 
     /** Removes this channel. Cannot be undone. */
-    std::future<channel> remove() const;
+    pplx::task<channel> remove() const;
 
     /** Gets a list of messages from this channel.
      *
@@ -170,14 +170,14 @@ namespace discord
      * @param pivot The message id to pivot the search around.
      * @return A list of messages that were retrieved.
      */
-    std::future<std::vector<message>> get_messages(int32_t limit = 50, search_method method = search_method::None, snowflake pivot = 0);
+    pplx::task<std::vector<message>> get_messages(int32_t limit = 50, search_method method = search_method::None, snowflake pivot = 0) const;
 
     /** Gets a message given its id.
      *
      * @param message_id The id of the message to get.
      * @return The message that was found, or an empty message if not found.
      */
-    std::future<message> get_message(snowflake message_id);
+    pplx::task<message> get_message(snowflake message_id) const;
 
     /** Creates a reaction on a message.
      *
@@ -185,7 +185,7 @@ namespace discord
      * @param emoji The emoji to react with.
      * @return Success status.
      */
-    std::future<bool> create_reaction(snowflake message_id, emoji emoji);
+    pplx::task<bool> create_reaction(snowflake message_id, emoji emoji) const;
 
     /** Creates a reaction on a message.
      *
@@ -193,7 +193,7 @@ namespace discord
      * @param emoji The emoji to react with.
      * @return Success status.
      */
-    std::future<bool> create_reaction(snowflake message_id, std::string emoji);
+    pplx::task<bool> create_reaction(snowflake message_id, std::string emoji) const;
 
     /** Deletes a reaction that a user or bot has made.
     *
@@ -202,7 +202,7 @@ namespace discord
     * @param user_id The id of the user whose reaction will be removed. Defaults to the bot's id.
     * @return Success status.
     */
-    std::future<bool> remove_reaction(snowflake message_id, emoji emoji, snowflake user_id = 0);
+    pplx::task<bool> remove_reaction(snowflake message_id, emoji emoji, snowflake user_id = 0) const;
 
     /** Get a list of users who reacted with a particular emoji.
     *
@@ -210,13 +210,13 @@ namespace discord
     * @param emoji The emoji that we should get the user list for.
     * @return A list of users who reacted with the given emoji.
     */
-    std::future<std::vector<user>> get_reactions(snowflake message_id, emoji emoji);
+    pplx::task<std::vector<user>> get_reactions(snowflake message_id, emoji emoji) const;
 
     /** Deletes all reactions on a message.
     *
     * @param message_id The message to delete all reactions on.
     */
-    std::future<void> remove_all_reactions(snowflake message_id);
+    pplx::task<void> remove_all_reactions(snowflake message_id) const;
 
     /** Edits a message with new information.
     *
@@ -224,21 +224,21 @@ namespace discord
     * @param new_content The new content of the message.
     * @return The message that was edited.
     */
-    std::future<message> edit_message(snowflake message_id, std::string new_content);
+    pplx::task<message> edit_message(snowflake message_id, std::string new_content) const;
 
     /** Delete a message from a channel.
     *
     * @param message_id The message to delete.
     * @return Success status.
     */
-    std::future<bool> remove_message(snowflake message_id);
+    pplx::task<bool> remove_message(snowflake message_id) const;
 
     /** Delete a list of messages all at once.
     *
     * @param message_ids A list of message ids to delete. Must be 100 or fewer.
     * @return Success status.
     */
-    std::future<bool> bulk_remove_messages(std::vector<snowflake> message_ids);
+    pplx::task<bool> bulk_remove_messages(std::vector<snowflake> message_ids) const;
 
     /** Edits the permissions of either a member or a role.
     *
@@ -248,39 +248,39 @@ namespace discord
     * @param type The type of permission to edit.
     * @return Success status.
     */
-    std::future<bool> edit_permissions(overwrite overwrite, uint32_t allow, uint32_t deny, std::string type);
+    pplx::task<bool> edit_permissions(overwrite overwrite, uint32_t allow, uint32_t deny, std::string type) const;
 
     /** Delete permissions from a channel.
     *
     * @param overwrite The permissions to delete.
     */
-    std::future<bool> remove_permission(overwrite overwrite);
+    pplx::task<bool> remove_permission(overwrite overwrite) const;
 
     /** Triggers a typing indicator for the current user.
     *
     * @return Success status.
     */
-    std::future<bool> start_typing();
+    pplx::task<bool> start_typing() const;
 
     /** Get a list of pinned messages in the given channel.
     *
     * @return A list of messages that were pinned.
     */
-    std::future<std::vector<message>> get_pinned_messages();
+    pplx::task<std::vector<message>> get_pinned_messages() const;
 
     /** Pins a message in a channel.
     *
     * @param message_id The message to pin.
     * @return Success status.
     */
-    std::future<bool> pin(snowflake message_id);
+    pplx::task<bool> pin(snowflake message_id) const;
 
     /** Remove a message from the list of pinned messages.
     *
     * @param message_id The message to unpin.
     * @return Success status.
     */
-    std::future<bool> unpin(snowflake message_id);
+    pplx::task<bool> unpin(snowflake message_id) const;
 
     /** Add a user to a group DM.
     *
@@ -288,12 +288,12 @@ namespace discord
     * @param access_token The access token that allows the bot to add a user to a DM.
     * @param nickname The nickname of the added user.
     */
-    std::future<void> add_recipient(snowflake user_id, std::string access_token, std::string nickname);
+    pplx::task<void> add_recipient(snowflake user_id, std::string access_token, std::string nickname) const;
 
     /** Remove a user from a group DM.
     *
     * @param user_id The id of the user to remove.
     */
-    std::future<void> remove_recipient(snowflake user_id);
+    pplx::task<void> remove_recipient(snowflake user_id) const;
   };
 }

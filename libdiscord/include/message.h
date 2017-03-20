@@ -1,6 +1,6 @@
 #pragma once
 
-#include <future>
+#include <cpprest/http_client.h>
 
 #include "common.h"
 #include "channel.h"
@@ -38,9 +38,9 @@ namespace discord
 
     guild guild() const;
 
-    std::future<message> respond(std::string content, bool tts = false, discord::embed embed = discord::embed()) const;
+    pplx::task<message> respond(std::string content, bool tts = false, discord::embed embed = discord::embed()) const;
 
-    std::future<bool> react(emoji reaction) const;
-    std::future<bool> react(std::string reaction) const;
+    pplx::task<bool> react(emoji reaction) const;
+    pplx::task<bool> react(std::string reaction) const;
   };
 }
