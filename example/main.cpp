@@ -34,9 +34,50 @@ int main()
   {
     std::cout << "Ready.\n";
   });
+
   bot.add_command("info", [&bot](auto& event)
   {
     event.respond("I am " + bot.profile().distinct() + "(" + bot.profile().id().to_string() + ")");
+  });
+
+  bot.add_command("sleep", [](auto& event)
+  {
+    event.channel().start_typing();
+    std::this_thread::sleep_for(std::chrono::seconds(10));
+    event.respond("Done sleeping.");
+  });
+
+  bot.add_command("react", [](auto& event)
+  {
+    discord::emoji shelterfrog;
+    bool found = event.guild().find_emoji("shelterfrog", shelterfrog);
+
+    try
+    {
+      //  Try adding the :thinking: emoji as a reaction.
+      event.react("%F0%9F%A4%94");
+    }
+    catch (discord::unknown_exception& e)
+    {
+      std::cout << "Could not find thinking emoji." << std::endl;
+    }
+
+    if (found)
+    {
+      try
+      {
+        //  Try adding a custom emoji reaction.
+        event.react(shelterfrog);
+      }
+      catch (discord::unknown_exception& e)
+      {
+        std::cout << "Could not find :shelterfrog: emoji." << std::endl;
+      }
+    }
+    else
+    {
+      event.respond("Could not find shelterfrog emoji.");
+    }
   });
 
   bot.add_command("mem", [&bot](auto& event)
