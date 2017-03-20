@@ -2,6 +2,7 @@
 
 #include "getRSS.h"
 #include "json.hpp"
+#include <mutex>
 
 nlohmann::json read_json_file(std::string file)
 {
@@ -56,7 +57,7 @@ int main()
       //  Try adding the :thinking: emoji as a reaction.
       event.react("%F0%9F%A4%94");
     }
-    catch (discord::unknown_exception& e)
+    catch (discord::unknown_exception&)
     {
       std::cout << "Could not find thinking emoji." << std::endl;
     }
@@ -68,7 +69,7 @@ int main()
         //  Try adding a custom emoji reaction.
         event.react(shelterfrog);
       }
-      catch (discord::unknown_exception& e)
+      catch (discord::unknown_exception&)
       {
         std::cout << "Could not find :shelterfrog: emoji." << std::endl;
       }
