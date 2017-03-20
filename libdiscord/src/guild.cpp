@@ -258,6 +258,20 @@ namespace discord
     return false;
   }
 
+  bool guild::find_emoji(std::string name, emoji& dest)
+  {
+    for (auto& pair : m_emojis)
+    {
+      if (pair.second.name() == name)
+      {
+        dest = pair.second;
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   void guild::set_unavailable(bool value)
   {
     m_unavailable = value;
