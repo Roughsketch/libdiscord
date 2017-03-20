@@ -6,6 +6,7 @@
 #include "role.h"
 #include "user.h"
 #include "voice.h"
+#include "api/guild_api.h"
 
 namespace discord
 {
@@ -95,13 +96,13 @@ namespace discord
     auto found = data.FindMember("verification_level");
     if (found != data.MemberEnd())
     {
-      m_verify_level = static_cast<verify_level>(found->value.GetInt());
+      m_verify_level = static_cast<discord::verify_level>(found->value.GetInt());
     }
 
     found = data.FindMember("default_message_notifications");
     if (found != data.MemberEnd())
     {
-      m_notify_level = static_cast<notify_level>(found->value.GetInt());
+      m_notify_level = static_cast<discord::notify_level>(found->value.GetInt());
     }
     
 
@@ -199,6 +200,36 @@ namespace discord
     return m_member_count;
   }
 
+  std::string guild::region() const
+  {
+    return m_region;
+  }
+
+  snowflake guild::afk_channel_id() const
+  {
+    return m_afk_channel_id;
+  }
+
+  uint32_t guild::afk_timeout() const
+  {
+    return m_afk_timeout;
+  }
+
+  snowflake guild::owner_id() const
+  {
+    return m_owner_id;
+  }
+
+  verify_level guild::verify_level() const
+  {
+    return m_verify_level;
+  }
+
+  notify_level guild::notify_level() const
+  {
+    return m_notify_level;
+  }
+
   std::vector<channel> guild::channels() const
   {
     std::vector<channel> values;
@@ -272,9 +303,9 @@ namespace discord
     return false;
   }
 
-  void guild::set_unavailable(bool value)
+  void guild::set_unavailable(bool unavailable)
   {
-    m_unavailable = value;
+    m_unavailable = unavailable;
   }
 
   void guild::add_channel(channel& chan)
@@ -352,8 +383,148 @@ namespace discord
     m_presences[presence.user().id()] = presence;
   }
 
-  bool guild::empty()
+  bool guild::empty() const
   {
     return m_empty;
+  }
+
+  pplx::task<discord::guild> guild::remove() const
+  {
+    return api::guild::remove(m_owner, m_id);
+  }
+
+  pplx::task<discord::channel> guild::create_text_channel(std::string name, std::vector<overwrite> permission_overwrites) const
+  {
+    return api::guild::create_text_channel(m_owner, m_id, name, permission_overwrites);
+  }
+
+  pplx::task<discord::channel> guild::create_voice_channel(std::string name, uint32_t bitrate, uint32_t user_limit, std::vector<overwrite> permission_overwrites) const
+  {
+    return api::guild::create_voice_channel(m_owner, m_id, name, bitrate, user_limit, permission_overwrites);
+  }
+
+  pplx::task<std::vector<discord::channel>> guild::modify_channel_positions(const std::map<snowflake, uint32_t>& positions) const
+  {
+    return api::guild::modify_channel_positions(m_owner, m_id, positions);
+  }
+
+  pplx::task<member> guild::get_member(snowflake user_id) const
+  {
+    return api::guild::get_member(m_owner, m_id, user_id);
+  }
+
+  pplx::task<std::vector<member>> guild::get_members(uint32_t limit, snowflake after) const
+  {
+    return api::guild::get_members(m_owner, m_id, limit, after);
+  }
+
+  pplx::task<bool> guild::add_member(snowflake user_id, std::string access_token, std::string nick, std::vector<role> roles, bool muted, bool deafened) const
+  {
+    return api::guild::add_member(m_owner, m_id, user_id, access_token, nick, roles, muted, deafened);
+  }
+
+  pplx::task<bool> guild::modify_member(snowflake user_id, std::string nick, std::vector<role> roles, bool muted, bool deafened, snowflake channel_id) const
+  {
+    return api::guild::modify_member(m_owner, m_id, user_id, nick, roles, muted, deafened, channel_id);
+  }
+
+  pplx::task<bool> guild::set_nickname(std::string nick) const
+  {
+    return api::guild::set_nickname(m_owner, m_id, nick);
+  }
+
+  pplx::task<bool> guild::add_member_role(snowflake user_id, snowflake role_id) const
+  {
+    return api::guild::add_member_role(m_owner, m_id, user_id, role_id);
+  }
+
+  pplx::task<bool> guild::remove_member_role(snowflake user_id, snowflake role_id) const
+  {
+    return api::guild::remove_member_role(m_owner, m_id, user_id, role_id);
+  }
+
+  pplx::task<bool> guild::kick(snowflake user_id) const
+  {
+    return api::guild::remove_member(m_owner, m_id, user_id);
+  }
+
+  pplx::task<std::vector<discord::user>> guild::get_bans() const
+  {
+    return api::guild::get_bans(m_owner, m_id);
+  }
+
+  pplx::task<bool> guild::ban(snowflake user_id, uint32_t delete_x_days) const
+  {
+    return api::guild::ban(m_owner, m_id, user_id, delete_x_days);
+  }
+
+  pplx::task<bool> guild::unban(snowflake user_id) const
+  {
+    return api::guild::unban(m_owner, m_id, user_id);
+  }
+
+  pplx::task<std::vector<role>> guild::get_roles() const
+  {
+    return api::guild::get_roles(m_owner, m_id);
+  }
+
+  pplx::task<role> guild::create_role(std::string name, permission permissions, uint32_t rgb_color, bool hoist, bool mentionable) const
+  {
+    return api::guild::create_role(m_owner, m_id, name, permissions, rgb_color, hoist, mentionable);
+  }
+
+  pplx::task<std::vector<role>> guild::modify_role_positions(const std::map<snowflake, uint32_t>& positions) const
+  {
+    return api::guild::modify_role_positions(m_owner, m_id, positions);
+  }
+
+  pplx::task<role> guild::modify_role(snowflake role_id, std::string name, permission permissions, uint32_t rgb_color, bool hoist, bool mentionable) const
+  {
+    return api::guild::modify_role(m_owner, m_id, role_id, name, permissions, rgb_color, hoist, mentionable);
+  }
+
+  pplx::task<bool> guild::remove_role(snowflake role_id) const
+  {
+    return api::guild::remove_role(m_owner, m_id, role_id);
+  }
+
+  pplx::task<uint32_t> guild::get_prune_count(uint32_t days) const
+  {
+    return api::guild::get_prune_count(m_owner, m_id, days);
+  }
+
+  pplx::task<uint32_t> guild::prune_users(uint32_t days) const
+  {
+    return api::guild::prune(m_owner, m_id, days);
+  }
+
+  pplx::task<std::vector<voice_region>> guild::get_voice_regions() const
+  {
+    return api::guild::get_voice_regions(m_owner, m_id);
+  }
+
+  pplx::task<std::vector<integration>> guild::get_integrations() const
+  {
+    return api::guild::get_integrations(m_owner, m_id);
+  }
+
+  pplx::task<bool> guild::create_integration(std::string type, snowflake integration_id) const
+  {
+    return api::guild::create_integration(m_owner, m_id, type, integration_id);
+  }
+
+  pplx::task<bool> guild::modify_integration(snowflake integration_id, uint32_t expire_behavior, uint32_t expire_grace_period, bool enable_emoticons) const
+  {
+    return api::guild::modify_integration(m_owner, m_id, integration_id, expire_behavior, expire_grace_period, enable_emoticons);
+  }
+
+  pplx::task<bool> guild::remove_integration(snowflake integration_id) const
+  {
+    return api::guild::remove_integration(m_owner, m_id, integration_id);
+  }
+
+  pplx::task<bool> guild::sync_integration(snowflake integration_id) const
+  {
+    return api::guild::sync_integration(m_owner, m_id, integration_id);
   }
 }
