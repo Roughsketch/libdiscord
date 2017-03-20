@@ -19,4 +19,19 @@ namespace discord
     voice_state();
     explicit voice_state(rapidjson::Value& data);
   };
+
+  class voice_region
+  {
+    std::string m_id;
+    std::string m_name;
+    std::string m_sample_hostname;
+    uint32_t m_sample_port;
+    bool m_vip;
+    bool m_optimal;
+    bool m_deprecated;
+    bool m_custom;
+  public:
+    voice_region();
+    explicit voice_region(rapidjson::Value& data);
+  };
 }
