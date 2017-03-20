@@ -2,7 +2,6 @@
 
 #include "getRSS.h"
 #include "json.hpp"
-#include <mutex>
 
 nlohmann::json read_json_file(std::string file)
 {
