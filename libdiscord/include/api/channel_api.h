@@ -2,7 +2,6 @@
 #include "channel.h"
 #include "embed.h"
 #include "message.h"
-#include "api.h"
 
 namespace discord
 {
