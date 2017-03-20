@@ -52,6 +52,7 @@ namespace discord
     m_bitrate = 0;
     m_user_limit = 0;
     m_is_dm = false;
+    m_empty = true;
   }
 
   channel::channel(connection_state* owner, rapidjson::Value& data)
@@ -85,6 +86,8 @@ namespace discord
       m_recipient = user(owner, found->value);
       m_is_dm = true;
     }
+
+    m_empty = false;
   }
 
   std::string channel::name() const
@@ -122,7 +125,12 @@ namespace discord
     return m_owner->find_guild_from_channel(m_id);
   }
 
-  pplx::task<channel> channel::modify(std::string name, int32_t position, std::string topic) const
+  bool channel::empty() const
+  {
+    return m_empty;
+  }
+
+  pplx::task<channel> channel::modify(std::string name, std::string topic, int32_t position) const
   {
     if (m_type != Text)
     {
@@ -156,6 +164,19 @@ namespace discord
   pplx::task<message> channel::get_message(snowflake message_id) const
   {
     return api::channel::get_message(m_owner, m_id, message_id);
+  }
+
+  pplx::task<message> channel::send_message(std::string content, bool tts, discord::embed embed) const
+  {
+    return api::channel::create_message(m_owner, m_id, content, tts, embed);
+  }
+
+  pplx::task<message> channel::send_embed(std::function<void(embed&)> modify_callback, std::string content) const
+  {
+    embed embed;
+    modify_callback(embed);
+
+    return api::channel::create_message(m_owner, m_id, content, false, embed);
   }
 
   pplx::task<bool> channel::create_reaction(snowflake message_id, emoji emoji) const

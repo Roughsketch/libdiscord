@@ -3,6 +3,7 @@
 #include <cpprest/http_client.h>
 
 #include "common.h"
+#include "embed.h"
 #include "permission.h"
 #include "user.h"
 
@@ -83,6 +84,7 @@ namespace discord
     user m_recipient;
 
     bool m_is_dm;
+    bool m_empty;
   public:
     channel();
     explicit channel(connection_state* owner, rapidjson::Value& data);
@@ -135,6 +137,11 @@ namespace discord
      */
     guild guild() const;
 
+    /** Whether or not this object is considered empty.
+     *
+     * @return True if this channel has no meaningful data.
+     */
+    bool empty() const;
 
     // ///////////////// //
     // Start API Methods //
@@ -147,7 +154,7 @@ namespace discord
     * @param topic The new topic of the channel. Must be 1024 characters or less.
     * @return The channel that was modified.
     */
-    pplx::task<channel> modify(std::string name = "", int32_t position = 0, std::string topic = "") const;
+    pplx::task<channel> modify(std::string name = "", std::string topic = "", int32_t position = 0) const;
 
     /** Modify a voice channel's attributes.
     *
@@ -178,6 +185,31 @@ namespace discord
      * @return The message that was found, or an empty message if not found.
      */
     pplx::task<message> get_message(snowflake message_id) const;
+
+    /** Creates a message and sends it to the channel.
+     *
+     * @param content The content of the message.
+     * @param tts Whether or not this message should be text-to-speech.
+     * @return The message that was sent.
+     */
+    pplx::task<message> send_message(std::string content, bool tts = false, discord::embed embed = discord::embed()) const;
+
+    /** Creates a message with the given content and embed that is modified through the callback.
+     *
+     * @code
+     * auto embed_task = chan.send_embed([](embed& e)
+     * {
+     *     e.set_title("Example embed");
+     *     e.set_description("This is how to use the send_embed callback.");
+     *     e.add_field("Field1", "You can add any embed object by using the embed mutator methods.");
+     *     e.add_field("Field2", "When this lambda is finished, the embed will be sent.");
+     * });
+     * @endcode
+     *  
+     * @param modify_callback The callback that will be used to modify an embed.
+     * @param content Text that will appear above the embed as a normal message.
+     */
+    pplx::task<message> send_embed(std::function<void(embed&)> modify_callback, std::string content = "") const;
 
     /** Creates a reaction on a message.
      *
