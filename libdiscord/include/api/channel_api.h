@@ -2,6 +2,7 @@
 #include "channel.h"
 #include "embed.h"
 #include "message.h"
+#include "api.h"
 
 namespace discord
 {
@@ -21,7 +22,7 @@ namespace discord
        */
       discord::channel modify_text_channel(connection_state* conn, snowflake channel_id, std::string name = "", int32_t position = 0, std::string topic = "");
 
-      /** Modify a channe's attributes.
+      /** Modify a channel's attributes.
        *
        * @param channel_id The id of the channel to modify.
        * @param name The new name of the channel. Must be between 2 and 100 characters inclusive.
