@@ -155,23 +155,21 @@ namespace discord
 
   void gateway::handle_dispatch_event(std::string event_name, rapidjson::Value& data)
   {
+    if (event_name == "RESUMED")
+    {
+      LOG(DEBUG) << "Successfully resumed.";
+      return;
+    }
+
     if (event_name == "READY")
     {
       LOG(DEBUG) << "Using gateway version " << data["v"].GetInt();
 
       //  Save session id so we can restart a session
       m_session_id = data["session_id"].GetString();
+    }
 
-      m_on_dispatch(event_name, data);
-    }
-    else if (event_name == "RESUMED")
-    {
-      LOG(DEBUG) << "Successfully resumed.";
-    }
-    else
-    {
-      m_on_dispatch(event_name, data);
-    }
+    m_on_dispatch(event_name, data);
   }
 
   void gateway::send(Opcode op, rapidjson::Value& packet)
