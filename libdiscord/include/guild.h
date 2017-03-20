@@ -172,6 +172,13 @@ namespace discord
     */
     channel find_channel(snowflake id) const;
 
+    /** Finds a channel based on its name.
+    *
+    * @param name The name of the channel to find.
+    * @return The channel that was found, or an empty channel if not found.
+    */
+    channel find_channel(std::string name) const;
+
     /** Finds a member based on their id.
     *
     * @param id The id of the member to find.

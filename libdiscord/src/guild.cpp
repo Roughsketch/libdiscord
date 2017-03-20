@@ -260,6 +260,19 @@ namespace discord
     return channel();
   }
 
+  channel guild::find_channel(std::string name) const
+  {
+    for (auto& pair : m_channels)
+    {
+      if (pair.second.name() == name)
+      {
+        return pair.second;
+      }
+    }
+
+    return channel();
+  }
+
   member guild::find_member(snowflake id) const
   {
     if (m_members.find(id) != std::end(m_members))
