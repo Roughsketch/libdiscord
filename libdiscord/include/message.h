@@ -1,7 +1,10 @@
 #pragma once
 
+#include <future>
+
 #include "common.h"
 #include "channel.h"
+#include "embed.h"
 #include "user.h"
 
 namespace discord
@@ -35,6 +38,6 @@ namespace discord
 
     guild guild() const;
 
-    message respond(std::string content) const;
+    std::future<message> respond(std::string content, bool tts = false, discord::embed embed = discord::embed()) const;
   };
 }

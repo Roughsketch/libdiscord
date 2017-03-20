@@ -6,6 +6,7 @@
 #include "user.h"
 #include "api/channel_api.h"
 
+
 namespace discord
 {
   message::message()
@@ -83,13 +84,13 @@ namespace discord
     return m_owner->find_guild_from_channel(m_channel_id);
   }
 
-  message message::respond(std::string content) const
+  std::future<message> message::respond(std::string content, bool tts, embed embed) const
   {
     if (content.size() > 2000)
     {
       throw discord_exception("Messages must be fewer than 2000 characters.");
     }
 
-    return api::channel::create_message(m_owner, m_channel_id, content);
+    return std::async(std::launch::async, api::channel::create_message, m_owner, m_channel_id, content, tts, embed);
   }
 }
