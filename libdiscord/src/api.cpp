@@ -9,7 +9,7 @@ namespace discord
   {
     std::string get_wss_url(connection_state& conn, int* shards)
     {
-      auto response = conn.request("gateway/bot", 0, method::GET).get();
+      auto response = conn.request(Gateway_Bot, 0, method::GET, "gateway/bot").get();
 
       if (response.status_code != 200)
       {
