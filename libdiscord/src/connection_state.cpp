@@ -8,6 +8,7 @@
 #include "member.h"
 #include "role.h"
 #include "user.h"
+#include <iomanip>
 
 namespace discord
 {
@@ -80,10 +81,10 @@ namespace discord
     }
   }
 
-  pplx::task<api_response> connection_state::request(std::string endpoint, snowflake major, method type, std::string&& data)
+  pplx::task<api_response> connection_state::request(api_key key, snowflake major, method type, std::string endpoint, const std::string&& data)
   {
     LOG(DEBUG) << "Request: " << endpoint << " - " << major.to_string() << " - " << data;
-    auto map_key = std::hash<std::string>()(m_token + endpoint + major.to_string());
+    auto map_key = std::hash<std::string>()(std::to_string(key) + major.to_string());
     auto mutex_it = m_api_mutex.find(map_key);
 
     //  If the cached mutex does not exist, create it.
@@ -93,8 +94,12 @@ namespace discord
     }
 
     auto mutex = m_api_mutex[map_key].get();
-
-    std::lock_guard<std::mutex> api_lock(*mutex);
+    
+    //  Try to lock this mutex until it works.
+    while (!mutex->try_lock())
+    {
+      std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
 
     if (m_global_mutex.try_lock())
     {
@@ -160,6 +165,16 @@ namespace discord
       auto reset = headers.find(U("X-RateLimit-Reset"));
       auto retry = headers.find(U("Retry-After"));
       auto global = headers.find(U("X-RateLimit-Global"));
+      auto date_str = headers.find(U("Date"));
+      auto server_date = std::chrono::system_clock::now();
+
+      if (date_str != std::end(headers))
+      {
+        std::tm tm = {};
+        std::stringstream ss(utility::conversions::to_utf8string(date_str->second));
+        ss >> std::get_time(&tm, "%b %d %Y %H:%M:%S");
+        server_date = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+      }
 
       if (remaining != std::end(headers))
       {
@@ -188,6 +203,8 @@ namespace discord
         {
           LOG(WARNING) << "Received a Retry-After header. Waiting for " << retry_after << "ms.";
           std::this_thread::sleep_for(std::chrono::milliseconds(retry_after));
+          mutex->unlock();
+          this->request(key, major, type, endpoint, std::move(data));
         }
         else
         {
@@ -217,6 +234,9 @@ namespace discord
       }
       else if (res.status_code() != web::http::status_codes::NoContent)
       {
+        //  If we are in this section we're going to throw, so unlock.
+        mutex->unlock();
+
         auto json_str = utility::conversions::to_utf8string(res.extract_string().get());
         response.data.Parse(json_str.c_str(), json_str.size());
 
@@ -282,6 +302,7 @@ namespace discord
         }
       }
 
+      mutex->unlock();
       return response;
     });
   }

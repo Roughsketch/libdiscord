@@ -77,6 +77,39 @@ namespace discord
     ReactionBlocked = 90001
   };
 
+  enum api_key
+  {
+    Chan_CID,
+    Chan_CID_Messages,
+    Chan_CID_Messages_BulkDelete,
+    Chan_CID_Messages_MID,
+    Chan_CID_Messages_MID_Reactions,
+    Chan_CID_Messages_MID_Reactions_Emoji,
+    Chan_CID_Messages_MID_Reactions_Emoji_Me,
+    Chan_CID_Messages_MID_Reactions_Emoji_UID,
+    Chan_CID_Perms_OID,
+    Chan_CID_Pins,
+    Chan_CID_Pins_MID,
+    Chan_CID_Recip_UID,
+    Chan_CID_Typing,
+    Gateway_Bot,
+    Guild_GID,
+    Guild_GID_Bans,
+    Guild_GID_Bans_UID,
+    Guild_GID_Chan,
+    Guild_GID_Int,
+    Guild_GID_Int_IID,
+    Guild_GID_Int_IID_Sync,
+    Guild_GID_Mem,
+    Guild_GID_Mem_Me_Nick,
+    Guild_GID_Mem_UID,
+    Guild_GID_Mem_UID_Role_RID,
+    Guild_GID_Prune,
+    Guild_GID_Regions,
+    Guild_GID_Roles,
+    Guild_GID_Roles_RID,
+  };
+
   namespace api
   {
     /** Get a secure websocket URL from Discord. *

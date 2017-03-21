@@ -33,7 +33,7 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string(), guild_id, method::PATCH, sb.GetString())
+        return conn->request(Guild_GID, guild_id, method::PATCH, "guilds/" + guild_id.to_string(), sb.GetString())
         .then([conn](api_response response)
         {
           return discord::guild(conn, response.data);
@@ -42,7 +42,7 @@ namespace discord
 
       pplx::task<discord::guild> remove(connection_state* conn, snowflake guild_id)
       {
-        return conn->request("guilds/" + guild_id.to_string(), guild_id, method::DEL)
+        return conn->request(Guild_GID, guild_id, method::DEL, "guilds/" + guild_id.to_string())
         .then([conn](api_response response)
         {
           return discord::guild(conn, response.data);
@@ -51,7 +51,7 @@ namespace discord
 
       pplx::task<std::vector<discord::channel>> get_channels(connection_state* conn, snowflake guild_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/channels", guild_id, method::GET)
+        return conn->request(Guild_GID_Chan, guild_id, method::GET, "guilds/" + guild_id.to_string() + "/channels")
         .then([conn](api_response response)
         {
           std::vector<channel> channels;
@@ -89,7 +89,8 @@ namespace discord
         writer.EndArray();
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/channels", guild_id, method::POST, sb.GetString())
+        return conn->request(Guild_GID_Chan, guild_id, method::POST, 
+          "guilds/" + guild_id.to_string() + "/channels", sb.GetString())
         .then([conn](api_response response)
         {
           return channel(conn, response.data);
@@ -117,7 +118,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/channels", guild_id, method::POST, sb.GetString())
+        return conn->request(Guild_GID_Chan, guild_id, method::POST,
+          "guilds/" + guild_id.to_string() + "/channels", sb.GetString())
         .then([conn](api_response response)
         {
           return channel(conn, response.data);
@@ -141,7 +143,8 @@ namespace discord
         writer.EndArray();
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/channels", guild_id, method::PATCH, sb.GetString())
+        return conn->request(Guild_GID_Chan, guild_id, method::PATCH,
+          "guilds/" + guild_id.to_string() + "/channels", sb.GetString())
         .then([conn](api_response response)
         {
           std::vector<channel> channels;
@@ -157,7 +160,8 @@ namespace discord
 
       pplx::task<member> get_member(connection_state* conn, snowflake guild_id, snowflake user_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/members/" + user_id.to_string(), guild_id, method::GET)
+        return conn->request(Guild_GID_Mem_UID, guild_id, method::GET,
+          "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string())
         .then([conn](api_response response)
         {
           return member(conn, response.data);
@@ -179,7 +183,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/members", guild_id, method::GET, sb.GetString())
+        return conn->request(Guild_GID_Mem, guild_id, method::GET,
+          "guilds/" + guild_id.to_string() + "/members", sb.GetString())
         .then([conn](api_response response)
         {
           std::vector<member> members;
@@ -224,7 +229,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/members/" + user_id.to_string(), guild_id, method::PUT, sb.GetString())
+        return conn->request(Guild_GID_Mem_UID, guild_id, method::PUT, 
+          "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string(), sb.GetString())
         .then([](api_response response)
         {
           return response.status_code == 201;
@@ -265,8 +271,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/members/" + user_id.to_string(),
-          guild_id, method::PATCH, sb.GetString())
+        return conn->request(Guild_GID_Mem_UID, guild_id, method::PATCH,
+          "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string(), sb.GetString())
         .then([](api_response response)
         {
           return response.status_code == 201;
@@ -285,7 +291,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/members/@me/nick", guild_id, method::PATCH, sb.GetString())
+        return conn->request(Guild_GID_Mem_Me_Nick, guild_id, method::PATCH, 
+          "guilds/" + guild_id.to_string() + "/members/@me/nick", sb.GetString())
         .then([](api_response response)
         {
           return response.status_code == 200;
@@ -294,9 +301,8 @@ namespace discord
 
       pplx::task<bool> add_member_role(connection_state* conn, snowflake guild_id, snowflake user_id, snowflake role_id)
       {
-        return conn->request(
-          "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string() + "/roles/" + role_id.to_string(),
-          guild_id, method::PUT)
+        return conn->request(Guild_GID_Mem_UID_Role_RID, guild_id, method::PUT,
+          "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string() + "/roles/" + role_id.to_string())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -305,8 +311,8 @@ namespace discord
 
       pplx::task<bool> remove_member_role(connection_state* conn, snowflake guild_id, snowflake user_id, snowflake role_id)
       {
-        return conn->request(
-          "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string() + "/roles/" + role_id.to_string(), guild_id, method::DEL)
+        return conn->request(Guild_GID_Mem_UID_Role_RID, guild_id, method::DEL,
+          "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string() + "/roles/" + role_id.to_string())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -315,7 +321,8 @@ namespace discord
 
       pplx::task<bool> remove_member(connection_state* conn, snowflake guild_id, snowflake user_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/members/" + user_id.to_string(), guild_id, method::DEL)
+        return conn->request(Guild_GID_Mem_UID, guild_id, method::DEL,
+          "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -324,7 +331,8 @@ namespace discord
 
       pplx::task<std::vector<discord::user>> get_bans(connection_state* conn, snowflake guild_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/bans", guild_id, method::GET)
+        return conn->request(Guild_GID_Bans, guild_id, method::GET,
+          "guilds/" + guild_id.to_string() + "/bans")
         .then([conn](api_response response)
         {
           std::vector<user> users;
@@ -355,7 +363,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/bans/" + user_id.to_string(), guild_id, method::PUT, sb.GetString())
+        return conn->request(Guild_GID_Bans_UID, guild_id, method::PUT, 
+          "guilds/" + guild_id.to_string() + "/bans/" + user_id.to_string(), sb.GetString())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -364,7 +373,8 @@ namespace discord
 
       pplx::task<bool> unban(connection_state* conn, snowflake guild_id, snowflake user_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/bans/" + user_id.to_string(), guild_id, method::DEL)
+        return conn->request(Guild_GID_Bans_UID, guild_id, method::DEL,
+          "guilds/" + guild_id.to_string() + "/bans/" + user_id.to_string())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -373,7 +383,8 @@ namespace discord
 
       pplx::task<std::vector<role>> get_roles(connection_state* conn, snowflake guild_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/roles", guild_id, method::GET)
+        return conn->request(Guild_GID_Roles, guild_id, method::GET,
+          "guilds/" + guild_id.to_string() + "/roles")
         .then([](api_response response)
         {
           std::vector<role> roles;
@@ -411,7 +422,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/roles", guild_id, method::POST, sb.GetString())
+        return conn->request(Guild_GID_Roles, guild_id, method::POST, 
+          "guilds/" + guild_id.to_string() + "/roles", sb.GetString())
         .then([](api_response response)
         {
           return role(response.data);
@@ -435,7 +447,8 @@ namespace discord
         writer.EndArray();
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/roles", guild_id, method::PATCH, sb.GetString())
+        return conn->request(Guild_GID_Roles, guild_id, method::PATCH,
+          "guilds/" + guild_id.to_string() + "/roles", sb.GetString())
         .then([](api_response response)
         {
           std::vector<role> roles;
@@ -473,8 +486,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/roles/" + role_id.to_string(),
-          guild_id, method::PATCH, sb.GetString())
+        return conn->request(Guild_GID_Roles_RID, guild_id, method::PATCH, 
+          "guilds/" + guild_id.to_string() + "/roles/" + role_id.to_string(), sb.GetString())
         .then([](api_response response)
         {
           return role(response.data);
@@ -483,7 +496,8 @@ namespace discord
 
       pplx::task<bool> remove_role(connection_state* conn, snowflake guild_id, snowflake role_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/roles/" + role_id.to_string(), guild_id, method::DEL)
+        return conn->request(Guild_GID_Roles_RID, guild_id, method::DEL,
+          "guilds/" + guild_id.to_string() + "/roles/" + role_id.to_string())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -502,7 +516,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/prune", guild_id, method::GET, sb.GetString())
+        return conn->request(Guild_GID_Prune, guild_id, method::GET, 
+          "guilds/" + guild_id.to_string() + "/prune", sb.GetString())
         .then([](api_response response)
         {
           return response.data.GetUint();
@@ -521,7 +536,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/prune", guild_id, method::POST, sb.GetString())
+        return conn->request(Guild_GID_Prune, guild_id, method::POST, 
+          "guilds/" + guild_id.to_string() + "/prune", sb.GetString())
         .then([](api_response response)
         {
           return response.data["pruned"].GetUint();
@@ -530,7 +546,8 @@ namespace discord
 
       pplx::task<std::vector<voice_region>> get_voice_regions(connection_state* conn, snowflake guild_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/regions", guild_id, method::GET)
+        return conn->request(Guild_GID_Regions, guild_id, method::GET,
+          "guilds/" + guild_id.to_string() + "/regions")
         .then([](api_response response)
         {
           std::vector<voice_region> regions;
@@ -546,7 +563,8 @@ namespace discord
 
       pplx::task<std::vector<integration>> get_integrations(connection_state* conn, snowflake guild_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/integrations", guild_id, method::GET)
+        return conn->request(Guild_GID_Int, guild_id, method::GET,
+          "guilds/" + guild_id.to_string() + "/integrations")
         .then([conn](api_response response)
         {
           std::vector<integration> integrations;
@@ -575,7 +593,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/integrations", guild_id, method::POST, sb.GetString())
+        return conn->request(Guild_GID_Int, guild_id, method::POST,
+          "guilds/" + guild_id.to_string() + "/integrations", sb.GetString())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -600,8 +619,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request("guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string(),
-          guild_id, method::PATCH, sb.GetString())
+        return conn->request(Guild_GID_Int_IID, guild_id, method::PATCH,
+          "guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string(), sb.GetString())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -610,8 +629,8 @@ namespace discord
 
       pplx::task<bool> remove_integration(connection_state* conn, snowflake guild_id, snowflake integration_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string(),
-          guild_id, method::DEL)
+        return conn->request(Guild_GID_Int_IID, guild_id, method::DEL,
+          "guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string())
         .then([](api_response response)
         {
           return response.status_code == 204;
@@ -620,8 +639,8 @@ namespace discord
 
       pplx::task<bool> sync_integration(connection_state* conn, snowflake guild_id, snowflake integration_id)
       {
-        return conn->request("guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string() + "/sync", 
-          guild_id, method::POST)
+        return conn->request(Guild_GID_Int_IID_Sync, guild_id, method::POST,
+          "guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string() + "/sync")
         .then([](api_response response)
         {
           return response.status_code == 204;

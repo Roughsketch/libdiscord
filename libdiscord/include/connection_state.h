@@ -90,7 +90,7 @@ namespace discord
      * @param type The method to use when connecting to the API.
      * @param data The JSON payload to attach.
      */
-    pplx::task<api_response> request(std::string endpoint, snowflake major, method type, std::string&& data = "");
+    pplx::task<api_response> connection_state::request(api_key key, snowflake major, method type, std::string endpoint, const std::string&& data = "");
 
     /** Registers an event handler that will be called on certain gateway events.
      *
