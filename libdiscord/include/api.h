@@ -108,6 +108,12 @@ namespace discord
     Guild_GID_Regions,
     Guild_GID_Roles,
     Guild_GID_Roles_RID,
+    User_Me,
+    User_Me_Channel,
+    User_Me_Connections,
+    User_Me_Guild,
+    User_Me_Guild_GID,
+    User_UID,
   };
 
   namespace api
