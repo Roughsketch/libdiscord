@@ -216,6 +216,7 @@ namespace discord
         }
       }
 
+      mutex->unlock(); // Unlock mutex since we're past the rate-limiting section.
       response.status_code = res.status_code();
 
       if (res.status_code() == web::http::status_codes::OK)
@@ -234,9 +235,6 @@ namespace discord
       }
       else if (res.status_code() != web::http::status_codes::NoContent)
       {
-        //  If we are in this section we're going to throw, so unlock.
-        mutex->unlock();
-
         auto json_str = utility::conversions::to_utf8string(res.extract_string().get());
         response.data.Parse(json_str.c_str(), json_str.size());
 
@@ -302,7 +300,6 @@ namespace discord
         }
       }
 
-      mutex->unlock();
       return response;
     });
   }
