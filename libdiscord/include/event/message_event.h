@@ -11,6 +11,12 @@ namespace discord
   public:
     explicit message_event(connection_state* owner, rapidjson::Value& data);
 
+    message_event(const message_event& other)
+    {
+      this->message::operator=(other);
+      m_stream << other.m_stream.str();
+    }
+
     ~message_event() {
       auto str = m_stream.str();
 
