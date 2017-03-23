@@ -1,8 +1,9 @@
 #pragma once
 
 #include "common.h"
-#include "user.h"
 #include "channel.h"
+#include "connection.h"
+#include "user.h"
 
 namespace discord
 {

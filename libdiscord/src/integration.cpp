@@ -1,4 +1,5 @@
 #include "integration.h"
+#include "user.h"
 
 namespace discord
 {
