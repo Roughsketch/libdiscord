@@ -92,7 +92,7 @@ namespace discord
 
           for (auto& ug_data : response.data.GetArray())
           {
-            user_guilds.emplace_back(user_guild(ug_data));
+            user_guilds.emplace_back(ug_data);
           }
 
           return user_guilds;
@@ -117,7 +117,7 @@ namespace discord
 
           for (auto& chan_data : response.data.GetArray())
           {
-            channels.emplace_back(channel(conn, chan_data));
+            channels.emplace_back(conn, chan_data);
           }
 
           return channels;
@@ -175,7 +175,7 @@ namespace discord
 
           for (auto& conn_data : response.data.GetArray())
           {
-            connections.emplace_back(connection(conn_data));
+            connections.emplace_back(conn_data);
           }
 
           return connections;

@@ -200,7 +200,7 @@ namespace discord
 
           for (auto& user_data : response.data.GetArray())
           {
-            users.emplace_back(user(conn, user_data));
+            users.emplace_back(conn, user_data);
           }
 
           return users;
@@ -323,7 +323,7 @@ namespace discord
 
           for (auto& message_data : response.data.GetArray())
           {
-            messages.emplace_back(message(conn, message_data));
+            messages.emplace_back(conn, message_data);
           }
 
           return messages;

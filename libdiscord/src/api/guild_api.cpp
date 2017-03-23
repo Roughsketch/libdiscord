@@ -58,7 +58,7 @@ namespace discord
 
           for (auto& chan_data : response.data.GetArray())
           {
-            channels.emplace_back(channel(conn, chan_data));
+            channels.emplace_back(conn, chan_data);
           }
 
           return channels;
@@ -151,7 +151,7 @@ namespace discord
 
           for (auto& chan_data : response.data.GetArray())
           {
-            channels.emplace_back(channel(conn, chan_data));
+            channels.emplace_back(conn, chan_data);
           }
           
           return channels;
@@ -191,7 +191,7 @@ namespace discord
 
           for (auto& member_data : response.data.GetArray())
           {
-            members.emplace_back(member(conn, member_data));
+            members.emplace_back(conn, member_data);
           }
 
           return members;
@@ -339,7 +339,7 @@ namespace discord
 
           for (auto& user_data : response.data.GetArray())
           {
-            users.emplace_back(user(conn, user_data));
+            users.emplace_back(conn, user_data);
           }
 
           return users;
@@ -391,7 +391,7 @@ namespace discord
 
           for (auto& role_data : response.data.GetArray())
           {
-            roles.emplace_back(role(role_data));
+            roles.emplace_back(role_data);
           }
 
           return roles;
@@ -455,7 +455,7 @@ namespace discord
 
           for (auto& role_data : response.data.GetArray())
           {
-            roles.emplace_back(role(role_data));
+            roles.emplace_back(role_data);
           }
 
           return roles;
@@ -554,7 +554,7 @@ namespace discord
 
           for (auto& region_data : response.data.GetArray())
           {
-            regions.emplace_back(voice_region(region_data));
+            regions.emplace_back(region_data);
           }
 
           return regions;
@@ -571,7 +571,7 @@ namespace discord
 
           for (auto& integration_data : response.data.GetArray())
           {
-            integrations.emplace_back(integration(conn, response.data));
+            integrations.emplace_back(conn, response.data);
           }
 
           return integrations;
