@@ -231,7 +231,7 @@ namespace discord
     {
       for (auto& field : found->value.GetArray())
       {
-        m_fields.push_back(embed_field(owner, field));
+        m_fields.emplace_back(owner, field);
       }
     }
   }
@@ -552,7 +552,7 @@ namespace discord
     {
       writer.String("fields");
       writer.StartArray();
-      for (auto& field : m_fields)
+      for (const auto& field : m_fields)
       {
         //  Check empty to avoid adding fields that aren't initialized correctly.
         if (!field.empty())

@@ -38,7 +38,7 @@ namespace discord
     {
       for (auto& mention : found->value.GetArray())
       {
-        m_mentions.push_back(user(owner, mention));
+        m_mentions.emplace_back(owner, mention);
       }
     }
     

@@ -17,9 +17,9 @@ namespace discord
     auto found = data.FindMember("roles");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      for (auto& emoji_role : data["roles"].GetArray())
+      for (const auto& emoji_role : data["roles"].GetArray())
       {
-        m_roles.push_back(snowflake(emoji_role.GetString()));
+        m_roles.emplace_back(emoji_role.GetString());
       }
     }
 

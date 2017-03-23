@@ -76,7 +76,7 @@ namespace discord
     {
       for (auto& perm_ow : data["permission_overwrites"].GetArray())
       {
-        m_permission_overwrites.push_back(overwrite(perm_ow));
+        m_permission_overwrites.emplace_back(perm_ow);
       }
     }
 

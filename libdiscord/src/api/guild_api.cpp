@@ -81,7 +81,7 @@ namespace discord
         writer.String("permission_overwrites");
         writer.StartArray();
 
-        for (auto& ow : permission_overwrites)
+        for (const auto& ow : permission_overwrites)
         {
           writer.String(ow.id().to_string());
         }
@@ -214,7 +214,7 @@ namespace discord
         writer.String("roles");
         writer.StartArray();
 
-        for (auto& role : roles)
+        for (const auto& role : roles)
         {
           writer.String(role.id().to_string());
         }
@@ -250,7 +250,7 @@ namespace discord
         writer.String("roles");
         writer.StartArray();
 
-        for (auto& role : roles)
+        for (const auto& role : roles)
         {
           writer.String(role.id().to_string());
         }
@@ -438,7 +438,7 @@ namespace discord
         writer.StartObject();
         writer.StartArray();
 
-        for (auto& pair : positions)
+        for (const auto& pair : positions)
         {
           writer.String(pair.first.to_string());
           writer.Int(pair.second);

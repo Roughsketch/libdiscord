@@ -24,9 +24,9 @@ namespace discord
     found = data.FindMember("roles");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      for (auto& role_id : found->value.GetArray())
+      for (const auto& role_id : found->value.GetArray())
       {
-        m_roles.push_back(snowflake(role_id.GetString()));
+        m_roles.emplace_back(role_id.GetString());
       }
     }
 

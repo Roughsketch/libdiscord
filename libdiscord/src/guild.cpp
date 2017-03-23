@@ -45,9 +45,9 @@ namespace discord
     found = data.FindMember("roles");
     if (found != data.MemberEnd())
     {
-      for (auto& role_id : found->value.GetArray())
+      for (const auto& role_id : found->value.GetArray())
       {
-        m_roles.push_back(snowflake(role_id.GetString()));
+        m_roles.emplace_back(role_id.GetString());
       }
     }
 
@@ -129,9 +129,9 @@ namespace discord
     found = data.FindMember("features");
     if (found != data.MemberEnd())
     {
-      for (auto& guild_feature : found->value.GetArray())
+      for (const auto& guild_feature : found->value.GetArray())
       {
-        m_features.push_back(guild_feature.GetString());
+        m_features.emplace_back(guild_feature.GetString());
       }
     }
 
@@ -140,7 +140,7 @@ namespace discord
     {
       for (auto& guild_voice_state : found->value.GetArray())
       {
-        m_voice_states.push_back(voice_state(guild_voice_state));
+        m_voice_states.emplace_back(guild_voice_state);
       }
     }
 
@@ -187,7 +187,7 @@ namespace discord
   {
     std::vector<emoji> emojis;
 
-    for (auto& emoji_kv : m_emojis)
+    for (const auto& emoji_kv : m_emojis)
     {
       emojis.push_back(emoji_kv.second);
     }
@@ -262,7 +262,7 @@ namespace discord
 
   channel guild::find_channel(std::string name) const
   {
-    for (auto& pair : m_channels)
+    for (const auto& pair : m_channels)
     {
       if (pair.second.name() == name)
       {
@@ -285,7 +285,7 @@ namespace discord
 
   void guild::set_emojis(std::vector<emoji>& emojis)
   {
-    for (auto& emoji : emojis)
+    for (const auto& emoji : emojis)
     {
       m_emojis[emoji.id()] = emoji;
     }
@@ -304,7 +304,7 @@ namespace discord
 
   bool guild::find_emoji(std::string name, emoji& dest)
   {
-    for (auto& pair : m_emojis)
+    for (const auto& pair : m_emojis)
     {
       if (pair.second.name() == name)
       {

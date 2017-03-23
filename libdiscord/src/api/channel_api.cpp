@@ -116,7 +116,7 @@ namespace discord
           std::vector<message> messages;
           for (auto& message_data : response.data.GetArray())
           {
-            messages.push_back(message(conn, message_data));
+            messages.emplace_back(conn, message_data);
           }
 
           return messages;
@@ -254,7 +254,7 @@ namespace discord
         writer.String("messages");
 
         writer.StartArray();
-        for (auto& id : message_ids)
+        for (const auto& id : message_ids)
         {
           writer.String(id.to_string());
         }

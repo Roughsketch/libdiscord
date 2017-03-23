@@ -255,7 +255,7 @@ namespace discord
           if (found != response.data.MemberEnd())
           {
             std::string messages;
-            for (auto& content : found->value.GetArray())
+            for (const auto& content : found->value.GetArray())
             {
               messages += std::string(content.GetString()) + "\n";
             }
@@ -430,7 +430,7 @@ namespace discord
         auto guild = m_guilds.at(id);
         auto channel_ids = guild.channel_ids();
 
-        for (auto& chan_id : channel_ids)
+        for (const auto& chan_id : channel_ids)
         {
           m_channel_guilds.erase(chan_id);
         }
@@ -523,9 +523,9 @@ namespace discord
       found = data.FindMember("roles");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
-        for (auto& role_id : found->value.GetArray())
+        for (const auto& role_id : found->value.GetArray())
         {
-          roles.push_back(snowflake(role_id.GetString()));
+          roles.emplace_back(role_id.GetString());
         }
       }
 
@@ -618,7 +618,7 @@ namespace discord
   {
     std::vector<guild> guild_vec;
 
-    for (auto& guild_kv : m_guilds)
+    for (const auto& guild_kv : m_guilds)
     {
       guild_vec.push_back(guild_kv.second);
     }

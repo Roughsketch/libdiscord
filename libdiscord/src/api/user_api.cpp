@@ -150,7 +150,7 @@ namespace discord
 
         writer.StartObject();
 
-        for (auto& pair : user_nicknames)
+        for (const auto& pair : user_nicknames)
         {
           writer.String(pair.first.to_string());
           writer.String(pair.second);
