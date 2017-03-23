@@ -38,7 +38,10 @@ namespace discord
           )
         {
           //  Call the command
-          m_commands[word.substr(m_prefix.size())](event);
+          pplx::create_task([this, word, event] 
+          {
+            m_commands[word.substr(m_prefix.size())](event); 
+          }).then([](){});
         }
         else if (m_on_message)
         {
@@ -72,14 +75,14 @@ namespace discord
           std::vector<snowflake> ids;
           snowflake chan_id(data["channel_id"].GetString());
 
-          for (auto& id : data["ids"].GetArray())
+          for (const auto& id : data["ids"].GetArray())
           {
-            ids.push_back(snowflake(id.GetString()));
+            ids.emplace_back(id.GetString());
           }
 
           LOG(DEBUG) << "Sending out " << ids.size() << " MessageDeletedEvents";
 
-          for (auto& id : ids)
+          for (const auto& id : ids)
           {
             message_deleted_event event(m_conn_state.get(), id, chan_id);
             m_on_message_deleted(event);
@@ -152,9 +155,9 @@ namespace discord
   {
     std::vector<channel> channels;
 
-    for (auto& guild : guilds())
+    for (const auto& guild : guilds())
     {
-      for (auto& chan : guild.channels())
+      for (const auto& chan : guild.channels())
       {
         channels.push_back(chan);
       }
@@ -213,7 +216,7 @@ namespace discord
     m_on_typing = callback;
   }
 
-  void bot::add_command(std::string name, std::function<void(message_event&)> callback)
+  void bot::add_command(std::string name, std::function<void(message_event)> callback)
   {
     m_commands[name] = callback;
   }

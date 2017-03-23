@@ -36,7 +36,7 @@ namespace discord
     std::function<void(emoji&)> m_on_emoji_updated;
     std::function<void(presence&)> m_on_presence;
     std::function<void(typing_event&)> m_on_typing;
-    std::unordered_map<std::string, std::function<void(message_event&)>> m_commands;
+    std::unordered_map<std::string, std::function<void(message_event)>> m_commands;
 
     void on_event(event_type type, rapidjson::Value& data);
   public:
@@ -133,7 +133,7 @@ namespace discord
      * @param name The name of the command to add.
      * @param callback The callback to trigger when the command is received.
      */
-    void add_command(std::string name, std::function<void(message_event&)> callback);
+    void add_command(std::string name, std::function<void(message_event)> callback);
 
     /** Runs the bot.
      *
