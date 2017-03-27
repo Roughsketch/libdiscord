@@ -272,6 +272,12 @@ namespace discord
     */
     pplx::task<bool> remove_messages(std::vector<snowflake> message_ids) const;
 
+    /** Delete a set amount of messages from a channel all at once.
+    * @param amount The amount of messages to delete. Must be between 2 and 100 inclusive.
+    * @throw discord_exception on invalid amount.
+    */
+    pplx::task<bool> remove_messages(int amount = 2) const;
+
     /** Edits the permissions of either a member or a role.
     *
     * @param overwrite The overwrite to update.

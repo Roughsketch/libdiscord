@@ -224,6 +224,24 @@ namespace discord
     return api::channel::bulk_remove_messages(m_owner, m_id, message_ids);
   }
 
+  pplx::task<bool> channel::remove_messages(int amount) const
+  {
+    if (amount < 2 || amount > 100)
+    {
+      throw discord_exception("Bulk message delete amount must be between 2 and 100 inclusive.");
+    }
+
+    return api::channel::get_messages(m_owner, m_id, amount)
+      .then([owner = m_owner, id = m_id](std::vector<message> messages) {
+        std::vector<snowflake> msg_ids(messages.size());
+        std::transform(std::begin(messages), std::end(messages), std::begin(msg_ids), 
+          [](const message& msg) -> snowflake {
+            return msg.id();
+          });
+        return api::channel::bulk_remove_messages(owner, id, msg_ids).get();
+      });
+  }
+
   pplx::task<bool> channel::edit_permissions(overwrite overwrite, uint32_t allow, uint32_t deny, std::string type) const
   {
     return api::channel::edit_permissions(m_owner, m_id, overwrite, allow, deny, type);
