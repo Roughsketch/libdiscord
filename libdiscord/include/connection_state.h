@@ -42,7 +42,7 @@ namespace discord
     int m_shards;
 
     std::mutex m_global_mutex;
-    std::unordered_map<size_t, std::unique_ptr<std::mutex>> m_api_mutex;
+    std::unordered_map<size_t, std::unique_ptr<std::mutex>> m_api_locks;
     web::http::client::http_client* m_client;
 
     std::vector<std::unique_ptr<gateway>> m_gateways;

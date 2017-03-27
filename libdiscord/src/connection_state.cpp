@@ -85,33 +85,12 @@ namespace discord
   {
     LOG(DEBUG) << "Request: " << endpoint << " - " << major.to_string() << " - " << data;
     auto map_key = std::hash<std::string>()(std::to_string(key) + major.to_string());
-    auto mutex_it = m_api_mutex.find(map_key);
+    auto api_locked = m_api_locks.find(map_key);
 
     //  If the cached mutex does not exist, create it.
-    if (mutex_it == std::end(m_api_mutex))
+    if (api_locked == std::end(m_api_locks))
     {
-      m_api_mutex[map_key] = std::make_unique<std::mutex>();
-    }
-
-    auto mutex = m_api_mutex[map_key].get();
-    
-    //  Try to lock this mutex until it works.
-    while (!mutex->try_lock())
-    {
-      std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
-
-    if (m_global_mutex.try_lock())
-    {
-      m_global_mutex.unlock();
-    }
-    else
-    {
-      //  If we can't lock the global mutex, then we might be rate limited.
-      //  Wait for the global mutex to become available again before continuing.
-      LOG(DEBUG) << "Could not lock global mutex. Waiting for it to unlock.";
-      std::lock_guard<std::mutex> global_lock(m_global_mutex);
-      LOG(DEBUG) << "Global mutex unlocked.";
+      m_api_locks.emplace(map_key, std::make_unique<std::mutex>());
     }
 
     web::http::method method;
@@ -146,7 +125,14 @@ namespace discord
       if (method == web::http::methods::GET)
       {
         LOG(DEBUG) << "Setting query parameters: " << (endpoint + data);
-        request.set_request_uri(utility::conversions::to_string_t(endpoint + data));
+        try
+        {
+          request.set_request_uri(utility::conversions::to_string_t(endpoint + "?" + data));
+        }
+        catch (const std::exception&)
+        {
+          throw discord_exception("Invalid query parameters in GET call.");
+        }
       }
       else
       {
@@ -155,152 +141,169 @@ namespace discord
       }
     }
 
-    return m_client->request(request).then([=](web::http::http_response res) -> api_response
-    {
-      api_response response;
-      auto headers = res.headers();
+    return pplx::create_task([=]() {
+      std::unique_lock<std::mutex> api_lock(*m_api_locks[map_key].get());
 
-      //  Various rate-limit related headers
-      auto remaining = headers.find(U("X-RateLimit-Remaining"));
-      auto reset = headers.find(U("X-RateLimit-Reset"));
-      auto retry = headers.find(U("Retry-After"));
-      auto global = headers.find(U("X-RateLimit-Global"));
-      auto date_str = headers.find(U("Date"));
-      auto server_date = std::chrono::system_clock::now();
-
-      if (date_str != std::end(headers))
+      //  Wait until this endpoint is unlocked.
+      if (m_global_mutex.try_lock())
       {
-        std::tm tm = {};
-        std::stringstream ss(utility::conversions::to_utf8string(date_str->second));
-        ss >> std::get_time(&tm, "%b %d %Y %H:%M:%S");
-        server_date = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+        m_global_mutex.unlock();
+      }
+      else
+      {
+        //  If we can't lock the global mutex, then we might be rate limited.
+        //  Wait for the global mutex to become available again before continuing.
+        LOG(DEBUG) << "Could not lock global mutex. Waiting for it to unlock.";
+        std::unique_lock<std::mutex> global_lock(m_global_mutex);
+        LOG(DEBUG) << "Global mutex unlocked.";
       }
 
-      if (remaining != std::end(headers))
+      return m_client->request(request).then([&](web::http::http_response res) -> api_response
       {
-        auto rate_remaining = std::stoul(utility::conversions::to_utf8string(remaining->second));
+        api_response response;
+        auto headers = res.headers();
 
-        if (!rate_remaining)
+        //  Various rate-limit related headers
+        auto remaining = headers.find(U("X-RateLimit-Remaining"));
+        auto reset = headers.find(U("X-RateLimit-Reset"));
+        auto retry = headers.find(U("Retry-After"));
+        auto global = headers.find(U("X-RateLimit-Global"));
+        auto date_str = headers.find(U("Date"));
+        auto server_date = std::chrono::system_clock::now();
+
+        if (date_str != std::end(headers))
         {
-          auto rate_reset = std::stoul(utility::conversions::to_utf8string(reset->second));
-
-          //  Get the time that the rate limit will reset.
-          auto end_time = std::chrono::system_clock::time_point(std::chrono::seconds(rate_reset));
-
-          //  Get the total amount of time to wait from this point.
-          auto total_time = std::chrono::duration_cast<std::chrono::seconds>(end_time - std::chrono::system_clock::now()).count();
-
-          LOG(WARNING) << "We hit the rate limit for endpoint " << endpoint << ". Sleeping for " << total_time << " seconds.";
-          std::this_thread::sleep_until(end_time);
+          std::tm tm = {};
+          std::stringstream ss(utility::conversions::to_utf8string(date_str->second));
+          ss >> std::get_time(&tm, "%b %d %Y %H:%M:%S");
+          server_date = std::chrono::system_clock::from_time_t(std::mktime(&tm));
         }
-      }
 
-      if (retry != std::end(headers))
-      {
-        auto retry_after = std::stoul(utility::conversions::to_utf8string(retry->second));
-
-        if (global == std::end(headers))
+        if (remaining != std::end(headers))
         {
-          LOG(WARNING) << "Received a Retry-After header. Waiting for " << retry_after << "ms.";
-          std::this_thread::sleep_for(std::chrono::milliseconds(retry_after));
-          mutex->unlock();
-          this->request(key, major, type, endpoint, std::move(data));
-        }
-        else
-        {
-          LOG(ERROR) << "Hit the global rate limit. Waiting for " << retry_after << "ms.";
+          auto rate_remaining = std::stoul(utility::conversions::to_utf8string(remaining->second));
 
-          //  This is a global rate limit, lock the global mutex and wait.
-          std::lock_guard<std::mutex> global_lock(m_global_mutex);
-          std::this_thread::sleep_for(std::chrono::milliseconds(retry_after));
-        }
-      }
-
-      mutex->unlock(); // Unlock mutex since we're past the rate-limiting section.
-      response.status_code = res.status_code();
-
-      if (res.status_code() == web::http::status_codes::OK)
-      {
-        auto bodyStream = res.body();
-        Concurrency::streams::container_buffer<std::string> inStringBuffer;
-
-        bodyStream.read_to_end(inStringBuffer).then([inStringBuffer](size_t bytesRead)
-        {
-          return inStringBuffer.collection();
-        }).then([&response](std::string text)
-        {
-          LOG(DEBUG) << "Got API response: " << text;
-          response.data.Parse(text.c_str(), text.size());
-        }).get();
-      }
-      else if (res.status_code() != web::http::status_codes::NoContent)
-      {
-        auto json_str = utility::conversions::to_utf8string(res.extract_string().get());
-        response.data.Parse(json_str.c_str(), json_str.size());
-
-        auto code_member = response.data.FindMember("code");
-
-        if (code_member != response.data.MemberEnd())
-        {
-          //  Try to find a name member which holds error data.
-          auto found = response.data.FindMember("name");
-
-          //  If the name member isn't found, try to find the content member instead.
-          if (found == response.data.MemberEnd())
+          if (!rate_remaining)
           {
-            found = response.data.FindMember("content");
+            auto rate_reset = std::stoul(utility::conversions::to_utf8string(reset->second));
+
+            //  Get the time that the rate limit will reset.
+            auto end_time = std::chrono::system_clock::time_point(std::chrono::seconds(rate_reset));
+
+            //  Get the total amount of time to wait from this point.
+            auto total_time = std::chrono::duration_cast<std::chrono::seconds>(end_time - std::chrono::system_clock::now()).count();
+
+            LOG(WARNING) << "We hit the rate limit for endpoint " << endpoint << ". Sleeping for " << total_time << " seconds.";
+            std::this_thread::sleep_until(end_time);
           }
+        }
 
-          //  If we found either name or content, then concatenate their messages and throw an exception.
-          if (found != response.data.MemberEnd())
+        if (retry != std::end(headers))
+        {
+          auto retry_after = std::stoul(utility::conversions::to_utf8string(retry->second));
+
+          if (global == std::end(headers))
           {
-            std::string messages;
-            for (const auto& content : found->value.GetArray())
+            LOG(WARNING) << "Received a Retry-After header. Waiting for " << retry_after << "ms.";
+            std::this_thread::sleep_for(std::chrono::milliseconds(retry_after));
+            api_lock.release()->unlock();
+            this->request(key, major, type, endpoint, std::move(data));
+          }
+          else
+          {
+            LOG(ERROR) << "Hit the global rate limit. Waiting for " << retry_after << "ms.";
+
+            //  This is a global rate limit, lock the global mutex and wait.
+            std::lock_guard<std::mutex> global_lock(m_global_mutex);
+            std::this_thread::sleep_for(std::chrono::milliseconds(retry_after));
+          }
+        }
+
+        response.status_code = res.status_code();
+
+        if (res.status_code() == web::http::status_codes::OK)
+        {
+          auto bodyStream = res.body();
+          Concurrency::streams::container_buffer<std::string> inStringBuffer;
+
+          bodyStream.read_to_end(inStringBuffer).then([inStringBuffer](size_t bytesRead)
+          {
+            return inStringBuffer.collection();
+          }).then([&response](std::string text)
+          {
+            LOG(DEBUG) << "Got API response: " << text;
+            response.data.Parse(text.c_str(), text.size());
+          }).get();
+        }
+        else if (res.status_code() != web::http::status_codes::NoContent)
+        {
+          auto json_str = utility::conversions::to_utf8string(res.extract_string().get());
+          response.data.Parse(json_str.c_str(), json_str.size());
+
+          auto code_member = response.data.FindMember("code");
+
+          if (code_member != response.data.MemberEnd())
+          {
+            //  Try to find a name member which holds error data.
+            auto found = response.data.FindMember("name");
+
+            //  If the name member isn't found, try to find the content member instead.
+            if (found == response.data.MemberEnd())
             {
-              messages += std::string(content.GetString()) + "\n";
+              found = response.data.FindMember("content");
             }
 
-            if (messages.size() > 0)
+            //  If we found either name or content, then concatenate their messages and throw an exception.
+            if (found != response.data.MemberEnd())
             {
-              throw discord_exception(messages);
+              std::string messages;
+              for (const auto& content : found->value.GetArray())
+              {
+                messages += std::string(content.GetString()) + "\n";
+              }
+
+              if (messages.size() > 0)
+              {
+                throw discord_exception(messages);
+              }
+
+              throw discord_exception("API call failed and response was null.");
             }
 
-            throw discord_exception("API call failed and response was null.");
-          }
+            //  Didn't find name or content member, throw based off error code instead.
+            auto code = code_member->value.GetInt();
+            std::string message = response.data["message"].GetString();
 
-          //  Didn't find name or content member, throw based off error code instead.
-          auto code = code_member->value.GetInt();
-          std::string message = response.data["message"].GetString();
+            if (code < 20000)
+            {
+              throw unknown_exception(message);
+            }
 
-          if (code < 20000)
-          {
-            throw unknown_exception(message);
-          }
+            if (code < 30000)
+            {
+              throw too_many_exception(message);
+            }
 
-          if (code < 30000)
-          {
-            throw too_many_exception(message);
-          }
-
-          switch (code)
-          {
-          case EmbedDisabled:
-            throw embed_exception(message);
-          case MissingPermissions:
-          case ChannelVerificationTooHigh:
-            throw permission_exception(message);
-          case Unauthorized:
-          case MissingAccess:
-          case InvalidAuthToken:
-            throw authorization_exception(message);
-          default:
-            //  No specially handled codes left, throw a default exception
-            throw discord_exception(message);
+            switch (code)
+            {
+            case EmbedDisabled:
+              throw embed_exception(message);
+            case MissingPermissions:
+            case ChannelVerificationTooHigh:
+              throw permission_exception(message);
+            case Unauthorized:
+            case MissingAccess:
+            case InvalidAuthToken:
+              throw authorization_exception(message);
+            default:
+              //  No specially handled codes left, throw a default exception
+              throw discord_exception(message);
+            }
           }
         }
-      }
 
-      return response;
+        return response;
+      }).get();
     });
   }
 
