@@ -220,12 +220,12 @@ namespace discord
     return m_owner_id;
   }
 
-  verify_level guild::verify_level() const
+  verification_level guild::verify_level() const
   {
     return m_verify_level;
   }
 
-  notify_level guild::notify_level() const
+  notification_level guild::notify_level() const
   {
     return m_notify_level;
   }

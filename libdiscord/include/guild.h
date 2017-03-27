@@ -19,7 +19,7 @@ namespace discord
   class connection_state;
   class presence_event;
 
-  enum class verify_level
+  enum class verification_level
   {
     None,
     Low,
@@ -28,7 +28,7 @@ namespace discord
   };
 
   /** Represents the default notification level of a Guild. */
-  enum class notify_level
+  enum class notification_level
   {
     None,
     MentionOnly
@@ -79,8 +79,8 @@ namespace discord
     uint32_t m_afk_timeout;
     bool m_embed_enabled;
     snowflake m_embed_channel_id;
-    verify_level m_verify_level;
-    notify_level m_notify_level;
+    verification_level m_verify_level;
+    notification_level m_notify_level;
     std::unordered_map<uint64_t, role> m_roles;
     std::unordered_map<uint64_t, emoji> m_emojis;
     std::vector<std::string> m_features;
@@ -145,13 +145,13 @@ namespace discord
     *
     * @return Guild's verification level.
     */
-    verify_level verify_level() const;
+    verification_level verify_level() const;
 
     /** Gets the notification level for this guild.
     *
     * @return Guild's notification level.
     */
-    notify_level notify_level() const;
+    notification_level notify_level() const;
 
     /** Gets a list of channels in this guild.
     *
