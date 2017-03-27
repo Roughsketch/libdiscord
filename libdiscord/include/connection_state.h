@@ -131,6 +131,10 @@ namespace discord
     */
     std::unique_ptr<channel> find_channel(snowflake id) const;
 
+    /** Find a guild from a channel id.
+    * @param id The id of the channel whose guild to find.
+    * @return A unique_ptr to a guild.
+    */
     std::unique_ptr<guild> find_guild_from_channel(snowflake id) const;
 
     /** Adds an entry to the cache that links a channel id to a guild id.
