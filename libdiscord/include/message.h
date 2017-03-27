@@ -9,7 +9,7 @@
 
 namespace discord
 {
-  class message : identifiable, connection_object
+  class message : public identifiable, connection_object
   {
     snowflake m_channel_id;
     user m_author;
@@ -34,9 +34,9 @@ namespace discord
 
     const user& author() const;
 
-    channel channel() const;
+    std::unique_ptr<channel> channel() const;
 
-    guild guild() const;
+    std::unique_ptr<guild> guild() const;
 
     pplx::task<message> respond(std::string content, bool tts = false, discord::embed embed = discord::embed()) const;
 

@@ -626,17 +626,17 @@ namespace discord
     return guild_vec;
   }
 
-  guild connection_state::find_guild(snowflake id) const
+  std::unique_ptr<guild> connection_state::find_guild(snowflake id) const
   {
     if (m_guilds.count(id))
     {
-      return m_guilds.at(id);
+      return std::make_unique<guild>(m_guilds.at(id));
     }
 
-    return guild();
+    return std::make_unique<guild>();
   }
 
-  channel connection_state::find_channel(snowflake id) const
+  std::unique_ptr<channel> connection_state::find_channel(snowflake id) const
   {
     if (m_channel_guilds.count(id))
     {
@@ -650,13 +650,13 @@ namespace discord
     }
     else if (m_private_channels.count(id))
     {
-      return m_private_channels.at(id);
+      return std::make_unique<channel>(m_private_channels.at(id));
     }
 
-    return channel();
+    return std::make_unique<channel>();
   }
 
-  guild connection_state::find_guild_from_channel(snowflake id) const
+  std::unique_ptr<guild> connection_state::find_guild_from_channel(snowflake id) const
   {
     if (m_channel_guilds.count(id))
     {
@@ -664,11 +664,11 @@ namespace discord
 
       if (m_guilds.count(guild_id))
       {
-        return m_guilds.at(guild_id);
+        return std::make_unique<guild>(m_guilds.at(guild_id));
       }
     }
 
-    return guild();
+    return std::make_unique<guild>();
   }
 
   void connection_state::cache_channel_id(snowflake guild_id, snowflake channel_id)

@@ -166,7 +166,7 @@ namespace discord
     return channels;
   }
 
-  guild bot::find_guild(snowflake id) const
+  std::unique_ptr<guild> bot::find_guild(snowflake id) const
   {
     return m_conn_state->find_guild(id);
   }

@@ -74,12 +74,12 @@ namespace discord
     return m_author;
   }
 
-  channel message::channel() const
+  std::unique_ptr<channel> message::channel() const
   {
     return m_owner->find_channel(m_channel_id);
   }
 
-  guild message::guild() const
+  std::unique_ptr<guild> message::guild() const
   {
     return m_owner->find_guild_from_channel(m_channel_id);
   }
@@ -96,11 +96,11 @@ namespace discord
 
   pplx::task<bool> message::react(emoji reaction) const
   {
-    return channel().create_reaction(m_id, reaction);
+    return channel()->create_reaction(m_id, reaction);
   }
 
   pplx::task<bool> message::react(std::string reaction) const
   {
-    return channel().create_reaction(m_id, reaction);
+    return channel()->create_reaction(m_id, reaction);
   }
 }

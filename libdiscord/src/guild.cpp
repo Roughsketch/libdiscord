@@ -250,37 +250,37 @@ namespace discord
     return keys;
   }
 
-  channel guild::find_channel(snowflake id) const
+  std::unique_ptr<channel> guild::find_channel(snowflake id) const
   {
     if (m_channels.find(id) != std::end(m_channels))
     {
-      return m_channels.at(id);
+      return std::make_unique<channel>(m_channels.at(id));
     }
 
-    return channel();
+    return std::make_unique<channel>();
   }
 
-  channel guild::find_channel(std::string name) const
+  std::unique_ptr<channel> guild::find_channel(std::string name) const
   {
     for (const auto& pair : m_channels)
     {
       if (pair.second.name() == name)
       {
-        return pair.second;
+        return std::make_unique<channel>(pair.second);
       }
     }
 
-    return channel();
+    return std::make_unique<channel>();
   }
 
-  member guild::find_member(snowflake id) const
+  std::unique_ptr<member> guild::find_member(snowflake id) const
   {
     if (m_members.find(id) != std::end(m_members))
     {
-      return m_members.at(id);
+      return std::make_unique<member>(m_members.at(id));
     }
 
-    return member();
+    return std::make_unique<member>();
   }
 
   void guild::set_emojis(std::vector<emoji>& emojis)

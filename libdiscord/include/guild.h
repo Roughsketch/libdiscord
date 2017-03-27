@@ -170,21 +170,21 @@ namespace discord
     * @param id The id of the channel to find.
     * @return The channel that was found, or an empty channel if not found.
     */
-    channel find_channel(snowflake id) const;
+    std::unique_ptr<channel> find_channel(snowflake id) const;
 
     /** Finds a channel based on its name.
     *
     * @param name The name of the channel to find.
     * @return The channel that was found, or an empty channel if not found.
     */
-    channel find_channel(std::string name) const;
+    std::unique_ptr<channel> find_channel(std::string name) const;
 
     /** Finds a member based on their id.
     *
     * @param id The id of the member to find.
     * @return The member that was found, or an empty member if not found.
     */
-    member find_member(snowflake id) const;
+    std::unique_ptr<member> find_member(snowflake id) const;
 
     /** Sets this guild's list of emojis. This will overwrite the current list.
     *

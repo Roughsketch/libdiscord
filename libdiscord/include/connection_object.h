@@ -30,6 +30,6 @@ namespace discord
     *  @param id The id of the guild to find.
     *  @return The guild that was found, or an empty guild if not found.
     */
-    guild find_guild(snowflake id) const;
+    std::unique_ptr<guild> find_guild(snowflake id) const;
   };
 }

@@ -72,7 +72,7 @@ namespace discord
      * @param id The guild's id.
      * @return The guild that was found or an empty guild if not found.
      */
-    guild find_guild(snowflake id) const;
+    std::unique_ptr<guild> find_guild(snowflake id) const;
 
     /** Triggered when the bot is finished receiving the READY packet from the gateway.
      *

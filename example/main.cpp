@@ -2,7 +2,6 @@
 
 #include "getRSS.h"
 #include "json.hpp"
-#include <mutex>
 
 nlohmann::json read_json_file(std::string file)
 {
@@ -42,9 +41,29 @@ int main()
 
   bot.add_command("sleep", [](auto event)
   {
-    event.channel().start_typing();
+    event.channel()->start_typing();
     std::this_thread::sleep_for(std::chrono::seconds(10));
     event.respond("Done sleeping.");
+  });
+
+  bot.add_command("prune", [](auto event)
+  {
+    std::cout << "Got into prune.\n";
+    std::istringstream iss(event.content());
+    int amount;
+    std::string command;
+
+    std::cout << "Getting amount.\n";
+    iss >> command >> amount;
+    std::cout << "Got amount.\n";
+
+    if (amount < 2 || amount > 100)
+    {
+      event.respond("Invalid amount specified. Must be between 2 and 100 inclusive.");
+      return;
+    }
+
+    event.channel()->remove_messages(amount);
   });
 
   bot.add_command("create", [](auto event)
@@ -60,8 +79,8 @@ int main()
     {
       auto channel_name = words[1];
 
-      discord::guild guild = event.guild();
-      discord::channel channel = guild.create_text_channel(channel_name).get();
+      auto guild = event.guild();
+      auto channel = guild->create_text_channel(channel_name).get();
       channel.modify(channel.name(), "This is a newly created channel.");
     }
   });
@@ -79,12 +98,12 @@ int main()
     {
       auto channel_name = words[1];
 
-      discord::guild guild = event.guild();
-      discord::channel channel = guild.find_channel(channel_name);
+      auto guild = event.guild();
+      auto channel = guild->find_channel(channel_name);
 
-      if (!channel.empty())
+      if (!channel->empty())
       {
-        channel.remove();
+        channel->remove();
       }
       else
       {
@@ -95,7 +114,7 @@ int main()
 
   bot.add_command("embed", [](auto event)
   {
-    event.channel().send_embed([](discord::embed &e)
+    event.channel()->send_embed([](discord::embed &e)
     {
       e.set_title("Example embed");
       e.set_description("This is how to use the send_embed callback.");
@@ -107,7 +126,7 @@ int main()
   bot.add_command("react", [](auto event)
   {
     discord::emoji shelterfrog;
-    bool found = event.guild().find_emoji("shelterfrog", shelterfrog);
+    bool found = event.guild()->find_emoji("shelterfrog", shelterfrog);
 
     try
     {

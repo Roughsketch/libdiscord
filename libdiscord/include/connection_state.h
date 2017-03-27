@@ -122,16 +122,16 @@ namespace discord
     * @param id The guild's id.
     * @return The guild that was found or an empty guild if not found.
     */
-    guild find_guild(snowflake id) const;
+    std::unique_ptr<guild> find_guild(snowflake id) const;
 
     /** Find a channel by its id.
     *
     * @param id The channel's id.
     * @return The channel that was found or an empty channel if not found.
     */
-    channel find_channel(snowflake id) const;
+    std::unique_ptr<channel> find_channel(snowflake id) const;
 
-    guild find_guild_from_channel(snowflake id) const;
+    std::unique_ptr<guild> find_guild_from_channel(snowflake id) const;
 
     /** Adds an entry to the cache that links a channel id to a guild id.
      *

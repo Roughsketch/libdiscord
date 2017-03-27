@@ -17,7 +17,7 @@ namespace discord
     return m_owner;
   }
 
-  guild connection_object::find_guild(snowflake id) const
+  std::unique_ptr<guild> connection_object::find_guild(snowflake id) const
   {
     return m_owner->find_guild(id);
   }
