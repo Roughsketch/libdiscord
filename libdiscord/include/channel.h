@@ -270,7 +270,7 @@ namespace discord
     * @param message_ids A list of message ids to delete. Must be 100 or fewer.
     * @return Success status.
     */
-    pplx::task<bool> bulk_remove_messages(std::vector<snowflake> message_ids) const;
+    pplx::task<bool> remove_messages(std::vector<snowflake> message_ids) const;
 
     /** Edits the permissions of either a member or a role.
     *

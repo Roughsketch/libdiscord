@@ -219,7 +219,7 @@ namespace discord
     return api::channel::remove_message(m_owner, m_id, message_id);
   }
 
-  pplx::task<bool> channel::bulk_remove_messages(std::vector<snowflake> message_ids) const
+  pplx::task<bool> channel::remove_messages(std::vector<snowflake> message_ids) const
   {
     return api::channel::bulk_remove_messages(m_owner, m_id, message_ids);
   }
