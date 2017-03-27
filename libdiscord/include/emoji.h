@@ -14,8 +14,8 @@ namespace discord
     emoji();
     explicit emoji(rapidjson::Value& data);
 
-    std::string emoji::name() const;
-    std::vector<snowflake> emoji::roles() const;
-    std::string emoji::mention() const;
+    std::string name() const;
+    std::vector<snowflake> roles() const;
+    std::string mention() const;
   };
 }
