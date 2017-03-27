@@ -78,39 +78,26 @@ namespace discord
         {
           throw discord_exception("Search method passed to get_messages, but pivot id is zero.");
         }
-
-        rapidjson::StringBuffer sb;
-        rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-
-        writer.StartObject();
-
-        writer.String("limit");
-        writer.Int(limit);
+        std::string params = "limit=" + std::to_string(limit);
 
         switch (method)
         {
         case search_method::None:
           break;
         case search_method::Before:
-          writer.String("before");
-          writer.String(pivot.to_string());
+          params += "&before=" + pivot.to_string();
           break;
         case search_method::After:
-          writer.String("after");
-          writer.String(pivot.to_string());
+          params += "&after=" + pivot.to_string();
           break;
         case search_method::Around:
-          writer.String("around");
-          writer.String(pivot.to_string());
+          params += "&around=" + pivot.to_string();
           break;
         default:
           throw discord_exception("Invalid search method passed to get_messages.");
         }
 
-        writer.EndObject();
-
-
-        return conn->request(Chan_CID_Messages, channel_id, method::GET, "channels/" + channel_id.to_string() + "/messages", sb.GetString())
+        return conn->request(Chan_CID_Messages, channel_id, method::GET, "channels/" + channel_id.to_string() + "/messages", std::move(params))
         .then([conn](api_response response)
         {
           std::vector<message> messages;
