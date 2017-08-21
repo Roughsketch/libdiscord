@@ -1,3 +1,5 @@
+This library is no longer being updated or maintained.
+
 - [Getting Started](#getting-started)
   - [Compiling libdiscord for Windows](#compiling-libdiscord-for-windows)
   - [Compiling a bot on Windows](#compiling-a-bot-on-windows)
