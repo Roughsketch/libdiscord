@@ -67,8 +67,8 @@ namespace discord
   {
     m_afk_timeout = 0;
     m_embed_enabled = false;
-    m_verify_level = verify_level::None;
-    m_notify_level = notify_level::None;
+    m_verify_level = verification_level::None;
+    m_notify_level = notification_level::None;
     m_mfa_level = 0;
     m_large = false;
     m_member_count = 0;
@@ -96,13 +96,13 @@ namespace discord
     auto found = data.FindMember("verification_level");
     if (found != data.MemberEnd())
     {
-      m_verify_level = static_cast<discord::verify_level>(found->value.GetInt());
+      m_verify_level = static_cast<discord::verification_level>(found->value.GetInt());
     }
 
     found = data.FindMember("default_message_notifications");
     if (found != data.MemberEnd())
     {
-      m_notify_level = static_cast<discord::notify_level>(found->value.GetInt());
+      m_notify_level = static_cast<discord::notification_level>(found->value.GetInt());
     }
     
 
