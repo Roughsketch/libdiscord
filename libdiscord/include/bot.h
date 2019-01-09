@@ -34,6 +34,7 @@ namespace discord
     std::function<void(emoji&)> m_on_emoji_created;
     std::function<void(emoji&)> m_on_emoji_deleted;
     std::function<void(emoji&)> m_on_emoji_updated;
+	std::function<void(guild&)> m_on_guild_created;
     std::function<void(presence&)> m_on_presence;
     std::function<void(typing_event&)> m_on_typing;
     std::unordered_map<std::string, std::function<void(message_event)>> m_commands;
@@ -115,6 +116,12 @@ namespace discord
      * @param callback The callback to trigger.
      */
     void on_emoji_updated(std::function<void(emoji&)> callback);
+
+	/** Triggered when a guild created event is received.
+	 *
+	 * @param callback The callback to trigger.
+	 */
+	void on_guild_created(std::function<void(guild&)> callback);
 
     /** Triggered when a presence event is received.
      *

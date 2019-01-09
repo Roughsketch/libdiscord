@@ -414,6 +414,7 @@ namespace discord
     {
       guild new_guild(this, data);
       m_guilds[new_guild.id()] = new_guild;
+	  raise_event(GuildCreated, data);
     }
     else if (event_name == "GUILD_UPDATE")
     {
