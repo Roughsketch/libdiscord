@@ -21,7 +21,7 @@ namespace discord
       {
         if (m_on_ready)
         {
-          m_on_ready();
+			m_on_ready();
         }
         break;
       }
@@ -89,6 +89,15 @@ namespace discord
           }
         }
       }
+	case GuildCreated:
+	  {
+		if(m_on_guild_created)
+		{
+			guild guild(m_conn_state.get(), data);
+			m_on_guild_created(guild);
+		}
+		break;
+	  }
     case Presence:
       {
         if (m_on_presence)
@@ -204,6 +213,11 @@ namespace discord
   void bot::on_emoji_updated(std::function<void(emoji&)> callback)
   {
     m_on_emoji_updated = callback;
+  }
+
+  void bot::on_guild_created(std::function<void(guild&)> callback) 
+  {
+	  m_on_guild_created = callback;
   }
 
   void bot::on_presence(std::function<void(presence&)> callback)

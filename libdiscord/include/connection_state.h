@@ -25,13 +25,18 @@ namespace discord
   enum event_type
   {
     Ready,
+	// Messages
     MessageCreated,
     MessageDeleted,
     MessageEdited,
     MessagesBulkDeleted,
+	// Guild
+	GuildCreated,
+	// Emoji
     EmojiCreated,
     EmojiDeleted,
     EmojiEdited,
+	// Misc
     Presence,
     Typing
   };
