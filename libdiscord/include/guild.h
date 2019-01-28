@@ -15,11 +15,11 @@
 
 namespace discord
 {
-  class channel;
-  class connection_state;
-  class presence_event;
+  class Channel;
+  class ConnectionState;
+  class PresenceEvent;
 
-  enum class verification_level
+  enum class VerificationLevel
   {
     None,
     Low,
@@ -28,7 +28,7 @@ namespace discord
   };
 
   /** Represents the default notification level of a Guild. */
-  enum class notification_level
+  enum class NotificationLevel
   {
     None,
     MentionOnly
@@ -36,68 +36,68 @@ namespace discord
 
   /** Enumeration of types that a Game object can be.
   Current only valid options are Stream and Normal. */
-  enum game_type : uint8_t
+  enum GameType : uint8_t
   {
     Normal = 0,
     Stream
   };
 
-  class game_status
+  class GameStatus
   {
     std::string m_name;
-    game_type m_type;
+    GameType m_type;
     std::string m_url;
   public:
-    game_status();
-    explicit game_status(rapidjson::Value& data);
+    GameStatus();
+    explicit GameStatus(rapidjson::Value& data);
     
   };
 
-  class presence : connection_object
+  class Presence : ConnectionObject
   {
-    user m_user;
-    std::vector<snowflake> m_roles;
-    game_status m_game;
-    snowflake m_guild_id;
+    User m_user;
+    std::vector<Snowflake> m_roles;
+    GameStatus m_game;
+    Snowflake m_guild_id;
     std::string m_status;
 
   public:
-    presence();
-    explicit presence(connection_state* owner, rapidjson::Value& data);
+    Presence();
+    explicit Presence(ConnectionState* owner, rapidjson::Value& data);
 
-    const user& user() const;
+    const User& user() const;
   };
 
-  class guild : public identifiable, public connection_object
+  class Guild : public Identifiable, public ConnectionObject
   {
     std::string m_name;
     std::string m_icon;
     std::string m_splash;
-    snowflake m_owner_id;
+    Snowflake m_owner_id;
     std::string m_region;
-    snowflake m_afk_channel_id;
+    Snowflake m_afk_channel_id;
     uint32_t m_afk_timeout;
     bool m_embed_enabled;
-    snowflake m_embed_channel_id;
-    verification_level m_verify_level;
-    notification_level m_notify_level;
-    std::unordered_map<uint64_t, role> m_roles;
-    std::unordered_map<uint64_t, emoji> m_emojis;
+    Snowflake m_embed_channel_id;
+    VerificationLevel m_verify_level;
+    NotificationLevel m_notify_level;
+    std::unordered_map<uint64_t, Role> m_roles;
+    std::unordered_map<uint64_t, Emoji> m_emojis;
     std::vector<std::string> m_features;
     uint32_t m_mfa_level;
     std::string m_joined_at;
     bool m_large;
     uint32_t m_member_count;
-    std::vector<voice_state> m_voice_states;
-    std::unordered_map<uint64_t, member> m_members;
-    std::unordered_map<uint64_t, channel> m_channels;
-    std::unordered_map<uint64_t, presence> m_presences;
+    std::vector<VoiceState> m_voice_states;
+    std::unordered_map<uint64_t, Member> m_members;
+    std::unordered_map<uint64_t, Channel> m_channels;
+    std::unordered_map<uint64_t, Presence> m_presences;
     bool m_unavailable;
 
     bool m_empty;
   public:
-    guild();
-    explicit guild(connection_state* owner, rapidjson::Value& data);
+    Guild();
+    explicit Guild(ConnectionState* owner, rapidjson::Value& data);
 
     /** Gets the name of this guild.
      *
@@ -109,7 +109,7 @@ namespace discord
     *
     * @return A list of custom emojis in this guild.
     */
-    std::vector<emoji> emojis() const;
+    std::vector<Emoji> emojis() const;
 
     /** Gets amount of members that have been seen in this guild.
     *
@@ -127,7 +127,7 @@ namespace discord
     *
     * @return The AFK channel's id.
     */
-    snowflake afk_channel_id() const;
+    Snowflake afk_channel_id() const;
 
     /** Gets the amount of time to wait until a user is marked AFK.
     *
@@ -139,25 +139,25 @@ namespace discord
     *
     * @return Guild owner id.
     */
-    snowflake owner_id() const;
+    Snowflake owner_id() const;
 
     /** Gets the verification level required to join the guild.
     *
     * @return Guild's verification level.
     */
-    verification_level verify_level() const;
+    VerificationLevel verify_level() const;
 
     /** Gets the notification level for this guild.
     *
     * @return Guild's notification level.
     */
-    notification_level notify_level() const;
+    NotificationLevel notify_level() const;
 
     /** Gets a list of channels in this guild.
     *
     * @return A list of channels in this guild.
     */
-    std::vector<channel> channels() const;
+    std::vector<Channel> channels() const;
 
     /** Gets a list of channel ids in this guild.
     *
@@ -170,27 +170,27 @@ namespace discord
     * @param id The id of the channel to find.
     * @return The channel that was found, or an empty channel if not found.
     */
-    std::unique_ptr<channel> find_channel(snowflake id) const;
+    std::unique_ptr<Channel> find_channel(Snowflake id) const;
 
     /** Finds a channel based on its name.
     *
     * @param name The name of the channel to find.
     * @return The channel that was found, or an empty channel if not found.
     */
-    std::unique_ptr<channel> find_channel(std::string name) const;
+    std::unique_ptr<Channel> find_channel(std::string name) const;
 
     /** Finds a member based on their id.
     *
     * @param id The id of the member to find.
     * @return The member that was found, or an empty member if not found.
     */
-    std::unique_ptr<member> find_member(snowflake id) const;
+    std::unique_ptr<Member> find_member(Snowflake id) const;
 
     /** Sets this guild's list of emojis. This will overwrite the current list.
     *
     * @param emojis The emojis to set for this guild.
     */
-    void set_emojis(std::vector<emoji>& emojis);
+    void set_emojis(std::vector<Emoji>& emojis);
 
     /** Find an emoji by its id.
     *
@@ -198,7 +198,7 @@ namespace discord
     * @param dest Destination for the emoji that was found.
     * @return True if the emoji was found.
     */
-    bool find_emoji(snowflake emoji_id, emoji& dest);
+    bool find_emoji(Snowflake emoji_id, Emoji& dest);
 
     /** Find an emoji by its name.
     *
@@ -206,7 +206,7 @@ namespace discord
     * @param dest Destination for the emoji that was found.
     * @return True if the emoji was found.
     */
-    bool find_emoji(std::string name, emoji& dest);
+    bool find_emoji(std::string name, Emoji& dest);
 
     /** Sets this guild as currently unavailable.
     *
@@ -218,25 +218,25 @@ namespace discord
     *
     * @param chan The channel to be added.
     */
-    void add_channel(channel& chan);
+    void add_channel(Channel& chan);
 
     /** Updates a channel in this guild. Does not modify the channel given.
     *
     * @param chan The channel that was updated.
     */
-    void update_channel(channel& chan);
+    void update_channel(Channel& chan);
 
     /** Removes a channel from this guild. Does not delete the channel given.
     *
     * @param chan The channel to remove.
     */
-    void remove_channel(channel& chan);
+    void remove_channel(Channel& chan);
 
     /** Adds a member to this guild's list of members.
     *
     * @param mem The member to add to the list.
     */
-    void add_member(member& mem);
+    void add_member(Member& mem);
 
     /** Updated a member's information in the guild's list of members.
     *
@@ -244,37 +244,37 @@ namespace discord
     * @param user The user object for this member.
     * @param nick The nickname for this member.
     */
-    void update_member(std::vector<snowflake>& role_ids, user& user, std::string nick);
+    void update_member(std::vector<Snowflake>& role_ids, User& user, std::string nick);
 
     /** Removes a member from the guild's list of members. Does not kick the member given.
     *
     * @param mem The member to remove from the guild's member list.
     */
-    void remove_member(member& mem);
+    void remove_member(Member& mem);
 
     /** Adds a role to the guild.
     *
     * @param role The role to add.
     */
-    void add_role(role& role);
+    void add_role(Role& role);
 
     /** Updates a role in the guild.
     *
     * @param role The role to update.
     */
-    void update_role(role& role);
+    void update_role(Role& role);
 
     /** Removes a role from the guild.
     *
     * @param role_id The role to remove.
     */
-    void remove_role(snowflake& role_id);
+    void remove_role(Snowflake& role_id);
 
     /** Updates the presence of a member.
     *
     * @param presence The presence information.
     */
-    void update_presence(presence& presence);
+    void update_presence(Presence& presence);
 
     /** Whether or not this object is considered empty.
      *
@@ -292,13 +292,13 @@ namespace discord
     * @return The modified guild object.
     */
     //  TODO: Change parameters
-    pplx::task<discord::guild> modify(discord::guild guild);
+    pplx::task<Guild> modify(discord::Guild guild);
 
     /** Removes this guild entirely. Cannot be undone.
     *
     * @return The guild that was removed.
     */
-    pplx::task<discord::guild> remove() const;
+    pplx::task<Guild> remove() const;
 
     /** Create a new text channel in a guild.
     *
@@ -306,7 +306,7 @@ namespace discord
     * @param permission_overwrites An array of permission overwrites to assign to this channel.
     * @return The channel that was created.
     */
-    pplx::task<discord::channel> create_text_channel(std::string name, std::vector<overwrite> permission_overwrites = {}) const;
+    pplx::task<Channel> create_text_channel(std::string name, std::vector<Overwrite> permission_overwrites = {}) const;
 
     /** Create a new voice channel in a guild.
     *
@@ -316,21 +316,21 @@ namespace discord
     * @param permission_overwrites An array of permission overwrites to assign to this channel.
     * @return The channel that was created.
     */
-    pplx::task<discord::channel> create_voice_channel(std::string name, uint32_t bitrate = 96000, uint32_t user_limit = 99, std::vector<overwrite> permission_overwrites = {}) const;
+    pplx::task<Channel> create_voice_channel(std::string name, uint32_t bitrate = 96000, uint32_t user_limit = 99, std::vector<Overwrite> permission_overwrites = {}) const;
 
     /** Sets several channel positions at once.
     *
     * @param positions A mapping of channel ids to positions which will be set.
     * @return The list of channels in the guild.
     */
-    pplx::task<std::vector<discord::channel>> modify_channel_positions(const std::map<snowflake, uint32_t>& positions) const;
+    pplx::task<std::vector<discord::Channel>> modify_channel_positions(const std::map<Snowflake, uint32_t>& positions) const;
 
     /** Get a member of a guild.
     *
     * @param user_id The user id of the member to get.
     * @return The member that was found.
     */
-    pplx::task<member> get_member(snowflake user_id) const;
+    pplx::task<Member> get_member(Snowflake user_id) const;
 
     /** Gets a list of members in the guild.
     *
@@ -338,7 +338,7 @@ namespace discord
     * @param after The id of the member to search after. Used for pagination.
     * @return A list of members from the guild.
     */
-    pplx::task<std::vector<member>> get_members(uint32_t limit = 1, snowflake after = 0) const;
+    pplx::task<std::vector<Member>> get_members(uint32_t limit = 1, Snowflake after = 0) const;
 
     /** Adds a member to a guild. Requires an OAuth2 access token.
     *
@@ -350,7 +350,7 @@ namespace discord
     * @param deafened Whether or not this user should be deaf.
     * @return Success status.
     */
-    pplx::task<bool> add_member(snowflake user_id, std::string access_token, std::string nick = "", std::vector<role> roles = {}, bool muted = false, bool deafened = false) const;
+    pplx::task<bool> add_member(Snowflake user_id, std::string access_token, std::string nick = "", std::vector<Role> roles = {}, bool muted = false, bool deafened = false) const;
 
     /** Modify a member in the guild.
     *
@@ -362,7 +362,7 @@ namespace discord
     * @param channel_id Voice channel to move user to.
     * @return Success status.
     */
-    pplx::task<bool> modify_member(snowflake user_id, std::string nick = "", std::vector<role> roles = {}, bool muted = false, bool deafened = false, snowflake channel_id = 0) const;
+    pplx::task<bool> modify_member(Snowflake user_id, std::string nick = "", std::vector<Role> roles = {}, bool muted = false, bool deafened = false, Snowflake channel_id = 0) const;
 
     /** Set the current user's nickname in this guild.
     *
@@ -376,26 +376,26 @@ namespace discord
     * @param role_id The role to add.
     * @return Success status.
     */
-    pplx::task<bool> add_member_role(snowflake user_id, snowflake role_id) const;
+    pplx::task<bool> add_member_role(Snowflake user_id, Snowflake role_id) const;
 
     /** Remove a role from a member.
     *
     * @param user_id The member to remove the role from.
     * @param role_id The role to remove.
     */
-    pplx::task<bool> remove_member_role(snowflake user_id, snowflake role_id) const;
+    pplx::task<bool> remove_member_role(Snowflake user_id, Snowflake role_id) const;
 
     /** Remove a member from a guild.
     *
     * @param user_id The member to remove.
     */
-    pplx::task<bool> kick(snowflake user_id) const;
+    pplx::task<bool> kick(Snowflake user_id) const;
 
     /** Get a list of bans that the guild has.
     *
     * @return A list of bans that are currently active in the guild.
     */
-    pplx::task<std::vector<discord::user>> get_bans() const;
+    pplx::task<std::vector<User>> get_bans() const;
 
     /** Bans a member from the guild.
     *
@@ -403,20 +403,20 @@ namespace discord
     * @param delete_x_days Number of days worth of messages to delete. Can be from 0-7.
     * @return Success status.
     */
-    pplx::task<bool> ban(snowflake user_id, uint32_t delete_x_days) const;
+    pplx::task<bool> ban(Snowflake user_id, uint32_t delete_x_days) const;
 
     /** Unbans a member from the guild.
     *
     * @param user_id The member to unban.
     * @return Success status.
     */
-    pplx::task<bool> unban(snowflake user_id) const;
+    pplx::task<bool> unban(Snowflake user_id) const;
 
     /** Gets a list of roles that belong to the guild.
     *
     * @return A list of roles that belong to the guild.
     */
-    pplx::task<std::vector<role>> get_roles() const;
+    pplx::task<std::vector<Role>> get_roles() const;
 
     /** Creates a new role in a guild.
     *
@@ -427,14 +427,14 @@ namespace discord
     * @param mentionable Whether or not this role is mentionable.
     * @return The role that was created.
     */
-    pplx::task<role> create_role(std::string name, permission permissions, uint32_t rgb_color = 0, bool hoist = false, bool mentionable = false) const;
+    pplx::task<Role> create_role(std::string name, Permission permissions, uint32_t rgb_color = 0, bool hoist = false, bool mentionable = false) const;
 
     /** Modifies the raw position of a role.
     *
     * @param positions A map of role ids to positions.
     * @return The list of roles from the server.
     */
-    pplx::task<std::vector<role>> modify_role_positions(const std::map<snowflake, uint32_t>& positions) const;
+    pplx::task<std::vector<Role>> modify_role_positions(const std::map<Snowflake, uint32_t>& positions) const;
 
     /** Modify the attributes of a role.
     *
@@ -446,14 +446,14 @@ namespace discord
     * @param mentionable The new mentionable value for this role.
     * @return The role that was updated.
     */
-    pplx::task<role> modify_role(snowflake role_id, std::string name, permission permissions, uint32_t rgb_color = 0, bool hoist = false, bool mentionable = false) const;
+    pplx::task<Role> modify_role(Snowflake role_id, std::string name, Permission permissions, uint32_t rgb_color = 0, bool hoist = false, bool mentionable = false) const;
 
     /** Removes a role from a guild.
     *
     * @param role_id The role to remove from the guild.
     * @return Success status.
     */
-    pplx::task<bool> remove_role(snowflake role_id) const;
+    pplx::task<bool> remove_role(Snowflake role_id) const;
 
     /** Get the amount of users that will be pruned if a prune is run on the guild.
     *
@@ -473,7 +473,7 @@ namespace discord
     *
     * @return A list of voice regions.
     */
-    pplx::task<std::vector<voice_region>> get_voice_regions() const;
+    pplx::task<std::vector<VoiceRegion>> get_voice_regions() const;
 
     /** Lists the invites to this guild.
     *
@@ -486,36 +486,36 @@ namespace discord
     *
     * @return A list of integrations that this guild owns.
     */
-    pplx::task<std::vector<integration>> get_integrations() const;
+    pplx::task<std::vector<Integration>> get_integrations() const;
 
-    /** Attaches an integration object to a guild.
+    /** Attaches an Integration object to a guild.
     *
-    * @param type The type of the integration.
-    * @param integration_id The integration to attach.
+    * @param type The type of the Integration.
+    * @param integration_id The Integration to attach.
     * @return Success status.
     */
-    pplx::task<bool> create_integration(std::string type, snowflake integration_id) const;
+    pplx::task<bool> create_integration(std::string type, Snowflake integration_id) const;
 
-    /** Modifies the behavior of an integration.
+    /** Modifies the behavior of an Integration.
     *
-    * @param integration_id The integration to modify.
-    * @param expire_behavior The behavior when an integration subscription lapses.
-    * @param expire_grace_period The period in seconds where the integration will ignore lapsed subscriptions.
+    * @param integration_id The Integration to modify.
+    * @param expire_behavior The behavior when an Integration subscription lapses.
+    * @param expire_grace_period The period in seconds where the Integration will ignore lapsed subscriptions.
     * @param enable_emoticons Whether emoticons should be synced.
     * @return Success status.
     */
-    pplx::task<bool> modify_integration(snowflake integration_id, uint32_t expire_behavior, uint32_t expire_grace_period, bool enable_emoticons) const;
+    pplx::task<bool> modify_integration(Snowflake integration_id, uint32_t expire_behavior, uint32_t expire_grace_period, bool enable_emoticons) const;
 
-    /** Removes an integration from a guild.
+    /** Removes an Integration from a guild.
     *
-    * @param integration_id The integration to remove.
+    * @param integration_id The Integration to remove.
     */
-    pplx::task<bool> remove_integration(snowflake integration_id) const;
+    pplx::task<bool> remove_integration(Snowflake integration_id) const;
 
-    /** Syncs an integration.
+    /** Syncs an Integration.
     *
-    * @param integration_id The integration to sync.
+    * @param integration_id The Integration to sync.
     */
-    pplx::task<bool> sync_integration(snowflake integration_id) const;
+    pplx::task<bool> sync_integration(Snowflake integration_id) const;
   };
 }

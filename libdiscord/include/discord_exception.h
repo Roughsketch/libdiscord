@@ -6,17 +6,17 @@
 namespace discord
 {
   /** Used for general Discord exceptions. */
-  class discord_exception : public std::exception
+  class DiscordException : public std::exception
   {
   protected:
     std::string m_msg;
 
   public:
-    explicit discord_exception(const char* message) : m_msg(message) {}
+    explicit DiscordException(const char* message) : m_msg(message) {}
 
-    explicit discord_exception(const std::string& message) : m_msg(message) {}
+    explicit DiscordException(const std::string& message) : m_msg(message) {}
 
-    virtual ~discord_exception() throw () {}
+    virtual ~DiscordException() throw () {}
 
     virtual const char* what() const throw () override {
       return m_msg.c_str();
@@ -24,14 +24,14 @@ namespace discord
   };
 
   /** Used when the API responds with an error code denoting an unknown entity. */
-  class unknown_exception : public discord_exception
+  class UnknownException : public DiscordException
   {
   public:
-    explicit unknown_exception(const char* message) : discord_exception(message) {}
+    explicit UnknownException(const char* message) : DiscordException(message) {}
 
-    explicit unknown_exception(const std::string& message) : discord_exception(message) {}
+    explicit UnknownException(const std::string& message) : DiscordException(message) {}
 
-    virtual ~unknown_exception() throw () {}
+    virtual ~UnknownException() throw () {}
 
     virtual const char* what() const throw () override {
       return m_msg.c_str();
@@ -39,17 +39,17 @@ namespace discord
   };
 
   /** Used when the API responds with a permissions related error code. */
-  class permission_exception : public discord_exception
+  class PermissionException : public DiscordException
   {
   protected:
     std::string m_msg;
 
   public:
-    explicit permission_exception(const char* message) : discord_exception(message) {}
+    explicit PermissionException(const char* message) : DiscordException(message) {}
 
-    explicit permission_exception(const std::string& message) : discord_exception(message) {}
+    explicit PermissionException(const std::string& message) : DiscordException(message) {}
 
-    virtual ~permission_exception() throw () {}
+    virtual ~PermissionException() throw () {}
 
     virtual const char* what() const throw () override {
       return m_msg.c_str();
@@ -57,35 +57,35 @@ namespace discord
   };
 
   /** Used when the API responds with an authorization related error code. */
-  class authorization_exception : public discord_exception
+  class AuthorizationException : public DiscordException
   {
   protected:
     std::string m_msg;
 
   public:
-    explicit authorization_exception(const char* message) : discord_exception(message) {}
+    explicit AuthorizationException(const char* message) : DiscordException(message) {}
 
-    explicit authorization_exception(const std::string& message) : discord_exception(message) {}
+    explicit AuthorizationException(const std::string& message) : DiscordException(message) {}
 
-    virtual ~authorization_exception() throw () {}
+    virtual ~AuthorizationException() throw () {}
 
     virtual const char* what() const throw () override {
       return m_msg.c_str();
     }
   };
 
-  /** Used when the API responds with an embed related error code. */
-  class embed_exception : public discord_exception
+  /** Used when the API responds with an Embed related error code. */
+  class EmbedException : public DiscordException
   {
   protected:
     std::string m_msg;
 
   public:
-    explicit embed_exception(const char* message) : discord_exception(message) {}
+    explicit EmbedException(const char* message) : DiscordException(message) {}
 
-    explicit embed_exception(const std::string& message) : discord_exception(message) {}
+    explicit EmbedException(const std::string& message) : DiscordException(message) {}
 
-    virtual ~embed_exception() throw () {}
+    virtual ~EmbedException() throw () {}
 
     virtual const char* what() const throw () override {
       return m_msg.c_str();
@@ -93,17 +93,17 @@ namespace discord
   };
 
   /** Used when the API responds with a "Too Many X" related error code. */
-  class too_many_exception : public discord_exception
+  class TooManyException : public DiscordException
   {
   protected:
     std::string m_msg;
 
   public:
-    explicit too_many_exception(const char* message) : discord_exception(message) {}
+    explicit TooManyException(const char* message) : DiscordException(message) {}
 
-    explicit too_many_exception(const std::string& message) : discord_exception(message) {}
+    explicit TooManyException(const std::string& message) : DiscordException(message) {}
 
-    virtual ~too_many_exception() throw () {}
+    virtual ~TooManyException() throw () {}
 
     virtual const char* what() const throw () override {
       return m_msg.c_str();

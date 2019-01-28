@@ -12,7 +12,7 @@
 
 namespace discord
 {
-  void connection_state::raise_event(event_type type, rapidjson::Value& data) const
+  void ConnectionState::raise_event(EventType type, rapidjson::Value& data) const
   {
     if (m_event_handler)
     {
@@ -20,30 +20,30 @@ namespace discord
     }
   }
 
-  connection_state::connection_state() : m_shards(0)
+  ConnectionState::ConnectionState() : m_shards(0)
   {
     m_client = new web::http::client::http_client(U("https://discordapp.com/api/v6"));
   }
 
-  connection_state::connection_state(std::string token, int shards) : connection_state()
+  ConnectionState::ConnectionState(std::string token, int shards) : ConnectionState()
   {
     m_token = token;
     m_shards = shards;
   }
 
-  connection_state::~connection_state()
+  ConnectionState::~ConnectionState()
   {
     delete m_client;
   }
 
-  void connection_state::connect()
+  void ConnectionState::connect()
   {
     int recommended_shards;
     utility::string_t wss_url;
 
     web::uri_builder builder(U(""));
-    builder.append_query(U("v"), gateway::VERSION);
-    builder.append_query(U("encoding"), gateway::ENCODING);
+    builder.append_query(U("v"), Gateway::VERSION);
+    builder.append_query(U("encoding"), Gateway::ENCODING);
 
     if (wss_url.empty())
     {
@@ -68,10 +68,10 @@ namespace discord
     //  For each shard, create a gateway.
     for (auto shard = 0; shard < m_shards; ++shard)
     {
-      m_gateways.push_back(std::make_unique<gateway>(wss_url, m_token, shard, m_shards));
+      m_gateways.push_back(std::make_unique<Gateway>(wss_url, m_token, shard, m_shards));
 
       //  Bind this object's on_dispatch method to the gateway callback.
-      m_gateways.back()->on_dispatch(std::bind(&connection_state::on_dispatch, this, std::placeholders::_1, std::placeholders::_2));
+      m_gateways.back()->on_dispatch(std::bind(&ConnectionState::on_dispatch, this, std::placeholders::_1, std::placeholders::_2));
     }
 
     //  Start all the gateways.
@@ -81,7 +81,7 @@ namespace discord
     }
   }
 
-  pplx::task<api_response> connection_state::request(api_key key, snowflake major, method type, std::string endpoint, const std::string&& data)
+  pplx::task<APIResponse> ConnectionState::request(APIKey key, Snowflake major, Method type, std::string endpoint, const std::string&& data)
   {
     LOG(DEBUG) << "Request: " << endpoint << " - " << major.to_string() << " - " << data;
     auto map_key = std::hash<std::string>()(std::to_string(key) + major.to_string());
@@ -97,19 +97,19 @@ namespace discord
 
     switch (type)
     {
-    case method::GET:
+    case Method::GET:
       method = web::http::methods::GET;
       break;
-    case method::POST:
+    case Method::POST:
       method = web::http::methods::POST;
       break;
-    case method::PUT:
+    case Method::PUT:
       method = web::http::methods::PUT;
       break;
-    case method::PATCH:
+    case Method::PATCH:
       method = web::http::methods::PATCH;
       break;
-    case method::DEL:
+    case Method::DEL:
       method = web::http::methods::DEL;
       break;
     }
@@ -131,7 +131,7 @@ namespace discord
         }
         catch (const std::exception&)
         {
-          throw discord_exception("Invalid query parameters in GET call.");
+          throw DiscordException("Invalid query parameters in GET call.");
         }
       }
       else
@@ -158,9 +158,9 @@ namespace discord
         LOG(DEBUG) << "Global mutex unlocked.";
       }
 
-      return m_client->request(request).then([&](web::http::http_response res) -> api_response
+      return m_client->request(request).then([&](web::http::http_response res) -> APIResponse
       {
-        api_response response;
+        APIResponse response;
         auto headers = res.headers();
 
         //  Various rate-limit related headers
@@ -264,10 +264,10 @@ namespace discord
 
               if (messages.size() > 0)
               {
-                throw discord_exception(messages);
+                throw DiscordException(messages);
               }
 
-              throw discord_exception("API call failed and response was null.");
+              throw DiscordException("API call failed and response was null.");
             }
 
             //  Didn't find name or content member, throw based off error code instead.
@@ -276,28 +276,28 @@ namespace discord
 
             if (code < 20000)
             {
-              throw unknown_exception(message);
+              throw UnknownException(message);
             }
 
             if (code < 30000)
             {
-              throw too_many_exception(message);
+              throw TooManyException(message);
             }
 
             switch (code)
             {
             case EmbedDisabled:
-              throw embed_exception(message);
+              throw EmbedException(message);
             case MissingPermissions:
             case ChannelVerificationTooHigh:
-              throw permission_exception(message);
+              throw PermissionException(message);
             case Unauthorized:
             case MissingAccess:
             case InvalidAuthToken:
-              throw authorization_exception(message);
+              throw AuthorizationException(message);
             default:
               //  No specially handled codes left, throw a default exception
-              throw discord_exception(message);
+              throw DiscordException(message);
             }
           }
         }
@@ -307,18 +307,18 @@ namespace discord
     });
   }
 
-  void connection_state::on_dispatch(std::string event_name, rapidjson::Value& data)
+  void ConnectionState::on_dispatch(std::string event_name, rapidjson::Value& data)
   {
     //LOG(INFO) << "Bot.handle_dispatch entered with " << event_name.c_str() << ".";
 
     if (event_name == "READY")
     {
-      m_profile = std::make_unique<user>(this, data["user"]);
+      m_profile = std::make_unique<User>(this, data["user"]);
 
       for (auto& channel_data : data["private_channels"].GetArray())
       {
-        snowflake id(channel_data["id"].GetString());
-        channel chan(this, channel_data);
+        Snowflake id(channel_data["id"].GetString());
+        Channel chan(this, channel_data);
         m_private_channels[id] = chan;
       }
 
@@ -328,12 +328,12 @@ namespace discord
     }
     else if (event_name == "CHANNEL_CREATE")
     {
-      channel chan(this, data);
+      Channel chan(this, data);
       auto found = data.FindMember("guild_id");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
         //  This is a Guild Channel object, add it to its respective guild.
-        auto guild_id = snowflake(data["guild_id"].GetString());
+        auto guild_id = Snowflake(data["guild_id"].GetString());
 
         m_channel_guilds[chan.id()] = guild_id;
 
@@ -350,18 +350,18 @@ namespace discord
       }
       else
       {
-        //  This is a DM channel object. Add it to the bot's private channels.
+        //  This is a DM channel object. Add it to the Bot's private channels.
         m_private_channels[chan.id()] = chan;
       }
     }
     else if (event_name == "CHANNEL_UPDATE")
     {
-      channel chan(this, data);
+      Channel chan(this, data);
       auto found = data.FindMember("guild_id");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
         //  This is a Guild Channel object, update it inside its respective guild.
-        auto guild_id = snowflake(data["guild_id"].GetString());
+        auto guild_id = Snowflake(data["guild_id"].GetString());
 
         m_channel_guilds[chan.id()] = guild_id;
 
@@ -384,12 +384,12 @@ namespace discord
     }
     else if (event_name == "CHANNEL_DELETE")
     {
-      channel chan(this, data);
+      Channel chan(this, data);
       auto found = data.FindMember("guild_id");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
         //  This is a Guild Channel object, remove it from its respective guild.
-        auto guild_id = snowflake(data["guild_id"].GetString());
+        auto guild_id = Snowflake(data["guild_id"].GetString());
 
         m_channel_guilds.erase(chan.id());
 
@@ -412,18 +412,18 @@ namespace discord
     }
     else if (event_name == "GUILD_CREATE")
     {
-      guild new_guild(this, data);
+      Guild new_guild(this, data);
       m_guilds[new_guild.id()] = new_guild;
 	  raise_event(GuildCreated, data);
     }
     else if (event_name == "GUILD_UPDATE")
     {
-      guild updated(this, data);
+      Guild updated(this, data);
       m_guilds[updated.id()] = updated;
     }
     else if (event_name == "GUILD_DELETE")
     {
-      snowflake id(data["id"].GetString());
+      Snowflake id(data["id"].GetString());
 
       if (data.FindMember("unavailable") != data.MemberEnd())
       {
@@ -444,8 +444,8 @@ namespace discord
     }
     else if (event_name == "GUILD_BAN_ADD")
     {
-      user banned(this, data["user"]);
-      snowflake guild_id(data["guild_id"].GetString());
+      User banned(this, data["user"]);
+      Snowflake guild_id(data["guild_id"].GetString());
 
       LOG(DEBUG) << "User " << banned.distinct()
         << " has been banned from "
@@ -453,8 +453,8 @@ namespace discord
     }
     else if (event_name == "GUILD_BAN_REMOVE")
     {
-      user unbanned(this, data["user"]);
-      snowflake guild_id(data["guild_id"].GetString());
+      User unbanned(this, data["user"]);
+      Snowflake guild_id(data["guild_id"].GetString());
       LOG(DEBUG) << "User " << unbanned.distinct()
         << " has been unbanned from "
         << m_guilds[guild_id].name();
@@ -462,17 +462,17 @@ namespace discord
     else if (event_name == "GUILD_EMOJIS_UPDATE")
     {
       //  Update emoji data for the guild
-      snowflake guild_id(data["guild_id"].GetString());
+      Snowflake guild_id(data["guild_id"].GetString());
       auto owner = m_guilds[guild_id];
 
-      std::vector<emoji> new_emojis;
-      std::vector<emoji> deleted_emojis;
+      std::vector<Emoji> new_emojis;
+      std::vector<Emoji> deleted_emojis;
       auto old_emojis = owner.emojis();
 
       for (auto& emoji_data : data["emojis"].GetArray())
       {
-        emoji emo(emoji_data);
-        emoji found;
+        Emoji emo(emoji_data);
+		Emoji found;
         new_emojis.push_back(emo);
 
         if (owner.find_emoji(emo.id(), found))
@@ -498,30 +498,30 @@ namespace discord
     }
     else if (event_name == "GUILD_MEMBER_ADD")
     {
-      snowflake guild_id(data["guild_id"].GetString());
-      member guild_member(this, data);
+      Snowflake guild_id(data["guild_id"].GetString());
+      Member guild_member(this, data);
       m_guilds[guild_id].add_member(guild_member);
     }
     else if (event_name == "GUILD_MEMBER_REMOVE")
     {
-      snowflake guild_id(data["guild_id"].GetString());
-      member guild_member(this, data);
+      Snowflake guild_id(data["guild_id"].GetString());
+      Member guild_member(this, data);
       m_guilds[guild_id].remove_member(guild_member);
     }
     else if (event_name == "GUILD_MEMBER_UPDATE")
     {
-      snowflake guild_id(data["guild_id"].GetString());
+      Snowflake guild_id(data["guild_id"].GetString());
 
-      std::vector<snowflake> roles;
+      std::vector<Snowflake> roles;
       std::string nick;
-      user updated_user;
+      User updated_user;
 
       set_from_json(nick, "nick", data);
 
       auto found = data.FindMember("user");
       if (found != data.MemberEnd() && !found->value.IsNull())
       {
-        updated_user = user(this, data["user"]);
+        updated_user = User(this, data["user"]);
       }
 
       found = data.FindMember("roles");
@@ -537,31 +537,31 @@ namespace discord
     }
     else if (event_name == "GUILD_MEMBERS_CHUNK")
     {
-      snowflake guild_id(data["guild_id"].GetString());
+      Snowflake guild_id(data["guild_id"].GetString());
       auto owner = m_guilds[guild_id];
 
       for (auto& member_data : data["members"].GetArray())
       {
-        member guild_member(this, member_data);
+        Member guild_member(this, member_data);
         owner.add_member(guild_member);
       }
     }
     else if (event_name == "GUILD_ROLE_CREATE")
     {
-      snowflake guild_id(data["guild_id"].GetString());
-      role guild_role(data["role"]);
+      Snowflake guild_id(data["guild_id"].GetString());
+      Role guild_role(data["role"]);
       m_guilds[guild_id].add_role(guild_role);
     }
     else if (event_name == "GUILD_ROLE_UPDATE")
     {
-      snowflake guild_id(data["guild_id"].GetString());
-      role guild_role(data["role"]);
+      Snowflake guild_id(data["guild_id"].GetString());
+      Role guild_role(data["role"]);
       m_guilds[guild_id].update_role(guild_role);
     }
     else if (event_name == "GUILD_ROLE_DELETE")
     {
-      snowflake guild_id(data["guild_id"].GetString());
-      snowflake guild_role(data["role_id"].GetString());
+      Snowflake guild_id(data["guild_id"].GetString());
+      Snowflake guild_role(data["role_id"].GetString());
       m_guilds[guild_id].remove_role(guild_role);
     }
     else if (event_name == "MESSAGE_CREATE")
@@ -582,12 +582,12 @@ namespace discord
     }
     else if (event_name == "PRESENCE_UPDATE")
     {
-      presence presence(this, data);
-      snowflake guild_id(data["guild_id"].GetString());
+      Presence presence(this, data);
+      Snowflake guild_id(data["guild_id"].GetString());
 
       m_guilds[guild_id].update_presence(presence);
 
-      raise_event(Presence, data);
+      raise_event(PresenceUpdate, data);
     }
     else if (event_name == "TYPING_START")
     {
@@ -603,24 +603,24 @@ namespace discord
     }
   }
 
-  void connection_state::on_event(std::function<void(event_type, rapidjson::Value& data)> callback)
+  void ConnectionState::on_event(std::function<void(EventType, rapidjson::Value& data)> callback)
   {
     m_event_handler = callback;
   }
 
-  const std::string& connection_state::token() const
+  const std::string& ConnectionState::token() const
   {
     return m_token;
   }
 
-  const user& connection_state::profile() const
+  const User& ConnectionState::profile() const
   {
     return *m_profile.get();
   }
 
-  std::vector<guild> connection_state::guilds() const
+  std::vector<Guild> ConnectionState::guilds() const
   {
-    std::vector<guild> guild_vec;
+    std::vector<Guild> guild_vec;
 
     for (const auto& guild_kv : m_guilds)
     {
@@ -630,17 +630,17 @@ namespace discord
     return guild_vec;
   }
 
-  std::unique_ptr<guild> connection_state::find_guild(snowflake id) const
+  std::unique_ptr<Guild> ConnectionState::find_guild(Snowflake id) const
   {
     if (m_guilds.count(id))
     {
-      return std::make_unique<guild>(m_guilds.at(id));
+      return std::make_unique<Guild>(m_guilds.at(id));
     }
 
-    return std::make_unique<guild>();
+    return std::make_unique<Guild>();
   }
 
-  std::unique_ptr<channel> connection_state::find_channel(snowflake id) const
+  std::unique_ptr<Channel> ConnectionState::find_channel(Snowflake id) const
   {
     if (m_channel_guilds.count(id))
     {
@@ -654,13 +654,13 @@ namespace discord
     }
     else if (m_private_channels.count(id))
     {
-      return std::make_unique<channel>(m_private_channels.at(id));
+      return std::make_unique<Channel>(m_private_channels.at(id));
     }
 
-    return std::make_unique<channel>();
+    return std::make_unique<Channel>();
   }
 
-  std::unique_ptr<guild> connection_state::find_guild_from_channel(snowflake id) const
+  std::unique_ptr<Guild> ConnectionState::find_guild_from_channel(Snowflake id) const
   {
     if (m_channel_guilds.count(id))
     {
@@ -668,14 +668,14 @@ namespace discord
 
       if (m_guilds.count(guild_id))
       {
-        return std::make_unique<guild>(m_guilds.at(guild_id));
+        return std::make_unique<Guild>(m_guilds.at(guild_id));
       }
     }
 
-    return std::make_unique<guild>();
+    return std::make_unique<Guild>();
   }
 
-  void connection_state::cache_channel_id(snowflake guild_id, snowflake channel_id)
+  void ConnectionState::cache_channel_id(Snowflake guild_id, Snowflake channel_id)
   {
     m_channel_guilds[channel_id] = guild_id;
   }

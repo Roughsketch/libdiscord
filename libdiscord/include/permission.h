@@ -4,7 +4,7 @@
 
 namespace discord
 {
-  enum permission_flag : uint32_t
+  enum PermissionFlag : uint32_t
   {
     CREATE_INSTANT_INVITE = 0x00000001, // Allows creation of instant invites
     KICK_MEMBERS          = 0x00000002, // Allows kicking members
@@ -35,13 +35,13 @@ namespace discord
     MANAGE_EMOJIS         = 0x40000000  // Allows management and editing of emojis
   };
 
-  class permission
+  class Permission
   {
     uint32_t m_permissions;
   public:
-    permission();
-    permission(uint32_t bits);
-    explicit permission(rapidjson::Value& data);
+    Permission();
+    Permission(uint32_t bits);
+    explicit Permission(rapidjson::Value& data);
 
     /** Get the integer value of this object.
 
@@ -53,12 +53,12 @@ namespace discord
 
     @param permission The permission to add.
     */
-    void add(permission_flag permission);
+    void add(PermissionFlag permission);
 
     /** Remove a permission to this object.
 
     @param permission The permission to remove.
     */
-    void remove(permission_flag permission);
+    void remove(PermissionFlag permission);
   };
 }

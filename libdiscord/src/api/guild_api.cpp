@@ -9,7 +9,7 @@ namespace discord
   {
     namespace guild
     {
-      pplx::task<discord::guild> modify(connection_state* conn, snowflake guild_id, discord::guild guild)
+      pplx::task<discord::Guild> modify(ConnectionState* conn, Snowflake guild_id, discord::Guild guild)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -33,28 +33,28 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID, guild_id, method::PATCH, "guilds/" + guild_id.to_string(), sb.GetString())
-        .then([conn](api_response response)
+        return conn->request(Guild_GID, guild_id, Method::PATCH, "guilds/" + guild_id.to_string(), sb.GetString())
+        .then([conn](APIResponse response)
         {
-          return discord::guild(conn, response.data);
+          return discord::Guild(conn, response.data);
         });
       }
 
-      pplx::task<discord::guild> remove(connection_state* conn, snowflake guild_id)
+      pplx::task<discord::Guild> remove(ConnectionState* conn, Snowflake guild_id)
       {
-        return conn->request(Guild_GID, guild_id, method::DEL, "guilds/" + guild_id.to_string())
-        .then([conn](api_response response)
+        return conn->request(Guild_GID, guild_id, Method::DEL, "guilds/" + guild_id.to_string())
+        .then([conn](APIResponse response)
         {
-          return discord::guild(conn, response.data);
+          return discord::Guild(conn, response.data);
         });
       }
 
-      pplx::task<std::vector<discord::channel>> get_channels(connection_state* conn, snowflake guild_id)
+      pplx::task<std::vector<discord::Channel>> get_channels(ConnectionState* conn, Snowflake guild_id)
       {
-        return conn->request(Guild_GID_Chan, guild_id, method::GET, "guilds/" + guild_id.to_string() + "/channels")
-        .then([conn](api_response response)
+        return conn->request(Guild_GID_Chan, guild_id, Method::GET, "guilds/" + guild_id.to_string() + "/channels")
+        .then([conn](APIResponse response)
         {
-          std::vector<channel> channels;
+          std::vector<Channel> channels;
 
           for (auto& chan_data : response.data.GetArray())
           {
@@ -65,7 +65,7 @@ namespace discord
         });
       }
 
-      pplx::task<discord::channel> create_text_channel(connection_state* conn, snowflake guild_id, std::string name, std::vector<overwrite> permission_overwrites)
+      pplx::task<discord::Channel> create_text_channel(ConnectionState* conn, Snowflake guild_id, std::string name, std::vector<Overwrite> permission_overwrites)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -89,15 +89,15 @@ namespace discord
         writer.EndArray();
         writer.EndObject();
 
-        return conn->request(Guild_GID_Chan, guild_id, method::POST, 
+        return conn->request(Guild_GID_Chan, guild_id, Method::POST, 
           "guilds/" + guild_id.to_string() + "/channels", sb.GetString())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          return channel(conn, response.data);
+          return Channel(conn, response.data);
         });
       }
 
-      pplx::task<discord::channel> create_voice_channel(connection_state* conn, snowflake guild_id, std::string name, uint32_t bitrate, uint32_t user_limit, std::vector<overwrite> permission_overwrites)
+      pplx::task<discord::Channel> create_voice_channel(ConnectionState* conn, Snowflake guild_id, std::string name, uint32_t bitrate, uint32_t user_limit, std::vector<Overwrite> permission_overwrites)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -118,15 +118,15 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Chan, guild_id, method::POST,
+        return conn->request(Guild_GID_Chan, guild_id, Method::POST,
           "guilds/" + guild_id.to_string() + "/channels", sb.GetString())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          return channel(conn, response.data);
+          return Channel(conn, response.data);
         });
       }
 
-      pplx::task<std::vector<discord::channel>> modify_channel_positions(connection_state* conn, snowflake guild_id, const std::map<snowflake, uint32_t>& positions)
+      pplx::task<std::vector<discord::Channel>> modify_channel_positions(ConnectionState* conn, Snowflake guild_id, const std::map<Snowflake, uint32_t>& positions)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -143,11 +143,11 @@ namespace discord
         writer.EndArray();
         writer.EndObject();
 
-        return conn->request(Guild_GID_Chan, guild_id, method::PATCH,
+        return conn->request(Guild_GID_Chan, guild_id, Method::PATCH,
           "guilds/" + guild_id.to_string() + "/channels", sb.GetString())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          std::vector<channel> channels;
+          std::vector<Channel> channels;
 
           for (auto& chan_data : response.data.GetArray())
           {
@@ -158,17 +158,17 @@ namespace discord
         });
       }
 
-      pplx::task<member> get_member(connection_state* conn, snowflake guild_id, snowflake user_id)
+      pplx::task<Member> get_member(ConnectionState* conn, Snowflake guild_id, Snowflake user_id)
       {
-        return conn->request(Guild_GID_Mem_UID, guild_id, method::GET,
+        return conn->request(Guild_GID_Mem_UID, guild_id, Method::GET,
           "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          return member(conn, response.data);
+          return Member(conn, response.data);
         });
       }
 
-      pplx::task<std::vector<member>> get_members(connection_state* conn, snowflake guild_id, uint32_t limit, snowflake after)
+      pplx::task<std::vector<Member>> get_members(ConnectionState* conn, Snowflake guild_id, uint32_t limit, Snowflake after)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -183,11 +183,11 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Mem, guild_id, method::GET,
+        return conn->request(Guild_GID_Mem, guild_id, Method::GET,
           "guilds/" + guild_id.to_string() + "/members", sb.GetString())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          std::vector<member> members;
+          std::vector<Member> members;
 
           for (auto& member_data : response.data.GetArray())
           {
@@ -198,7 +198,7 @@ namespace discord
         });
       }
 
-      pplx::task<bool> add_member(connection_state* conn, snowflake guild_id, snowflake user_id, std::string access_token, std::string nick, std::vector<role> roles, bool muted, bool deafened)
+      pplx::task<bool> add_member(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, std::string access_token, std::string nick, std::vector<Role> roles, bool muted, bool deafened)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -229,15 +229,15 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Mem_UID, guild_id, method::PUT, 
+        return conn->request(Guild_GID_Mem_UID, guild_id, Method::PUT, 
           "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string(), sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 201;
         });
       }
 
-      pplx::task<bool> modify_member(connection_state* conn, snowflake guild_id, snowflake user_id, std::string nick, std::vector<role> roles, bool muted, bool deafened, snowflake channel_id)
+      pplx::task<bool> modify_member(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, std::string nick, std::vector<Role> roles, bool muted, bool deafened, Snowflake channel_id)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -271,15 +271,15 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Mem_UID, guild_id, method::PATCH,
+        return conn->request(Guild_GID_Mem_UID, guild_id, Method::PATCH,
           "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string(), sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 201;
         });
       }
 
-      pplx::task<bool> set_nickname(connection_state* conn, snowflake guild_id, std::string nick)
+      pplx::task<bool> set_nickname(ConnectionState* conn, Snowflake guild_id, std::string nick)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -291,51 +291,51 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Mem_Me_Nick, guild_id, method::PATCH, 
+        return conn->request(Guild_GID_Mem_Me_Nick, guild_id, Method::PATCH, 
           "guilds/" + guild_id.to_string() + "/members/@me/nick", sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 200;
         });
       }
 
-      pplx::task<bool> add_member_role(connection_state* conn, snowflake guild_id, snowflake user_id, snowflake role_id)
+      pplx::task<bool> add_member_role(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, Snowflake role_id)
       {
-        return conn->request(Guild_GID_Mem_UID_Role_RID, guild_id, method::PUT,
+        return conn->request(Guild_GID_Mem_UID_Role_RID, guild_id, Method::PUT,
           "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string() + "/roles/" + role_id.to_string())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> remove_member_role(connection_state* conn, snowflake guild_id, snowflake user_id, snowflake role_id)
+      pplx::task<bool> remove_member_role(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, Snowflake role_id)
       {
-        return conn->request(Guild_GID_Mem_UID_Role_RID, guild_id, method::DEL,
+        return conn->request(Guild_GID_Mem_UID_Role_RID, guild_id, Method::DEL,
           "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string() + "/roles/" + role_id.to_string())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });;
       }
 
-      pplx::task<bool> remove_member(connection_state* conn, snowflake guild_id, snowflake user_id)
+      pplx::task<bool> remove_member(ConnectionState* conn, Snowflake guild_id, Snowflake user_id)
       {
-        return conn->request(Guild_GID_Mem_UID, guild_id, method::DEL,
+        return conn->request(Guild_GID_Mem_UID, guild_id, Method::DEL,
           "guilds/" + guild_id.to_string() + "/members/" + user_id.to_string())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });;
       }
 
-      pplx::task<std::vector<discord::user>> get_bans(connection_state* conn, snowflake guild_id)
+      pplx::task<std::vector<discord::User>> get_bans(ConnectionState* conn, Snowflake guild_id)
       {
-        return conn->request(Guild_GID_Bans, guild_id, method::GET,
+        return conn->request(Guild_GID_Bans, guild_id, Method::GET,
           "guilds/" + guild_id.to_string() + "/bans")
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          std::vector<user> users;
+          std::vector<User> users;
 
           for (auto& user_data : response.data.GetArray())
           {
@@ -346,7 +346,7 @@ namespace discord
         });
       }
 
-      pplx::task<bool> ban(connection_state* conn, snowflake guild_id, snowflake user_id, uint32_t delete_x_days)
+      pplx::task<bool> ban(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, uint32_t delete_x_days)
       {
         if (delete_x_days > 7)
         {
@@ -363,31 +363,31 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Bans_UID, guild_id, method::PUT, 
+        return conn->request(Guild_GID_Bans_UID, guild_id, Method::PUT, 
           "guilds/" + guild_id.to_string() + "/bans/" + user_id.to_string(), sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> unban(connection_state* conn, snowflake guild_id, snowflake user_id)
+      pplx::task<bool> unban(ConnectionState* conn, Snowflake guild_id, Snowflake user_id)
       {
-        return conn->request(Guild_GID_Bans_UID, guild_id, method::DEL,
+        return conn->request(Guild_GID_Bans_UID, guild_id, Method::DEL,
           "guilds/" + guild_id.to_string() + "/bans/" + user_id.to_string())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<std::vector<role>> get_roles(connection_state* conn, snowflake guild_id)
+      pplx::task<std::vector<Role>> get_roles(ConnectionState* conn, Snowflake guild_id)
       {
-        return conn->request(Guild_GID_Roles, guild_id, method::GET,
+        return conn->request(Guild_GID_Roles, guild_id, Method::GET,
           "guilds/" + guild_id.to_string() + "/roles")
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
-          std::vector<role> roles;
+          std::vector<Role> roles;
 
           for (auto& role_data : response.data.GetArray())
           {
@@ -398,7 +398,7 @@ namespace discord
         });
       }
 
-      pplx::task<role> create_role(connection_state* conn, snowflake guild_id, std::string name, permission permissions, uint32_t rgb_color, bool hoist, bool mentionable)
+      pplx::task<Role> create_role(ConnectionState* conn, Snowflake guild_id, std::string name, Permission permissions, uint32_t rgb_color, bool hoist, bool mentionable)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -422,15 +422,15 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Roles, guild_id, method::POST, 
+        return conn->request(Guild_GID_Roles, guild_id, Method::POST, 
           "guilds/" + guild_id.to_string() + "/roles", sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
-          return role(response.data);
+          return Role(response.data);
         });
       }
 
-      pplx::task<std::vector<role>> modify_role_positions(connection_state* conn, snowflake guild_id, const std::map<snowflake, uint32_t>& positions)
+      pplx::task<std::vector<Role>> modify_role_positions(ConnectionState* conn, Snowflake guild_id, const std::map<Snowflake, uint32_t>& positions)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -447,11 +447,11 @@ namespace discord
         writer.EndArray();
         writer.EndObject();
 
-        return conn->request(Guild_GID_Roles, guild_id, method::PATCH,
+        return conn->request(Guild_GID_Roles, guild_id, Method::PATCH,
           "guilds/" + guild_id.to_string() + "/roles", sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
-          std::vector<role> roles;
+          std::vector<Role> roles;
 
           for (auto& role_data : response.data.GetArray())
           {
@@ -462,7 +462,7 @@ namespace discord
         });
       }
 
-      pplx::task<role> modify_role(connection_state* conn, snowflake guild_id, snowflake role_id, std::string name, permission permissions, uint32_t rgb_color, bool hoist, bool mentionable)
+      pplx::task<Role> modify_role(ConnectionState* conn, Snowflake guild_id, Snowflake role_id, std::string name, Permission permissions, uint32_t rgb_color, bool hoist, bool mentionable)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -486,25 +486,25 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Roles_RID, guild_id, method::PATCH, 
+        return conn->request(Guild_GID_Roles_RID, guild_id, Method::PATCH, 
           "guilds/" + guild_id.to_string() + "/roles/" + role_id.to_string(), sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
-          return role(response.data);
+          return Role(response.data);
         });
       }
 
-      pplx::task<bool> remove_role(connection_state* conn, snowflake guild_id, snowflake role_id)
+      pplx::task<bool> remove_role(ConnectionState* conn, Snowflake guild_id, Snowflake role_id)
       {
-        return conn->request(Guild_GID_Roles_RID, guild_id, method::DEL,
+        return conn->request(Guild_GID_Roles_RID, guild_id, Method::DEL,
           "guilds/" + guild_id.to_string() + "/roles/" + role_id.to_string())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<uint32_t> get_prune_count(connection_state* conn, snowflake guild_id, uint32_t days)
+      pplx::task<uint32_t> get_prune_count(ConnectionState* conn, Snowflake guild_id, uint32_t days)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -516,15 +516,15 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Prune, guild_id, method::GET, 
+        return conn->request(Guild_GID_Prune, guild_id, Method::GET, 
           "guilds/" + guild_id.to_string() + "/prune", sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.data.GetUint();
         });
       }
 
-      pplx::task<uint32_t> prune(connection_state* conn, snowflake guild_id, uint32_t days)
+      pplx::task<uint32_t> prune(ConnectionState* conn, Snowflake guild_id, uint32_t days)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -536,21 +536,21 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Prune, guild_id, method::POST, 
+        return conn->request(Guild_GID_Prune, guild_id, Method::POST, 
           "guilds/" + guild_id.to_string() + "/prune", sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.data["pruned"].GetUint();
         });
       }
 
-      pplx::task<std::vector<voice_region>> get_voice_regions(connection_state* conn, snowflake guild_id)
+      pplx::task<std::vector<VoiceRegion>> get_voice_regions(ConnectionState* conn, Snowflake guild_id)
       {
-        return conn->request(Guild_GID_Regions, guild_id, method::GET,
+        return conn->request(Guild_GID_Regions, guild_id, Method::GET,
           "guilds/" + guild_id.to_string() + "/regions")
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
-          std::vector<voice_region> regions;
+          std::vector<VoiceRegion> regions;
 
           for (auto& region_data : response.data.GetArray())
           {
@@ -561,13 +561,13 @@ namespace discord
         });
       }
 
-      pplx::task<std::vector<integration>> get_integrations(connection_state* conn, snowflake guild_id)
+      pplx::task<std::vector<Integration>> get_integrations(ConnectionState* conn, Snowflake guild_id)
       {
-        return conn->request(Guild_GID_Int, guild_id, method::GET,
+        return conn->request(Guild_GID_Int, guild_id, Method::GET,
           "guilds/" + guild_id.to_string() + "/integrations")
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          std::vector<integration> integrations;
+          std::vector<Integration> integrations;
 
           for (auto& integration_data : response.data.GetArray())
           {
@@ -578,7 +578,7 @@ namespace discord
         });
       }
 
-      pplx::task<bool> create_integration(connection_state* conn, snowflake guild_id, std::string type, snowflake integration_id)
+      pplx::task<bool> create_integration(ConnectionState* conn, Snowflake guild_id, std::string type, Snowflake integration_id)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -593,15 +593,15 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Int, guild_id, method::POST,
+        return conn->request(Guild_GID_Int, guild_id, Method::POST,
           "guilds/" + guild_id.to_string() + "/integrations", sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> modify_integration(connection_state* conn, snowflake guild_id, snowflake integration_id, uint32_t expire_behavior, uint32_t expire_grace_period, bool enable_emoticons)
+      pplx::task<bool> modify_integration(ConnectionState* conn, Snowflake guild_id, Snowflake integration_id, uint32_t expire_behavior, uint32_t expire_grace_period, bool enable_emoticons)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -619,29 +619,29 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Guild_GID_Int_IID, guild_id, method::PATCH,
+        return conn->request(Guild_GID_Int_IID, guild_id, Method::PATCH,
           "guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string(), sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> remove_integration(connection_state* conn, snowflake guild_id, snowflake integration_id)
+      pplx::task<bool> remove_integration(ConnectionState* conn, Snowflake guild_id, Snowflake integration_id)
       {
-        return conn->request(Guild_GID_Int_IID, guild_id, method::DEL,
+        return conn->request(Guild_GID_Int_IID, guild_id, Method::DEL,
           "guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> sync_integration(connection_state* conn, snowflake guild_id, snowflake integration_id)
+      pplx::task<bool> sync_integration(ConnectionState* conn, Snowflake guild_id, Snowflake integration_id)
       {
-        return conn->request(Guild_GID_Int_IID_Sync, guild_id, method::POST,
+        return conn->request(Guild_GID_Int_IID_Sync, guild_id, Method::POST,
           "guilds/" + guild_id.to_string() + "/integrations/" + integration_id.to_string() + "/sync")
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });

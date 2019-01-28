@@ -5,22 +5,22 @@
 
 namespace discord
 {
-  class member : public connection_object
+  class Member : public ConnectionObject
   {
-    user m_user;
+    User m_user;
     std::string m_nick;
-    std::vector<snowflake> m_roles;
+    std::vector<Snowflake> m_roles;
     std::string m_joined_at;
     bool m_deaf;
     bool m_mute;
   public:
-    member();
-    explicit member(connection_state* owner, rapidjson::Value& data);
+    Member();
+    explicit Member(ConnectionState* owner, rapidjson::Value& data);
 
-    const user& user() const;
+    const User& user() const;
 
-    void set_roles(std::vector<snowflake>& role_ids);
-    void set_user(discord::user& user);
+    void set_roles(std::vector<Snowflake>& role_ids);
+    void set_user(discord::User& user);
     void set_nick(std::string nick);
   };
 }

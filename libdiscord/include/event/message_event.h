@@ -5,19 +5,19 @@
 
 namespace discord
 {
-  class message_event : public message
+  class MessageEvent : public Message
   {
     std::stringstream m_stream;
   public:
-    explicit message_event(connection_state* owner, rapidjson::Value& data);
+    explicit MessageEvent(ConnectionState* owner, rapidjson::Value& data);
 
-    message_event(const message_event& other)
+    MessageEvent(const MessageEvent& other)
     {
-      this->message::operator=(other);
+      this->Message::operator=(other);
       m_stream << other.m_stream.str();
     }
 
-    ~message_event() {
+    ~MessageEvent() {
       auto str = m_stream.str();
 
       if (!str.empty())
@@ -27,28 +27,28 @@ namespace discord
     }
 
     template <typename U>
-    message_event& operator<<(U& obj)
+    MessageEvent& operator<<(U& obj)
     {
       m_stream << obj;
       return *this;
     }
   };
 
-  class message_deleted_event : public connection_object
+  class MessageDeletedEvent : public ConnectionObject
   {
   public:
-    explicit message_deleted_event(connection_state* owner, rapidjson::Value& data) : connection_object(owner)
+    explicit MessageDeletedEvent(ConnectionState* owner, rapidjson::Value& data) : ConnectionObject(owner)
     {
     }
-    explicit message_deleted_event(connection_state* owner, snowflake message_id, snowflake channel_id) : connection_object(owner)
+    explicit MessageDeletedEvent(ConnectionState* owner, Snowflake message_id, Snowflake channel_id) : ConnectionObject(owner)
     {
     }
   };
 
-  class typing_event : public connection_object
+  class TypingEvent : public ConnectionObject
   {
   public:
-    explicit typing_event(connection_state* owner, rapidjson::Value& data) : connection_object(owner)
+    explicit TypingEvent(ConnectionState* owner, rapidjson::Value& data) : ConnectionObject(owner)
     {
     }
   };

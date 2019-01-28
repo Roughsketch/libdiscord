@@ -8,10 +8,10 @@
 
 namespace discord
 {
-  struct bot_data;
-  class bot;
+  struct BotData;
+  class Bot;
 
-  class gateway
+  class Gateway
   {
     //  Client variables
     std::string m_token;
@@ -64,7 +64,7 @@ namespace discord
     static const utility::string_t VERSION;
     static const utility::string_t ENCODING;
 
-    explicit gateway(utility::string_t wss_url, const std::string& token, int shard = 0, int total_shards = 1);
+    explicit Gateway(utility::string_t wss_url, const std::string& token, int shard = 0, int total_shards = 1);
 
     void start();
     void on_dispatch(std::function<void(std::string, rapidjson::Value&)> callback);

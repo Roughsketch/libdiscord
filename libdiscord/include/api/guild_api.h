@@ -5,8 +5,8 @@
 
 namespace discord
 {
-  class integration;
-  class overwrite;
+  class Integration;
+  class Overwrite;
 
   namespace api
   {
@@ -18,21 +18,21 @@ namespace discord
        * @param guild A guild whose attributes will be sent.
        * @return The modified guild object.
        */
-      pplx::task<discord::guild> modify(connection_state* conn, snowflake guild_id, discord::guild guild);
+      pplx::task<Guild> modify(ConnectionState* conn, Snowflake guild_id, Guild guild);
 
       /** Removes a guild entirely. Cannot be undone.
        *
        * @param guild_id The guild to remove.
        * @return The guild that was removed.
        */
-      pplx::task<discord::guild> remove(connection_state* conn, snowflake guild_id);
+      pplx::task<Guild> remove(ConnectionState* conn, Snowflake guild_id);
 
       /** Get a list of channels in this guild.
        *
        * @param guild_id The guild to grab the channels from.
        * @return A list of channels in the given guild.
        */
-      pplx::task<std::vector<discord::channel>> get_channels(connection_state* conn, snowflake guild_id);
+      pplx::task<std::vector<Channel>> get_channels(ConnectionState* conn, Snowflake guild_id);
 
       /** Create a new text channel in a guild.
        *
@@ -41,7 +41,7 @@ namespace discord
        * @param permission_overwrites An array of permission overwrites to assign to this channel.
        * @return The channel that was created.
        */
-      pplx::task<discord::channel> create_text_channel(connection_state* conn, snowflake guild_id, std::string name, std::vector<overwrite> permission_overwrites = {});
+      pplx::task<Channel> create_text_channel(ConnectionState* conn, Snowflake guild_id, std::string name, std::vector<Overwrite> permission_overwrites = {});
 
       /** Create a new voice channel in a guild.
        *
@@ -52,7 +52,7 @@ namespace discord
        * @param permission_overwrites An array of permission overwrites to assign to this channel.
        * @return The channel that was created.
        */
-      pplx::task<discord::channel> create_voice_channel(connection_state* conn, snowflake guild_id, std::string name, uint32_t bitrate = 96000, uint32_t user_limit = 99, std::vector<overwrite> permission_overwrites = {});
+      pplx::task<Channel> create_voice_channel(ConnectionState* conn, Snowflake guild_id, std::string name, uint32_t bitrate = 96000, uint32_t user_limit = 99, std::vector<Overwrite> permission_overwrites = {});
 
       /** Sets several channel positions at once.
        *
@@ -60,7 +60,7 @@ namespace discord
        * @param positions A mapping of channel ids to positions which will be set.
        * @return The list of channels in the guild.
        */
-      pplx::task<std::vector<discord::channel>> modify_channel_positions(connection_state* conn, snowflake guild_id, const std::map<snowflake, uint32_t>& positions);
+      pplx::task<std::vector<Channel>> modify_channel_positions(ConnectionState* conn, Snowflake guild_id, const std::map<Snowflake, uint32_t>& positions);
 
       /** Get a member of a guild.
        *
@@ -68,7 +68,7 @@ namespace discord
        * @param user_id The user id of the member to get.
        * @return The member that was found.
        */
-      pplx::task<member> get_member(connection_state* conn, snowflake guild_id, snowflake user_id);
+      pplx::task<Member> get_member(ConnectionState* conn, Snowflake guild_id, Snowflake user_id);
 
       /** Gets a list of members in the guild.
        *
@@ -77,7 +77,7 @@ namespace discord
        * @param after The id of the member to search after. Used for pagination.
        * @return A list of members from the guild.
        */
-      pplx::task<std::vector<member>> get_members(connection_state* conn, snowflake guild_id, uint32_t limit = 1, snowflake after = 0);
+      pplx::task<std::vector<Member>> get_members(ConnectionState* conn, Snowflake guild_id, uint32_t limit = 1, Snowflake after = 0);
 
       /** Adds a member to a guild. Requires an OAuth2 access token.
        *
@@ -90,7 +90,7 @@ namespace discord
        * @param deafened Whether or not this user should be deaf.
        * @return Success status.
        */
-      pplx::task<bool> add_member(connection_state* conn, snowflake guild_id, snowflake user_id, std::string access_token, std::string nick = "", std::vector<role> roles = {}, bool muted = false, bool deafened = false);
+      pplx::task<bool> add_member(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, std::string access_token, std::string nick = "", std::vector<Role> roles = {}, bool muted = false, bool deafened = false);
 
       /** Modify a member in the guild.
        *
@@ -103,14 +103,14 @@ namespace discord
        * @param channel_id Voice channel to move user to.
        * @return Success status.
        */
-      pplx::task<bool> modify_member(connection_state* conn, snowflake guild_id, snowflake user_id, std::string nick = "", std::vector<role> roles = {}, bool muted = false, bool deafened = false, snowflake channel_id = 0);
+      pplx::task<bool> modify_member(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, std::string nick = "", std::vector<Role> roles = {}, bool muted = false, bool deafened = false, Snowflake channel_id = 0);
 
       /** Set the current user's nickname in this guild.
        *
        * @param guild_id The guild to set the nickname in.
        * @param nick The nickname to set.
        */
-      pplx::task<bool> set_nickname(connection_state* conn, snowflake guild_id, std::string nick);
+      pplx::task<bool> set_nickname(ConnectionState* conn, Snowflake guild_id, std::string nick);
 
       /** Add a role to a member.
        *
@@ -119,7 +119,7 @@ namespace discord
        * @param role_id The role to add.
        * @return Success status.
        */
-      pplx::task<bool> add_member_role(connection_state* conn, snowflake guild_id, snowflake user_id, snowflake role_id);
+      pplx::task<bool> add_member_role(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, Snowflake role_id);
 
       /** Remove a role from a member.
        *
@@ -127,21 +127,21 @@ namespace discord
        * @param user_id The member to remove the role from.
        * @param role_id The role to remove.
        */
-      pplx::task<bool> remove_member_role(connection_state* conn, snowflake guild_id, snowflake user_id, snowflake role_id);
+      pplx::task<bool> remove_member_role(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, Snowflake role_id);
 
       /** Remove a member from a guild.
        *
        * @param guild_id The guild to remove the member from.
        * @param user_id The member to remove.
        */
-      pplx::task<bool> remove_member(connection_state* conn, snowflake guild_id, snowflake user_id);
+      pplx::task<bool> remove_member(ConnectionState* conn, Snowflake guild_id, Snowflake user_id);
 
       /** Get a list of bans that the guild has.
        *
        * @param guild_id The guild to list bans from.
        * @return A list of bans that are currently active in the guild.
        */
-      pplx::task<std::vector<discord::user>> get_bans(connection_state* conn, snowflake guild_id);
+      pplx::task<std::vector<User>> get_bans(ConnectionState* conn, Snowflake guild_id);
 
       /** Bans a member from the guild.
        *
@@ -150,7 +150,7 @@ namespace discord
        * @param delete_x_days Number of days worth of messages to delete. Can be from 0-7.
        * @return Success status.
        */
-      pplx::task<bool> ban(connection_state* conn, snowflake guild_id, snowflake user_id, uint32_t delete_x_days);
+      pplx::task<bool> ban(ConnectionState* conn, Snowflake guild_id, Snowflake user_id, uint32_t delete_x_days);
 
       /** Unbans a member from the guild.
        *
@@ -158,14 +158,14 @@ namespace discord
        * @param user_id The member to unban.
        * @return Success status.
        */
-      pplx::task<bool> unban(connection_state* conn, snowflake guild_id, snowflake user_id);
+      pplx::task<bool> unban(ConnectionState* conn, Snowflake guild_id, Snowflake user_id);
 
       /** Gets a list of roles that belong to the guild.
        *
        * @param guild_id The guild to get the roles from.
        * @return A list of roles that belong to the guild.
        */
-      pplx::task<std::vector<role>> get_roles(connection_state* conn, snowflake guild_id);
+      pplx::task<std::vector<Role>> get_roles(ConnectionState* conn, Snowflake guild_id);
 
       /** Creates a new role in a guild.
        *
@@ -177,7 +177,7 @@ namespace discord
        * @param mentionable Whether or not this role is mentionable.
        * @return The role that was created.
        */
-      pplx::task<role> create_role(connection_state* conn, snowflake guild_id, std::string name, permission permissions, uint32_t rgb_color = 0, bool hoist = false, bool mentionable = false);
+      pplx::task<Role> create_role(ConnectionState* conn, Snowflake guild_id, std::string name, Permission permissions, uint32_t rgb_color = 0, bool hoist = false, bool mentionable = false);
 
       /** Modifies the raw position of a role.
        *
@@ -185,7 +185,7 @@ namespace discord
        * @param positions A map of role ids to positions.
        * @return The list of roles from the server.
        */
-      pplx::task<std::vector<role>> modify_role_positions(connection_state* conn, snowflake guild_id, const std::map<snowflake, uint32_t>& positions);
+      pplx::task<std::vector<Role>> modify_role_positions(ConnectionState* conn, Snowflake guild_id, const std::map<Snowflake, uint32_t>& positions);
 
       /** Modify the attributes of a role.
        *
@@ -198,7 +198,7 @@ namespace discord
        * @param mentionable The new mentionable value for this role.
        * @return The role that was updated.
        */
-      pplx::task<role> modify_role(connection_state* conn, snowflake guild_id, snowflake role_id, std::string name, permission permissions, uint32_t rgb_color = 0, bool hoist = false, bool mentionable = false);
+      pplx::task<Role> modify_role(ConnectionState* conn, Snowflake guild_id, Snowflake role_id, std::string name, Permission permissions, uint32_t rgb_color = 0, bool hoist = false, bool mentionable = false);
 
       /** Removes a role from a guild.
        *
@@ -206,7 +206,7 @@ namespace discord
        * @param role_id The role to remove from the guild.
        * @return Success status.
        */
-      pplx::task<bool> remove_role(connection_state* conn, snowflake guild_id, snowflake role_id);
+      pplx::task<bool> remove_role(ConnectionState* conn, Snowflake guild_id, Snowflake role_id);
 
       /** Get the amount of users that will be pruned if a prune is run on the guild.
        *
@@ -214,7 +214,7 @@ namespace discord
        * @param days The number of days to send to the prune command.
        * @return The amount of members that will be pruned if pruned with the given amount of days.
        */
-      pplx::task<uint32_t> get_prune_count(connection_state* conn, snowflake guild_id, uint32_t days);
+      pplx::task<uint32_t> get_prune_count(ConnectionState* conn, Snowflake guild_id, uint32_t days);
 
       /** Prunes members from a guild.
        *
@@ -222,14 +222,14 @@ namespace discord
        * @param days The number of days to send to the prune command.
        * @return The amount of members that were pruned.
        */
-      pplx::task<uint32_t> prune(connection_state* conn, snowflake guild_id, uint32_t days);
+      pplx::task<uint32_t> prune(ConnectionState* conn, Snowflake guild_id, uint32_t days);
 
       /** Lists the voice regions available.
        *
        * @param guild_id The guild to list voice regions from.
        * @return A list of voice regions.
        */
-      pplx::task<std::vector<voice_region>> get_voice_regions(connection_state* conn, snowflake guild_id);
+      pplx::task<std::vector<VoiceRegion>> get_voice_regions(ConnectionState* conn, Snowflake guild_id);
 
       /** Lists the invites to this guild.
        *
@@ -244,56 +244,56 @@ namespace discord
        * @param guild_id The guild to list integrations from.
        * @return A list of integrations that this guild owns.
        */
-      pplx::task<std::vector<integration>> get_integrations(connection_state* conn, snowflake guild_id);
+      pplx::task<std::vector<Integration>> get_integrations(ConnectionState* conn, Snowflake guild_id);
 
-      /** Attaches an integration object to a guild.
+      /** Attaches an Integration object to a guild.
        *
-       * @param guild_id The guild to create an integration in.
-       * @param type The type of the integration.
-       * @param integration_id The integration to attach.
+       * @param guild_id The guild to create an Integration in.
+       * @param type The type of the Integration.
+       * @param integration_id The Integration to attach.
        * @return Success status.
        */
-      pplx::task<bool> create_integration(connection_state* conn, snowflake guild_id, std::string type, snowflake integration_id);
+      pplx::task<bool> create_integration(ConnectionState* conn, Snowflake guild_id, std::string type, Snowflake integration_id);
 
-      /** Modifies the behavior of an integration.
+      /** Modifies the behavior of an Integration.
        *
-       * @param guild_id The guild that owns the integration.
-       * @param integration_id The integration to modify.
-       * @param expire_behavior The behavior when an integration subscription lapses.
-       * @param expire_grace_period The period in seconds where the integration will ignore lapsed subscriptions.
+       * @param guild_id The guild that owns the Integration.
+       * @param integration_id The Integration to modify.
+       * @param expire_behavior The behavior when an Integration subscription lapses.
+       * @param expire_grace_period The period in seconds where the Integration will ignore lapsed subscriptions.
        * @param enable_emoticons Whether emoticons should be synced.
        * @return Success status.
        */
-      pplx::task<bool> modify_integration(connection_state* conn, snowflake guild_id, snowflake integration_id, uint32_t expire_behavior, uint32_t expire_grace_period, bool enable_emoticons);
+      pplx::task<bool> modify_integration(ConnectionState* conn, Snowflake guild_id, Snowflake integration_id, uint32_t expire_behavior, uint32_t expire_grace_period, bool enable_emoticons);
 
-      /** Removes an integration from a guild.
+      /** Removes an Integration from a guild.
        *
-       * @param guild_id The guild that the integration should be removed from.
-       * @param integration_id The integration to remove.
+       * @param guild_id The guild that the Integration should be removed from.
+       * @param integration_id The Integration to remove.
        */
-      pplx::task<bool> remove_integration(connection_state* conn, snowflake guild_id, snowflake integration_id);
+      pplx::task<bool> remove_integration(ConnectionState* conn, Snowflake guild_id, Snowflake integration_id);
 
-      /** Syncs an integration.
+      /** Syncs an Integration.
        *
-       * @param guild_id The guild that owns the integration.
-       * @param integration_id The integration to sync.
+       * @param guild_id The guild that owns the Integration.
+       * @param integration_id The Integration to sync.
        */
-      pplx::task<bool> sync_integration(connection_state* conn, snowflake guild_id, snowflake integration_id);
+      pplx::task<bool> sync_integration(ConnectionState* conn, Snowflake guild_id, Snowflake integration_id);
 
-      /** Gets an embed for the guild.
+      /** Gets an Embed for the guild.
        *
-       * @param guild_id The guild to get the embed for.
-       * @return The embed for the guild.
+       * @param guild_id The guild to get the Embed for.
+       * @return The Embed for the guild.
        */
       //  TODO: Implement
       //guild_embed get_embed(connection_state* conn, snowflake guild_id);
 
-      /** Modifies a guild embed.
+      /** Modifies a guild Embed.
        *
-       * @param guild_id The guild whose embed should be modified.
-       * @param enabled Whether or not the embed should be enabled.
-       * @param channel_id The embed channel id.
-       * @return The modified guild embed.
+       * @param guild_id The guild whose Embed should be modified.
+       * @param enabled Whether or not the Embed should be enabled.
+       * @param channel_id The Embed channel id.
+       * @return The modified guild Embed.
        */
       //  TODO: Implement
       //guild_embed modify_embed(connection_state* conn, snowflake guild_id, bool enabled = false, snowflake channel_id = 0);

@@ -6,7 +6,7 @@
 
 namespace discord
 {
-  class user : public identifiable, public connection_object
+  class User : public Identifiable, public ConnectionObject
   {
     std::string m_username;
     std::string m_discriminator;
@@ -16,20 +16,20 @@ namespace discord
     bool m_verified;
     std::string m_email;
   public:
-    user();
-    explicit user(connection_state* owner, rapidjson::Value& data);
+    User();
+    explicit User(ConnectionState* owner, rapidjson::Value& data);
 
     std::string name() const;
     std::string discriminator() const;
     std::string distinct() const;
   };
 
-  class user_guild : public identifiable
+  class user_guild : public Identifiable
   {
     std::string m_name;
     std::string m_icon;
     bool m_owner;
-    permission m_permissions;
+    Permission m_permissions;
   public:
     user_guild();
     explicit user_guild(rapidjson::Value& data);
@@ -56,6 +56,6 @@ namespace discord
 
     @return Current user's permissions in this guild.
     */
-    permission permissions() const;
+    Permission permissions() const;
   };
 }

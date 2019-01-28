@@ -4,26 +4,26 @@
 
 namespace discord
 {
-  class connection_state;
+  class ConnectionState;
 
   /** Struct for holding API responses. Includes status code and JSON data. */
-  struct api_response
+  struct APIResponse
   {
     rapidjson::Document data;
     uint16_t status_code;
 
-    api_response()
+    APIResponse()
     {
       status_code = 0;
     }
 
-    api_response(const api_response& other)
+    APIResponse(const APIResponse& other)
     {
       data.CopyFrom(other.data, data.GetAllocator());
       status_code = other.status_code;
     }
 
-    api_response& operator=(const api_response& other)
+    APIResponse& operator=(const APIResponse& other)
     {
       data.CopyFrom(other.data, data.GetAllocator());
       status_code = other.status_code;
@@ -32,7 +32,7 @@ namespace discord
   };
 
   /** Responses that the Discord API can send. */
-  enum response_code : uint32_t
+  enum ResponseCode : uint32_t
   {
     UnknownAccount = 10001,
     UnknownApplication,
@@ -77,7 +77,7 @@ namespace discord
     ReactionBlocked = 90001
   };
 
-  enum api_key
+  enum APIKey
   {
     Chan_CID,
     Chan_CID_Messages,
@@ -122,6 +122,6 @@ namespace discord
       *
       * @return A WSS URL that can be used to connect to the Discord gateway.
       */
-    std::string get_wss_url(connection_state& conn, int* shards = nullptr);
+    std::string get_wss_url(ConnectionState& conn, int* shards = nullptr);
   }
 }

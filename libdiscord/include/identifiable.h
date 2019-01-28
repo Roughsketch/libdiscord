@@ -4,34 +4,34 @@
 
 namespace discord
 {
-  class identifiable
+  class Identifiable
   {
   protected:
-    snowflake m_id;
+    Snowflake m_id;
   public:
-    identifiable() : m_id(0) {}
-    explicit identifiable(snowflake id) : m_id(id) {}
-    explicit identifiable(rapidjson::Value& value)
+    Identifiable() : m_id(0) {}
+    explicit Identifiable(Snowflake id) : m_id(id) {}
+    explicit Identifiable(rapidjson::Value& value)
     {
-      m_id = snowflake(value.GetString());
+      m_id = Snowflake(value.GetString());
     }
 
-    bool operator<(const identifiable& rhs) const
+    bool operator<(const Identifiable& rhs) const
     {
       return m_id < rhs.m_id;
     }
 
-    explicit operator snowflake() const
+    explicit operator Snowflake() const
     {
       return m_id;
     }
 
-    void set_id(snowflake id)
+    void set_id(Snowflake id)
     {
       m_id = id;
     }
 
-    snowflake id() const
+    Snowflake id() const
     {
       return m_id;
     }

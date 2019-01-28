@@ -2,13 +2,13 @@
 
 namespace discord
 {
-  emoji::emoji()
+  Emoji::Emoji()
   {
     m_require_colons = false;
     m_managed = false;
   }
 
-  emoji::emoji(rapidjson::Value& data) : identifiable(data["id"])
+  Emoji::Emoji(rapidjson::Value& data) : Identifiable(data["id"])
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_require_colons, "require_colons", data);
@@ -27,17 +27,17 @@ namespace discord
     std::sort(std::begin(m_roles), std::end(m_roles));
   }  
   
-  std::string emoji::name() const
+  std::string Emoji::name() const
   {
     return m_name;
   }
 
-  std::vector<snowflake> emoji::roles() const
+  std::vector<Snowflake> Emoji::roles() const
   {
     return m_roles;
   }
 
-  std::string emoji::mention() const
+  std::string Emoji::mention() const
   {
     return "<:" + name() + ":" + id().to_string() + ">";
   }

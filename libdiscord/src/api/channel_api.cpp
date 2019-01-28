@@ -10,7 +10,7 @@ namespace discord
   {
     namespace channel
     {
-      pplx::task<discord::channel> modify_text_channel(connection_state* conn, snowflake channel_id, std::string name, int32_t position, std::string topic)
+      pplx::task<Channel> modify_text_channel(ConnectionState* conn, Snowflake channel_id, std::string name, int32_t position, std::string topic)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -28,14 +28,14 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Chan_CID, channel_id, method::PATCH, "channels/" + channel_id.to_string(), sb.GetString())
-        .then([conn](api_response response)
+        return conn->request(Chan_CID, channel_id, Method::PATCH, "channels/" + channel_id.to_string(), sb.GetString())
+        .then([conn](APIResponse response)
         {
-          return discord::channel(conn, response.data);
+          return Channel(conn, response.data);
         });
       }
 
-      pplx::task<discord::channel> modify_voice_channel(connection_state* conn, snowflake channel_id, std::string name, int32_t position, uint32_t bitrate, uint32_t user_limit)
+      pplx::task<Channel> modify_voice_channel(ConnectionState* conn, Snowflake channel_id, std::string name, int32_t position, uint32_t bitrate, uint32_t user_limit)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -56,51 +56,51 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Chan_CID, channel_id, method::PATCH, "channels/" + channel_id.to_string(), sb.GetString())
-        .then([conn](api_response response)
+        return conn->request(Chan_CID, channel_id, Method::PATCH, "channels/" + channel_id.to_string(), sb.GetString())
+        .then([conn](APIResponse response)
         {
-          return discord::channel(conn, response.data);
+          return Channel(conn, response.data);
         });
       }
 
-      pplx::task<discord::channel> remove(connection_state* conn, snowflake channel_id)
+      pplx::task<Channel> remove(ConnectionState* conn, Snowflake channel_id)
       {
-        return conn->request(Chan_CID, channel_id, method::DEL, "channels/" + channel_id.to_string())
-        .then([conn](api_response response)
+        return conn->request(Chan_CID, channel_id, Method::DEL, "channels/" + channel_id.to_string())
+        .then([conn](APIResponse response)
         {
-          return discord::channel(conn, response.data);
+          return Channel(conn, response.data);
         });
       }
 
-      pplx::task<std::vector<message>> get_messages(connection_state* conn, snowflake channel_id, int32_t limit, search_method method, snowflake pivot)
+      pplx::task<std::vector<Message>> get_messages(ConnectionState* conn, Snowflake channel_id, int32_t limit, SearchMethod method, Snowflake pivot)
       {
-        if (method != search_method::None && pivot.id() == 0)
+        if (method != SearchMethod::None && pivot.id() == 0)
         {
-          throw discord_exception("Search method passed to get_messages, but pivot id is zero.");
+          throw DiscordException("Search method passed to get_messages, but pivot id is zero.");
         }
         std::string params = "limit=" + std::to_string(limit);
 
         switch (method)
         {
-        case search_method::None:
+        case SearchMethod::None:
           break;
-        case search_method::Before:
+        case SearchMethod::Before:
           params += "&before=" + pivot.to_string();
           break;
-        case search_method::After:
+        case SearchMethod::After:
           params += "&after=" + pivot.to_string();
           break;
-        case search_method::Around:
+        case SearchMethod::Around:
           params += "&around=" + pivot.to_string();
           break;
         default:
-          throw discord_exception("Invalid search method passed to get_messages.");
+          throw DiscordException("Invalid search method passed to get_messages.");
         }
 
-        return conn->request(Chan_CID_Messages, channel_id, method::GET, "channels/" + channel_id.to_string() + "/messages", std::move(params))
-        .then([conn](api_response response)
+        return conn->request(Chan_CID_Messages, channel_id, Method::GET, "channels/" + channel_id.to_string() + "/messages", std::move(params))
+        .then([conn](APIResponse response)
         {
-          std::vector<message> messages;
+          std::vector<Message> messages;
           for (auto& message_data : response.data.GetArray())
           {
             messages.emplace_back(conn, message_data);
@@ -110,16 +110,16 @@ namespace discord
         });
       }
 
-      pplx::task<message> get_message(connection_state* conn, snowflake channel_id, snowflake message_id)
+      pplx::task<Message> get_message(ConnectionState* conn, Snowflake channel_id, Snowflake message_id)
       {
-        return conn->request(Chan_CID_Messages_MID, channel_id, method::GET, "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string())
-        .then([conn](api_response response)
+        return conn->request(Chan_CID_Messages_MID, channel_id, Method::GET, "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string())
+        .then([conn](APIResponse response)
         {
-          return message(conn, response.data);
+          return Message(conn, response.data);
         });
       }
 
-      pplx::task<message> create_message(connection_state* conn, snowflake channel_id, std::string content, bool tts, discord::embed embed)
+      pplx::task<Message> create_message(ConnectionState* conn, Snowflake channel_id, std::string content, bool tts, Embed Embed)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -132,58 +132,58 @@ namespace discord
         writer.String("tts");
         writer.Bool(tts);
 
-        if (!embed.empty())
+        if (!Embed.empty())
         {
           writer.String("embed");
-          embed.Serialize(writer);
+          Embed.Serialize(writer);
         }
 
         writer.EndObject();
 
-        return conn->request(Chan_CID_Messages, channel_id, method::POST, "channels/" + channel_id.to_string() + "/messages", sb.GetString())
-        .then([conn](api_response response)
+        return conn->request(Chan_CID_Messages, channel_id, Method::POST, "channels/" + channel_id.to_string() + "/messages", sb.GetString())
+        .then([conn](APIResponse response)
         {
-          return message(conn, response.data);
+          return Message(conn, response.data);
         });
       }
 
-      pplx::task<bool> create_reaction(connection_state* conn, snowflake channel_id, snowflake message_id, std::string emoji)
+      pplx::task<bool> create_reaction(ConnectionState* conn, Snowflake channel_id, Snowflake message_id, std::string emoji)
       {
-        return conn->request(Chan_CID_Messages_MID_Reactions_Emoji_Me, channel_id, method::PUT, 
+        return conn->request(Chan_CID_Messages_MID_Reactions_Emoji_Me, channel_id, Method::PUT, 
           "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string() + "/reactions/" + emoji + "/@me")
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> remove_own_reaction(connection_state* conn, snowflake channel_id, snowflake message_id, emoji emoji)
+      pplx::task<bool> remove_own_reaction(ConnectionState* conn, Snowflake channel_id, Snowflake message_id, Emoji emoji)
       {
-        return conn->request(Chan_CID_Messages_MID_Reactions_Emoji_Me, channel_id, method::DEL,
+        return conn->request(Chan_CID_Messages_MID_Reactions_Emoji_Me, channel_id, Method::DEL,
           "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string() + "/reactions/" + emoji.name() + "/@me")
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> remove_user_reaction(connection_state* conn, snowflake channel_id, snowflake message_id, emoji emoji, snowflake user_id)
+      pplx::task<bool> remove_user_reaction(ConnectionState* conn, Snowflake channel_id, Snowflake message_id, Emoji emoji, Snowflake user_id)
       {
-        return conn->request(Chan_CID_Messages_MID_Reactions_Emoji_UID, channel_id, method::DEL,
+        return conn->request(Chan_CID_Messages_MID_Reactions_Emoji_UID, channel_id, Method::DEL,
           "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string() + "/reactions/" + emoji.name() + "/" + user_id.to_string())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<std::vector<discord::user>> get_reactions(connection_state* conn, snowflake channel_id, snowflake message_id, emoji emoji)
+      pplx::task<std::vector<User>> get_reactions(ConnectionState* conn, Snowflake channel_id, Snowflake message_id, Emoji emoji)
       {
-        return conn->request(Chan_CID_Messages_MID_Reactions_Emoji, channel_id, method::GET,
+        return conn->request(Chan_CID_Messages_MID_Reactions_Emoji, channel_id, Method::GET,
           "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string() + "/reactions/" + emoji.name())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          std::vector<user> users;
+          std::vector<User> users;
 
           for (auto& user_data : response.data.GetArray())
           {
@@ -194,17 +194,17 @@ namespace discord
         });
       }
 
-      pplx::task<void> remove_all_reactions(connection_state* conn, snowflake channel_id, snowflake message_id)
+      pplx::task<void> remove_all_reactions(ConnectionState* conn, Snowflake channel_id, Snowflake message_id)
       {
-        return conn->request(Chan_CID_Messages_MID_Reactions, channel_id, method::DEL,
+        return conn->request(Chan_CID_Messages_MID_Reactions, channel_id, Method::DEL,
           "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string() + "/reactions")
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return;
         });
       }
 
-      pplx::task<message> edit_message(connection_state* conn, snowflake channel_id, snowflake message_id, std::string new_content)
+      pplx::task<Message> edit_message(ConnectionState* conn, Snowflake channel_id, Snowflake message_id, std::string new_content)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -214,25 +214,25 @@ namespace discord
         writer.String(new_content);
         writer.EndObject();
 
-        return conn->request(Chan_CID_Messages_MID, channel_id, method::PATCH, 
+        return conn->request(Chan_CID_Messages_MID, channel_id, Method::PATCH, 
           "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string(), sb.GetString())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          return message(conn, response.data);
+          return Message(conn, response.data);
         });
       }
 
-      pplx::task<bool> remove_message(connection_state* conn, snowflake channel_id, snowflake message_id)
+      pplx::task<bool> remove_message(ConnectionState* conn, Snowflake channel_id, Snowflake message_id)
       {
-        return conn->request(Chan_CID_Messages_MID, channel_id, method::DEL, 
+        return conn->request(Chan_CID_Messages_MID, channel_id, Method::DEL, 
           "channels/" + channel_id.to_string() + "/messages/" + message_id.to_string())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> bulk_remove_messages(connection_state* conn, snowflake channel_id, std::vector<snowflake> message_ids)
+      pplx::task<bool> bulk_remove_messages(ConnectionState* conn, Snowflake channel_id, std::vector<Snowflake> message_ids)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -249,15 +249,15 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Chan_CID_Messages_BulkDelete, channel_id, method::POST,
+        return conn->request(Chan_CID_Messages_BulkDelete, channel_id, Method::POST,
           "channels/" + channel_id.to_string() + "/messages/bulk-delete", sb.GetString())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> edit_permissions(connection_state* conn, snowflake channel_id, overwrite overwrite, uint32_t allow, uint32_t deny, std::string type)
+      pplx::task<bool> edit_permissions(ConnectionState* conn, Snowflake channel_id, Overwrite overwrite, uint32_t allow, uint32_t deny, std::string type)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -273,40 +273,40 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Chan_CID_Perms_OID, channel_id, method::PUT,
+        return conn->request(Chan_CID_Perms_OID, channel_id, Method::PUT,
           "channels/" + channel_id.to_string() + "/permissions/" + overwrite.id().to_string(), sb.GetString())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> remove_permission(connection_state* conn, snowflake channel_id, overwrite overwrite)
+      pplx::task<bool> remove_permission(ConnectionState* conn, Snowflake channel_id, Overwrite overwrite)
       {
-        return conn->request(Chan_CID_Perms_OID, channel_id, method::DEL,
+        return conn->request(Chan_CID_Perms_OID, channel_id, Method::DEL,
           "channels/" + channel_id.to_string() + "/permissions/" + overwrite.id().to_string())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> trigger_typing_indicator(connection_state* conn, snowflake channel_id)
+      pplx::task<bool> trigger_typing_indicator(ConnectionState* conn, Snowflake channel_id)
       {
-        return conn->request(Chan_CID_Typing, channel_id, method::POST,
+        return conn->request(Chan_CID_Typing, channel_id, Method::POST,
           "channels/" + channel_id.to_string() + "/typing")
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<std::vector<message>> get_pinned_messages(connection_state* conn, snowflake channel_id)
+      pplx::task<std::vector<Message>> get_pinned_messages(ConnectionState* conn, Snowflake channel_id)
       {
-        return conn->request(Chan_CID_Pins, channel_id, method::GET, "channels/" + channel_id.to_string() + "/pins")
-        .then([conn](api_response response)
+        return conn->request(Chan_CID_Pins, channel_id, Method::GET, "channels/" + channel_id.to_string() + "/pins")
+        .then([conn](APIResponse response)
         {
-          std::vector<message> messages;
+          std::vector<Message> messages;
 
           for (auto& message_data : response.data.GetArray())
           {
@@ -317,27 +317,27 @@ namespace discord
         });
       }
 
-      pplx::task<bool> add_pinned_message(connection_state* conn, snowflake channel_id, snowflake message_id)
+      pplx::task<bool> add_pinned_message(ConnectionState* conn, Snowflake channel_id, Snowflake message_id)
       {
-        return conn->request(Chan_CID_Pins_MID, channel_id, method::POST,
+        return conn->request(Chan_CID_Pins_MID, channel_id, Method::POST,
           "channels/" + channel_id.to_string() + "/pins/" + message_id.to_string())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<bool> remove_pinned_message(connection_state* conn, snowflake channel_id, snowflake message_id)
+      pplx::task<bool> remove_pinned_message(ConnectionState* conn, Snowflake channel_id, Snowflake message_id)
       {
-        return conn->request(Chan_CID_Pins_MID, channel_id, method::DEL,
+        return conn->request(Chan_CID_Pins_MID, channel_id, Method::DEL,
           "channels/" + channel_id.to_string() + "/pins/" + message_id.to_string())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<void> group_dm_add_recipient(connection_state* conn, snowflake channel_id, snowflake user_id, std::string access_token, std::string nickname)
+      pplx::task<void> group_dm_add_recipient(ConnectionState* conn, Snowflake channel_id, Snowflake user_id, std::string access_token, std::string nickname)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -351,19 +351,19 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(Chan_CID_Recip_UID, channel_id, method::PUT,
+        return conn->request(Chan_CID_Recip_UID, channel_id, Method::PUT,
           "channels/" + channel_id.to_string() + "/recipients/" + user_id.to_string(), sb.GetString())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return;
         });;
       }
 
-      pplx::task<void> group_dm_remove_recipient(connection_state* conn, snowflake channel_id, snowflake user_id)
+      pplx::task<void> group_dm_remove_recipient(ConnectionState* conn, Snowflake channel_id, Snowflake user_id)
       {
-        return conn->request(Chan_CID_Recip_UID, channel_id, method::DEL,
+        return conn->request(Chan_CID_Recip_UID, channel_id, Method::DEL,
           "channels/" + channel_id.to_string() + "/recipients/" + user_id.to_string())
-        .then([](api_response response)
+        .then([](APIResponse response)
         {
           return;
         });;

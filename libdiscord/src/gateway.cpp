@@ -6,11 +6,11 @@
 
 namespace discord
 {
-  const uint8_t gateway::LARGE_SERVER = 100;
-  const utility::string_t gateway::VERSION = utility::string_t(U("6"));
-  const utility::string_t gateway::ENCODING = utility::string_t(U("json"));
+  const uint8_t Gateway::LARGE_SERVER = 100;
+  const utility::string_t Gateway::VERSION = utility::string_t(U("6"));
+  const utility::string_t Gateway::ENCODING = utility::string_t(U("json"));
 
-  void gateway::connect()
+  void Gateway::connect()
   {
     try
     {
@@ -22,7 +22,7 @@ namespace discord
     }
   }
 
-  void gateway::on_message(web::websockets::client::websocket_incoming_message msg)
+  void Gateway::on_message(web::websockets::client::websocket_incoming_message msg)
   {
     std::string str;
 
@@ -153,7 +153,7 @@ namespace discord
     }
   }
 
-  void gateway::handle_dispatch_event(std::string event_name, rapidjson::Value& data)
+  void Gateway::handle_dispatch_event(std::string event_name, rapidjson::Value& data)
   {
     if (event_name == "RESUMED")
     {
@@ -163,7 +163,7 @@ namespace discord
 
     if (event_name == "READY")
     {
-      LOG(DEBUG) << "Using gateway version " << data["v"].GetInt();
+      LOG(DEBUG) << "Using Gateway version " << data["v"].GetInt();
 
       //  Save session id so we can restart a session
       m_session_id = data["session_id"].GetString();
@@ -172,7 +172,7 @@ namespace discord
     m_on_dispatch(event_name, data);
   }
 
-  void gateway::send(Opcode op, rapidjson::Value& packet)
+  void Gateway::send(Opcode op, rapidjson::Value& packet)
   {
     rapidjson::Document payload(rapidjson::kObjectType);
 
@@ -196,7 +196,7 @@ namespace discord
     }
   }
 
-  void gateway::send_heartbeat()
+  void Gateway::send_heartbeat()
   {
     if (!m_recieved_ack)
     {
@@ -211,7 +211,7 @@ namespace discord
     m_recieved_ack = false;
   }
 
-  void gateway::send_identify()
+  void Gateway::send_identify()
   {
     LOG(DEBUG) << "Sending identify packet.";
 
@@ -236,7 +236,7 @@ namespace discord
     send(Identify, doc);
   }
 
-  void gateway::send_resume()
+  void Gateway::send_resume()
   {
     LOG(DEBUG) << "Sending resume packet.";
 
@@ -254,7 +254,7 @@ namespace discord
     send(Resume, payload);
   }
 
-  gateway::gateway(utility::string_t wss_url, const std::string& token, int shard, int total_shards)
+  Gateway::Gateway(utility::string_t wss_url, const std::string& token, int shard, int total_shards)
     : m_token(token), m_wss_url(wss_url), m_shard(shard), m_total_shards(total_shards)
   {
     m_heartbeat_interval = 0;
@@ -264,7 +264,7 @@ namespace discord
     m_use_resume = false;
   }
 
-  void gateway::start()
+  void Gateway::start()
   {
     m_client.set_message_handler([&](web::websockets::client::websocket_incoming_message msg)
     {
@@ -293,12 +293,12 @@ namespace discord
     connect();
   }
 
-  void gateway::on_dispatch(std::function<void(std::string, rapidjson::Value&)> callback)
+  void Gateway::on_dispatch(std::function<void(std::string, rapidjson::Value&)> callback)
   {
     m_on_dispatch = callback;
   }
 
-  bool gateway::connected() const
+  bool Gateway::connected() const
   {
     return m_connected;
   }

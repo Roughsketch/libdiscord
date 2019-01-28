@@ -4,18 +4,18 @@
 
 namespace discord
 {
-  class emoji : public identifiable
+  class Emoji : public Identifiable
   {
     std::string m_name;
-    std::vector<snowflake> m_roles;
+    std::vector<Snowflake> m_roles;
     bool m_require_colons;
     bool m_managed;
   public:
-    emoji();
-    explicit emoji(rapidjson::Value& data);
+    Emoji();
+    explicit Emoji(rapidjson::Value& data);
 
     std::string name() const;
-    std::vector<snowflake> roles() const;
+    std::vector<Snowflake> roles() const;
     std::string mention() const;
   };
 }

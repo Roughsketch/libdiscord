@@ -4,10 +4,10 @@
 
 namespace discord
 {
-  class serializable
+  class Serializable
   {
   public:
-    virtual ~serializable() {}
+    virtual ~Serializable() {}
     virtual void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const = 0;
   };
 }

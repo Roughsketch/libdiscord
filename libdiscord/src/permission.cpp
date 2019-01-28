@@ -2,32 +2,32 @@
 
 namespace discord
 {
-  permission::permission()
+  Permission::Permission()
   {
     m_permissions = 0;
   }
 
-  permission::permission(uint32_t bits)
+  Permission::Permission(uint32_t bits)
   {
     m_permissions = bits;
   }
 
-  permission::permission(rapidjson::Value& data)
+  Permission::Permission(rapidjson::Value& data)
   {
     m_permissions = data.GetInt();
   }
 
-  uint32_t permission::get() const
+  uint32_t Permission::get() const
   {
     return m_permissions;
   }
 
-  void permission::add(permission_flag permission)
+  void Permission::add(PermissionFlag permission)
   {
     m_permissions |= permission;
   }
 
-  void permission::remove(permission_flag permission)
+  void Permission::remove(PermissionFlag permission)
   {
     m_permissions &= ~permission;
   }

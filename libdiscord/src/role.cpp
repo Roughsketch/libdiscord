@@ -2,7 +2,7 @@
 
 namespace discord
 {
-  role::role()
+  Role::Role()
   {
     m_color = 0;
     m_hoist = false;
@@ -11,7 +11,7 @@ namespace discord
     m_mentionable = false;
   }
 
-  role::role(rapidjson::Value& data)
+  Role::Role(rapidjson::Value& data)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_color, "color", data);
@@ -23,7 +23,7 @@ namespace discord
     auto found = data.FindMember("permissions");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_permissions = permission(data["permissions"].GetInt());
+      m_permissions = Permission(data["permissions"].GetInt());
     }
   }
 }

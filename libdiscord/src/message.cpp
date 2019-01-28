@@ -9,14 +9,14 @@
 
 namespace discord
 {
-  message::message()
+  Message::Message()
   {
     m_tts = false;
     m_mention_everyone = false;
     m_pinned = false;
   }
 
-  message::message(connection_state* owner, rapidjson::Value& data) : identifiable(data["id"]), connection_object(owner)
+  Message::Message(ConnectionState* owner, rapidjson::Value& data) : Identifiable(data["id"]), ConnectionObject(owner)
   {
     set_from_json(m_channel_id, "channel_id", data);
     set_from_json(m_content, "content", data);
@@ -30,7 +30,7 @@ namespace discord
     auto found = data.FindMember("author");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_author = user(owner, data["author"]);
+      m_author = User(owner, data["author"]);
     }
 
     found = data.FindMember("mentions");
@@ -59,47 +59,47 @@ namespace discord
       }
       else
       {
-        m_nonce = snowflake(found->value.GetString());
+        m_nonce = Snowflake(found->value.GetString());
       }
     }
   }
 
-  std::string message::content() const
+  std::string Message::content() const
   {
     return m_content;
   }
 
-  const user& message::author() const
+  const User& Message::author() const
   {
     return m_author;
   }
 
-  std::unique_ptr<channel> message::channel() const
+  std::unique_ptr<Channel> Message::channel() const
   {
     return m_owner->find_channel(m_channel_id);
   }
 
-  std::unique_ptr<guild> message::guild() const
+  std::unique_ptr<Guild> Message::guild() const
   {
     return m_owner->find_guild_from_channel(m_channel_id);
   }
 
-  pplx::task<message> message::respond(std::string content, bool tts, embed embed) const
+  pplx::task<Message> Message::respond(std::string content, bool tts, Embed Embed) const
   {
     if (content.size() > 2000)
     {
-      throw discord_exception("Messages must be fewer than 2000 characters.");
+      throw DiscordException("Messages must be fewer than 2000 characters.");
     }
 
-    return api::channel::create_message(m_owner, m_channel_id, content, tts, embed);
+    return api::channel::create_message(m_owner, m_channel_id, content, tts, Embed);
   }
 
-  pplx::task<bool> message::react(emoji reaction) const
+  pplx::task<bool> Message::react(Emoji reaction) const
   {
     return channel()->create_reaction(m_id, reaction);
   }
 
-  pplx::task<bool> message::react(std::string reaction) const
+  pplx::task<bool> Message::react(std::string reaction) const
   {
     return channel()->create_reaction(m_id, reaction);
   }
