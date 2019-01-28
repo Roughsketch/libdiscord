@@ -120,7 +120,7 @@ namespace discord
     return m_topic;
   }
 
-  std::unique_ptr<guild> channel::guild() const
+  std::unique_ptr<guild> channel::inner_guild() const
   {
     return m_owner->find_guild_from_channel(m_id);
   }

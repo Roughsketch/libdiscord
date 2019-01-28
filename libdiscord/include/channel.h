@@ -135,7 +135,7 @@ namespace discord
      *
      * @return The guild that owns this channel, or an empty guild if the channel is a DM.
      */
-    std::unique_ptr<guild> guild() const;
+    std::unique_ptr<guild> inner_guild() const;
 
     /** Whether or not this object is considered empty.
      *
