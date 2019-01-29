@@ -119,7 +119,7 @@ namespace discord
         });
       }
 
-      pplx::task<Message> create_message(ConnectionState* conn, Snowflake channel_id, std::string content, bool tts, Embed Embed)
+      pplx::task<Message> create_message(ConnectionState* conn, Snowflake channel_id, std::string content, bool tts, Embed embed)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -132,10 +132,10 @@ namespace discord
         writer.String("tts");
         writer.Bool(tts);
 
-        if (!Embed.empty())
+        if (!embed.empty())
         {
           writer.String("embed");
-          Embed.Serialize(writer);
+          embed.Serialize(writer);
         }
 
         writer.EndObject();

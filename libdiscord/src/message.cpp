@@ -84,14 +84,14 @@ namespace discord
     return m_owner->find_guild_from_channel(m_channel_id);
   }
 
-  pplx::task<Message> Message::respond(std::string content, bool tts, Embed Embed) const
+  pplx::task<Message> Message::respond(std::string content, bool tts, Embed embed) const
   {
     if (content.size() > 2000)
     {
       throw DiscordException("Messages must be fewer than 2000 characters.");
     }
 
-    return api::channel::create_message(m_owner, m_channel_id, content, tts, Embed);
+    return api::channel::create_message(m_owner, m_channel_id, content, tts, embed);
   }
 
   pplx::task<bool> Message::react(Emoji reaction) const

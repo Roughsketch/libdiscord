@@ -173,10 +173,10 @@ namespace discord
 
   pplx::task<Message> Channel::send_embed(std::function<void(Embed&)> modify_callback, std::string content) const
   {
-    Embed Embed;
-    modify_callback(Embed);
+    Embed embed;
+    modify_callback(embed);
 
-    return api::channel::create_message(m_owner, m_id, content, false, Embed);
+    return api::channel::create_message(m_owner, m_id, content, false, embed);
   }
 
   pplx::task<bool> Channel::create_reaction(Snowflake message_id, Emoji emoji) const

@@ -192,7 +192,7 @@ namespace discord
      * @param tts Whether or not this message should be text-to-speech.
      * @return The message that was sent.
      */
-    pplx::task<Message> send_message(std::string content, bool tts = false, Embed Embed = Embed()) const;
+    pplx::task<Message> send_message(std::string content, bool tts = false, Embed embed = Embed()) const;
 
     /** Creates a message with the given content and Embed that is modified through the callback.
      *

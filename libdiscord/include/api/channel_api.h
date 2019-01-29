@@ -64,7 +64,7 @@ namespace discord
        * @param tts Whether or not this message should be text-to-speech.
        * @return The message that was sent.
        */
-      pplx::task<Message> create_message(ConnectionState* conn, Snowflake channel_id, std::string content, bool tts = false, Embed Embed = Embed());
+      pplx::task<Message> create_message(ConnectionState* conn, Snowflake channel_id, std::string content, bool tts = false, Embed embed = Embed());
 
       /** Creates a reaction on a message.
        *
