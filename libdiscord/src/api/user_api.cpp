@@ -8,25 +8,25 @@ namespace discord
   {
     namespace user
     {
-      pplx::task<discord::user> get_current_user(connection_state* conn)
+      pplx::task<User> get_current_user(ConnectionState* conn)
       {
-        return conn->request(User_Me, 0, method::GET, "users/@me")
-        .then([conn](api_response response)
+        return conn->request(User_Me, 0, Method::GET, "users/@me")
+        .then([conn](APIResponse response)
         {
-          return discord::user(conn, response.data);
+          return User(conn, response.data);
         });
       }
 
-      pplx::task<discord::user> get_user(connection_state* conn, snowflake user_id)
+      pplx::task<User> get_user(ConnectionState* conn, Snowflake user_id)
       {
-        return conn->request(User_UID, 0, method::GET, "users/" + user_id.to_string())
-        .then([conn](api_response response)
+        return conn->request(User_UID, 0, Method::GET, "users/" + user_id.to_string())
+        .then([conn](APIResponse response)
         {
-          return discord::user(conn, response.data);
+          return User(conn, response.data);
         });
       }
 
-      pplx::task<discord::user> modify(connection_state* conn, std::string username, std::string avatar)
+      pplx::task<User> modify(ConnectionState* conn, std::string username, std::string avatar)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -38,18 +38,18 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(User_Me, 0, method::PATCH, "users/@me", sb.GetString())
-        .then([conn](api_response response)
+        return conn->request(User_Me, 0, Method::PATCH, "users/@me", sb.GetString())
+        .then([conn](APIResponse response)
         {
-          return discord::user(conn, response.data);
+          return User(conn, response.data);
         });
       }
 
-      pplx::task<std::vector<user_guild>> guilds(connection_state* conn, uint32_t limit, search_method method, snowflake guild_id)
+      pplx::task<std::vector<user_guild>> guilds(ConnectionState* conn, uint32_t limit, SearchMethod method, Snowflake guild_id)
       {
         if (limit == 0)
         {
-          throw discord_exception("Invalid limit of 0 passed to guilds endpoint.");
+          throw DiscordException("Invalid limit of 0 passed to guilds endpoint.");
         }
 
         if (limit > 100)
@@ -70,11 +70,11 @@ namespace discord
         {
           switch (method)
           {
-          case search_method::After:
+          case SearchMethod::After:
             writer.String("after");
             writer.String(guild_id.to_string());
             break;
-          case search_method::Before:
+          case SearchMethod::Before:
             writer.String("before");
             writer.String(guild_id.to_string());
             break;
@@ -85,8 +85,8 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(User_Me_Guild, 0, method::GET, "users/@me/guilds", sb.GetString())
-        .then([](api_response response)
+        return conn->request(User_Me_Guild, 0, Method::GET, "users/@me/guilds", sb.GetString())
+        .then([](APIResponse response)
         {
           std::vector<user_guild> user_guilds;
 
@@ -99,21 +99,21 @@ namespace discord
         });
       }
 
-      pplx::task<bool> leave_guild(connection_state* conn, snowflake guild_id)
+      pplx::task<bool> leave_guild(ConnectionState* conn, Snowflake guild_id)
       {
-        return conn->request(User_Me_Guild_GID, 0, method::DEL, "users/@me/guilds/" + guild_id.to_string())
-        .then([](api_response response)
+        return conn->request(User_Me_Guild_GID, 0, Method::DEL, "users/@me/guilds/" + guild_id.to_string())
+        .then([](APIResponse response)
         {
           return response.status_code == 204;
         });
       }
 
-      pplx::task<std::vector<channel>> get_dms(connection_state* conn)
+      pplx::task<std::vector<Channel>> get_dms(ConnectionState* conn)
       {
-        return conn->request(User_Me_Channel, 0, method::GET, "users/@me/channels")
-        .then([conn](api_response response)
+        return conn->request(User_Me_Channel, 0, Method::GET, "users/@me/channels")
+        .then([conn](APIResponse response)
         {
-          std::vector<channel> channels;
+          std::vector<Channel> channels;
 
           for (auto& chan_data : response.data.GetArray())
           {
@@ -124,7 +124,7 @@ namespace discord
         });
       }
 
-      pplx::task<channel> create_dm(connection_state* conn, snowflake recipient_id)
+      pplx::task<Channel> create_dm(ConnectionState* conn, Snowflake recipient_id)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -136,14 +136,14 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(User_Me_Channel, 0, method::POST, "users/@me/channels", sb.GetString())
-        .then([conn](api_response response)
+        return conn->request(User_Me_Channel, 0, Method::POST, "users/@me/channels", sb.GetString())
+        .then([conn](APIResponse response)
         {
-          return channel(conn, response.data);
+          return Channel(conn, response.data);
         });
       }
 
-      pplx::task<channel> create_group_dm(connection_state* conn, std::vector<std::string> access_tokens, std::map<snowflake, std::string> user_nicknames)
+      pplx::task<Channel> create_group_dm(ConnectionState* conn, std::vector<std::string> access_tokens, std::map<Snowflake, std::string> user_nicknames)
       {
         rapidjson::StringBuffer sb;
         rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
@@ -158,20 +158,20 @@ namespace discord
 
         writer.EndObject();
 
-        return conn->request(User_Me_Channel, 0, method::POST,
+        return conn->request(User_Me_Channel, 0, Method::POST,
           "users/@me/channels", sb.GetString())
-        .then([conn](api_response response)
+        .then([conn](APIResponse response)
         {
-          return channel(conn, response.data);
+          return Channel(conn, response.data);
         });
       }
 
-      pplx::task<std::vector<connection>> connections(connection_state* conn)
+      pplx::task<std::vector<Connection>> connections(ConnectionState* conn)
       {
-        return conn->request(User_Me_Connections, 0, method::GET, "users/@me/connections")
-        .then([](api_response response)
+        return conn->request(User_Me_Connections, 0, Method::GET, "users/@me/connections")
+        .then([](APIResponse response)
         {
-          std::vector<connection> connections;
+          std::vector<Connection> connections;
 
           for (auto& conn_data : response.data.GetArray())
           {

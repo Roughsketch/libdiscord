@@ -5,29 +5,29 @@
 
 namespace discord
 {
-  class snowflake
+  class Snowflake
   {
     uint64_t m_id;
   public:
-    snowflake() : m_id(0) {};
-    snowflake(uint64_t id) : m_id(id) {};
+    Snowflake() : m_id(0) {};
+    Snowflake(uint64_t id) : m_id(id) {};
 
-    explicit snowflake(const std::string s)
+    explicit Snowflake(const std::string s)
     {
       m_id = std::stoull(s);
     }
 
-    bool operator==(const snowflake& rhs) const
+    bool operator==(const Snowflake& rhs) const
     {
       return m_id == rhs.m_id;
     }
 
-    bool operator!=(const snowflake& rhs) const
+    bool operator!=(const Snowflake& rhs) const
     {
       return m_id != rhs.m_id;
     }
 
-    bool operator<(const snowflake& rhs) const
+    bool operator<(const Snowflake& rhs) const
     {
       return m_id < rhs.m_id;
     }

@@ -3,34 +3,34 @@
 
 namespace discord
 {
-  embed_footer::embed_footer(connection_state* owner, rapidjson::Value& data)
+  EmbedFooter::EmbedFooter(ConnectionState* owner, rapidjson::Value& data)
   {
     set_from_json(m_text, "text", data);
     set_from_json(m_icon_url, "icon_url", data);
     set_from_json(m_proxy_icon_url, "proxy_icon_url", data);
   }
 
-  embed_footer::embed_footer(std::string text, std::string icon_url, std::string proxy_icon_url)
+  EmbedFooter::EmbedFooter(std::string text, std::string icon_url, std::string proxy_icon_url)
     : m_text(text), m_icon_url(icon_url), m_proxy_icon_url(proxy_icon_url)
   {
   }
 
-  std::string embed_footer::content() const
+  std::string EmbedFooter::content() const
   {
     return m_text;
   }
 
-  std::string embed_footer::icon_url() const
+  std::string EmbedFooter::icon_url() const
   {
     return m_icon_url;
   }
 
-  std::string embed_footer::proxy_icon_url() const
+  std::string EmbedFooter::proxy_icon_url() const
   {
     return m_proxy_icon_url;
   }
 
-  embed_image::embed_image(connection_state* owner, rapidjson::Value& data)
+  EmbedImage::EmbedImage(ConnectionState* owner, rapidjson::Value& data)
   {
     set_from_json(m_url, "url", data);
     set_from_json(m_proxy_url, "proxy_url", data);
@@ -38,80 +38,80 @@ namespace discord
     set_from_json(m_width, "width", data);
   }
 
-  embed_image::embed_image(std::string url, uint32_t width, uint32_t height, std::string proxy_url)
+  EmbedImage::EmbedImage(std::string url, uint32_t width, uint32_t height, std::string proxy_url)
     : m_url(url), m_proxy_url(proxy_url), m_height(height), m_width(width)
   {
   }
 
-  std::string embed_image::url() const
+  std::string EmbedImage::url() const
   {
     return m_url;
   }
 
-  std::string embed_image::proxy_url() const
+  std::string EmbedImage::proxy_url() const
   {
     return m_proxy_url;
   }
 
-  uint32_t embed_image::width() const
+  uint32_t EmbedImage::width() const
   {
     return m_width;
   }
 
-  uint32_t embed_image::height() const
+  uint32_t EmbedImage::height() const
   {
     return m_height;
   }
 
-  embed_video::embed_video(connection_state* owner, rapidjson::Value& data)
+  EmbedVideo::EmbedVideo(ConnectionState* owner, rapidjson::Value& data)
   {
     set_from_json(m_url, "url", data);
     set_from_json(m_height, "height", data);
     set_from_json(m_width, "width", data);
   }
 
-  embed_video::embed_video(std::string url, uint32_t width, uint32_t height)
+  EmbedVideo::EmbedVideo(std::string url, uint32_t width, uint32_t height)
     : m_url(url), m_height(height), m_width(width)
   {
   }
 
-  std::string embed_video::url() const
+  std::string EmbedVideo::url() const
   {
     return m_url;
   }
 
-  uint32_t embed_video::width() const
+  uint32_t EmbedVideo::width() const
   {
     return m_width;
   }
 
-  uint32_t embed_video::height() const
+  uint32_t EmbedVideo::height() const
   {
     return m_height;
   }
 
-  embed_provider::embed_provider(connection_state* owner, rapidjson::Value& data)
+  EmbedProvider::EmbedProvider(ConnectionState* owner, rapidjson::Value& data)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_url, "url", data);
   }
 
-  embed_provider::embed_provider(std::string name, std::string url)
+  EmbedProvider::EmbedProvider(std::string name, std::string url)
     : m_name(name), m_url(url)
   {
   }
 
-  std::string embed_provider::name() const
+  std::string EmbedProvider::name() const
   {
     return m_name;
   }
 
-  std::string embed_provider::url() const
+  std::string EmbedProvider::url() const
   {
     return m_url;
   }
 
-  embed_author::embed_author(connection_state* owner, rapidjson::Value& data)
+  EmbedAuthor::EmbedAuthor(ConnectionState* owner, rapidjson::Value& data)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_url, "url", data);
@@ -119,69 +119,69 @@ namespace discord
     set_from_json(m_proxy_icon_url, "proxy_icon_url", data);
   }
 
-  embed_author::embed_author(std::string name, std::string url, std::string icon_url, std::string proxy_icon_url)
+  EmbedAuthor::EmbedAuthor(std::string name, std::string url, std::string icon_url, std::string proxy_icon_url)
     : m_name(name), m_url(url), m_icon_url(icon_url), m_proxy_icon_url(proxy_icon_url)
   {
   }
 
-  std::string embed_author::name() const
+  std::string EmbedAuthor::name() const
   {
     return m_name;
   }
 
-  std::string embed_author::url() const
+  std::string EmbedAuthor::url() const
   {
     return m_url;
   }
 
-  std::string embed_author::icon_url() const
+  std::string EmbedAuthor::icon_url() const
   {
     return m_icon_url;
   }
 
-  std::string embed_author::proxy_icon_url() const
+  std::string EmbedAuthor::proxy_icon_url() const
   {
     return m_proxy_icon_url;
   }
 
-  embed_field::embed_field()
+  EmbedField::EmbedField()
   {
     m_inline = false;
   }
 
-  embed_field::embed_field(connection_state* owner, rapidjson::Value& data)
+  EmbedField::EmbedField(ConnectionState* owner, rapidjson::Value& data)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_value, "value", data);
     set_from_json(m_inline, "inline", data);
   }
 
-  embed_field::embed_field(std::string name, std::string value, bool is_inline)
+  EmbedField::EmbedField(std::string name, std::string value, bool is_inline)
     : m_name(name), m_value(value), m_inline(is_inline)
   {
   }
 
-  std::string embed_field::name() const
+  std::string EmbedField::name() const
   {
     return m_name;
   }
 
-  std::string embed_field::content() const
+  std::string EmbedField::content() const
   {
     return m_value;
   }
 
-  bool embed_field::is_inline() const
+  bool EmbedField::is_inline() const
   {
     return m_inline;
   }
 
-  embed::embed()
+  Embed::Embed()
   {
     m_color = 0;
   }
 
-  embed::embed(connection_state* owner, rapidjson::Value& data)
+  Embed::Embed(ConnectionState* owner, rapidjson::Value& data)
   {
     set_from_json(m_title, "title", data);
     set_from_json(m_type, "type", data);
@@ -193,13 +193,13 @@ namespace discord
     auto found = data.FindMember("footer");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_footer = embed_footer(owner, data);
+      m_footer = EmbedFooter(owner, data);
     }
 
     found = data.FindMember("image");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_image = embed_image(owner, data);
+      m_image = EmbedImage(owner, data);
     }
 
     found = data.FindMember("thumbnail");
@@ -211,19 +211,19 @@ namespace discord
     found = data.FindMember("video");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_video = embed_video(owner, data);
+      m_video = EmbedVideo(owner, data);
     }
 
     found = data.FindMember("provider");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_provider = embed_provider(owner, data);
+      m_provider = EmbedProvider(owner, data);
     }
 
     found = data.FindMember("author");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_author = embed_author(owner, data);
+      m_author = EmbedAuthor(owner, data);
     }
 
     found = data.FindMember("fields");
@@ -236,117 +236,117 @@ namespace discord
     }
   }
 
-  void embed::set_title(std::string title)
+  void Embed::set_title(std::string title)
   {
     m_title = title;
   }
 
-  void embed::set_description(std::string description)
+  void Embed::set_description(std::string description)
   {
     m_description = description;
   }
 
-  void embed::set_url(std::string url)
+  void Embed::set_url(std::string url)
   {
     m_url = url;
   }
 
-  void embed::set_footer(std::string text, std::string icon_url, std::string proxy_icon_url)
+  void Embed::set_footer(std::string text, std::string icon_url, std::string proxy_icon_url)
   {
-    m_footer = embed_footer(text, icon_url, proxy_icon_url);
+    m_footer = EmbedFooter(text, icon_url, proxy_icon_url);
   }
 
-  void embed::set_image(std::string url)
+  void Embed::set_image(std::string url)
   {
-    m_image = embed_image(url);
+    m_image = EmbedImage(url);
   }
 
-  void embed::set_thumbnail(std::string url)
+  void Embed::set_thumbnail(std::string url)
   {
     m_thumbnail = embed_thumbnail(url);
   }
 
-  void embed::set_video(std::string url)
+  void Embed::set_video(std::string url)
   {
-    m_video = embed_video(url);
+    m_video = EmbedVideo(url);
   }
 
-  void embed::set_author(std::string name, std::string url, std::string icon_url)
+  void Embed::set_author(std::string name, std::string url, std::string icon_url)
   {
-    m_author = embed_author(name, url, icon_url);
+    m_author = EmbedAuthor(name, url, icon_url);
   }
 
-  void embed::add_field(std::string name, std::string value, bool is_inline)
+  void Embed::add_field(std::string name, std::string value, bool is_inline)
   {
-    m_fields.push_back(embed_field(name, value, is_inline));
+    m_fields.push_back(EmbedField(name, value, is_inline));
   }
 
-  std::string embed::title() const
+  std::string Embed::title() const
   {
     return m_title;
   }
 
-  std::string embed::type() const
+  std::string Embed::type() const
   {
     return m_type;
   }
 
-  std::string embed::description() const
+  std::string Embed::description() const
   {
     return m_description;
   }
 
-  std::string embed::url() const
+  std::string Embed::url() const
   {
     return m_url;
   }
 
-  std::string embed::timestamp() const
+  std::string Embed::timestamp() const
   {
     return m_timestamp;
   }
 
-  uint32_t embed::color() const
+  uint32_t Embed::color() const
   {
     return m_color;
   }
 
-  embed_footer& embed::footer()
+  EmbedFooter& Embed::footer()
   {
     return m_footer;
   }
 
-  embed_image& embed::image()
+  EmbedImage& Embed::image()
   {
     return m_image;
   }
 
-  embed_thumbnail& embed::thumbnail()
+  embed_thumbnail& Embed::thumbnail()
   {
     return m_thumbnail;
   }
 
-  embed_video& embed::video()
+  EmbedVideo& Embed::video()
   {
     return m_video;
   }
 
-  embed_provider& embed::provider()
+  EmbedProvider& Embed::provider()
   {
     return m_provider;
   }
 
-  embed_author& embed::author()
+  EmbedAuthor& Embed::author()
   {
     return m_author;
   }
 
-  std::vector<embed_field>& embed::fields()
+  std::vector<EmbedField>& Embed::fields()
   {
     return m_fields;
   }
 
-  bool embed::empty() const
+  bool Embed::empty() const
   {
     return  m_title.empty() && m_description.empty() &&
             m_footer.empty() && m_image.empty() &&
@@ -358,7 +358,7 @@ namespace discord
   * Start RapidJSON Serialization methods. *
   ******************************************/
 
-  void embed_footer::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  void EmbedFooter::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
   {
     writer.StartObject();
 
@@ -380,7 +380,7 @@ namespace discord
     writer.EndObject();
   }
 
-  void embed_image::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  void EmbedImage::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
   {
     writer.StartObject();
 
@@ -408,7 +408,7 @@ namespace discord
     writer.EndObject();
   }
 
-  void embed_video::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  void EmbedVideo::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
   {
     writer.StartObject();
 
@@ -430,7 +430,7 @@ namespace discord
     writer.EndObject();
   }
 
-  void embed_provider::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  void EmbedProvider::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
   {
     writer.StartObject();
 
@@ -446,7 +446,7 @@ namespace discord
     writer.EndObject();
   }
 
-  void embed_author::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  void EmbedAuthor::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
   {
     writer.StartObject();
 
@@ -474,7 +474,7 @@ namespace discord
     writer.EndObject();
   }
 
-  void embed_field::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  void EmbedField::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
   {
     writer.StartObject();
 
@@ -490,7 +490,7 @@ namespace discord
     writer.EndObject();
   }
 
-  void embed::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
+  void Embed::Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const
   {
     writer.StartObject();
 

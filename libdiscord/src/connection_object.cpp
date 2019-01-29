@@ -4,20 +4,20 @@
 
 namespace discord
 {
-  connection_object::connection_object() : m_owner(nullptr)
+  ConnectionObject::ConnectionObject() : m_owner(nullptr)
   {
   }
 
-  connection_object::connection_object(connection_state* owner) : m_owner(owner)
+  ConnectionObject::ConnectionObject(ConnectionState* owner) : m_owner(owner)
   {
   }
 
-  connection_state* connection_object::owner() const
+  ConnectionState* ConnectionObject::owner() const
   {
     return m_owner;
   }
 
-  std::unique_ptr<guild> connection_object::find_guild(snowflake id) const
+  std::unique_ptr<Guild> ConnectionObject::find_guild(Snowflake id) const
   {
     return m_owner->find_guild(id);
   }

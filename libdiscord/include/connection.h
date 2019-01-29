@@ -5,16 +5,16 @@
 
 namespace discord
 {
-  class connection
+  class Connection
   {
     std::string m_id;
     std::string m_name;
     std::string m_type;
     bool m_revoked;
-    std::vector<integration> m_integrations;
+    std::vector<Integration> m_integrations;
   public:
-    connection();
-    explicit connection(rapidjson::Value& data);
+    Connection();
+    explicit Connection(rapidjson::Value& data);
 
     /** Gets the id for this connection.
 
@@ -44,6 +44,6 @@ namespace discord
 
     @return The list of partial integrations associated with this connection.
     */
-    std::vector<integration> integrations() const;
+    std::vector<Integration> integrations() const;
   };
 }

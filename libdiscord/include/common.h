@@ -11,10 +11,29 @@
 
 namespace discord
 {
+	enum EventType
+	{
+		Ready,
+		// Messages
+		MessageCreated,
+		MessageDeleted,
+		MessageEdited,
+		MessagesBulkDeleted,
+		// Guild
+		GuildCreated,
+		// Emoji
+		EmojiCreated,
+		EmojiDeleted,
+		EmojiEdited,
+		// Misc
+		PresenceUpdate,
+		Typing
+	};
+
   /** A wrapper for cpprestsdk's method values. Using this avoids library users 
    *  having to include cpprestsdk's headers in their project.
    */
-  enum class method
+  enum class Method
   {
     GET,
     POST,
@@ -54,17 +73,17 @@ namespace discord
    * @param data The data to read from.
    */
   template <typename Key>
-  void set_from_json(snowflake& value, Key key, rapidjson::Value& data)
+  void set_from_json(Snowflake& value, Key key, rapidjson::Value& data)
   {
     auto iter = data.FindMember(key);
 
     if (iter == data.MemberEnd() || iter->value.IsNull())
     {
-      value = snowflake{};
+      value = Snowflake{};
     }
     else
     {
-      value = snowflake(iter->value.GetString());
+      value = Snowflake(iter->value.GetString());
     }
   }
 }

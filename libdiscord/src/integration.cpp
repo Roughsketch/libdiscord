@@ -3,25 +3,25 @@
 
 namespace discord
 {
-  integration_account::integration_account()
+  IntegrationAccount::IntegrationAccount()
   {
   }
 
-  integration_account::integration_account(rapidjson::Value& data)
+  IntegrationAccount::IntegrationAccount(rapidjson::Value& data)
   {
   }
 
-  std::string integration_account::id() const
+  std::string IntegrationAccount::id() const
   {
     return m_id;
   }
 
-  std::string integration_account::name() const
+  std::string IntegrationAccount::name() const
   {
     return m_name;
   }
 
-  integration::integration()
+  Integration::Integration()
   {
     m_enabled = false;
     m_syncing = false;
@@ -29,7 +29,7 @@ namespace discord
     m_expire_grace_period = 0;
   }
 
-  integration::integration(connection_state* owner, rapidjson::Value& data) : identifiable(data["id"]), connection_object(owner)
+  Integration::Integration(ConnectionState* owner, rapidjson::Value& data) : Identifiable(data["id"]), ConnectionObject(owner)
   {
     set_from_json(m_name, "name", data);
     set_from_json(m_type, "type", data);
@@ -43,13 +43,13 @@ namespace discord
     auto found = data.FindMember("user");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_user = user(owner, found->value);
+      m_user = User(owner, found->value);
     }
     
     found = data.FindMember("account");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_account = integration_account(found->value);
+      m_account = IntegrationAccount(found->value);
     }
   }
 }

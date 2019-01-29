@@ -9,10 +9,10 @@
 
 namespace discord
 {
-  class emoji;
-  class message;
+  class Emoji;
+  class Message;
 
-  enum class search_method
+  enum class SearchMethod
   {
     None,
     Before,
@@ -20,14 +20,14 @@ namespace discord
     Around
   };
 
-  class overwrite : public identifiable
+  class Overwrite : public Identifiable
   {
     std::string m_type;
-    permission m_allow;
-    permission m_deny;
+    Permission m_allow;
+    Permission m_deny;
   public:
-    overwrite();
-    explicit overwrite(rapidjson::Value& data);
+    Overwrite();
+    explicit Overwrite(rapidjson::Value& data);
 
     /** Get the type of this overwrite (either "role" or "member")
 
@@ -39,17 +39,17 @@ namespace discord
 
     @return The permissions that are allowed.
     */
-    permission allow() const;
+	Permission allow() const;
 
     /** Get the permissions that are denied.
 
     @return The permissions that are denied.
     */
-    permission deny() const;
+	Permission deny() const;
   };
 
   /** Types of channels that can be sent by the API. */
-  enum channel_type : uint8_t
+  enum ChannelType : uint8_t
   {
     Text = 0,
     Private,
@@ -57,7 +57,7 @@ namespace discord
     Group
   };
 
-  class channel : public identifiable, public connection_object
+  class Channel : public Identifiable, public ConnectionObject
   {
     //  Constants
     static const uint32_t MinNameSize = 2;
@@ -69,25 +69,25 @@ namespace discord
     static const uint32_t MaxUserLimit = 99;
 
     //  All Channels
-    snowflake m_last_message_id;
+    Snowflake m_last_message_id;
 
     //  Guild Channels
     std::string m_name;
-    channel_type m_type;
+    ChannelType m_type;
     int32_t m_position;
-    std::vector<overwrite> m_permission_overwrites;
+    std::vector<Overwrite> m_permission_overwrites;
     std::string m_topic;
     uint32_t m_bitrate;
     uint32_t m_user_limit;
 
     //  DM Specific
-    user m_recipient;
+    User m_recipient;
 
     bool m_is_dm;
     bool m_empty;
   public:
-    channel();
-    explicit channel(connection_state* owner, rapidjson::Value& data);
+    Channel();
+    explicit Channel(ConnectionState* owner, rapidjson::Value& data);
 
     /** Gets the name of the channel.
      *
@@ -105,7 +105,7 @@ namespace discord
      *    
      * @return The type of channel this is.
      */
-    channel_type type() const;
+    ChannelType type() const;
 
     /** Gets the position this channel is in the guild list.
      *
@@ -135,7 +135,7 @@ namespace discord
      *
      * @return The guild that owns this channel, or an empty guild if the channel is a DM.
      */
-    std::unique_ptr<guild> guild() const;
+    std::unique_ptr<Guild> guild() const;
 
     /** Whether or not this object is considered empty.
      *
@@ -154,7 +154,7 @@ namespace discord
     * @param topic The new topic of the channel. Must be 1024 characters or less.
     * @return The channel that was modified.
     */
-    pplx::task<channel> modify(std::string name = "", std::string topic = "", int32_t position = 0) const;
+    pplx::task<Channel> modify(std::string name = "", std::string topic = "", int32_t position = 0) const;
 
     /** Modify a voice channel's attributes.
     *
@@ -164,11 +164,11 @@ namespace discord
     * @param user_limit The new user limit for the channel. Must be between 1 and 99 inclusive.
     * @return The channel that was modified.
     */
-    pplx::task<channel> modify(std::string name = "", int32_t position = 0, uint32_t bitrate = 0, uint32_t user_limit = 0) const;
+    pplx::task<Channel> modify(std::string name = "", int32_t position = 0, uint32_t bitrate = 0, uint32_t user_limit = 0) const;
 
 
     /** Removes this channel. Cannot be undone. */
-    pplx::task<channel> remove() const;
+    pplx::task<Channel> remove() const;
 
     /** Gets a list of messages from this channel.
      *
@@ -177,14 +177,14 @@ namespace discord
      * @param pivot The message id to pivot the search around.
      * @return A list of messages that were retrieved.
      */
-    pplx::task<std::vector<message>> get_messages(int32_t limit = 50, search_method method = search_method::None, snowflake pivot = 0) const;
+    pplx::task<std::vector<Message>> get_messages(int32_t limit = 50, SearchMethod method = SearchMethod::None, Snowflake pivot = 0) const;
 
     /** Gets a message given its id.
      *
      * @param message_id The id of the message to get.
      * @return The message that was found, or an empty message if not found.
      */
-    pplx::task<message> get_message(snowflake message_id) const;
+    pplx::task<Message> get_message(Snowflake message_id) const;
 
     /** Creates a message and sends it to the channel.
      *
@@ -192,24 +192,24 @@ namespace discord
      * @param tts Whether or not this message should be text-to-speech.
      * @return The message that was sent.
      */
-    pplx::task<message> send_message(std::string content, bool tts = false, discord::embed embed = discord::embed()) const;
+    pplx::task<Message> send_message(std::string content, bool tts = false, Embed embed = Embed()) const;
 
-    /** Creates a message with the given content and embed that is modified through the callback.
+    /** Creates a message with the given content and Embed that is modified through the callback.
      *
      * @code
-     * auto embed_task = chan.send_embed([](embed& e)
+     * auto embed_task = chan.send_embed([](Embed& e)
      * {
-     *     e.set_title("Example embed");
+     *     e.set_title("Example Embed");
      *     e.set_description("This is how to use the send_embed callback.");
-     *     e.add_field("Field1", "You can add any embed object by using the embed mutator methods.");
-     *     e.add_field("Field2", "When this lambda is finished, the embed will be sent.");
+     *     e.add_field("Field1", "You can add any Embed object by using the Embed mutator methods.");
+     *     e.add_field("Field2", "When this lambda is finished, the Embed will be sent.");
      * });
      * @endcode
      *  
-     * @param modify_callback The callback that will be used to modify an embed.
-     * @param content Text that will appear above the embed as a normal message.
+     * @param modify_callback The callback that will be used to modify an Embed.
+     * @param content Text that will appear above the Embed as a normal message.
      */
-    pplx::task<message> send_embed(std::function<void(embed&)> modify_callback, std::string content = "") const;
+    pplx::task<Message> send_embed(std::function<void(Embed&)> modify_callback, std::string content = "") const;
 
     /** Creates a reaction on a message.
      *
@@ -217,7 +217,7 @@ namespace discord
      * @param emoji The emoji to react with.
      * @return Success status.
      */
-    pplx::task<bool> create_reaction(snowflake message_id, emoji emoji) const;
+    pplx::task<bool> create_reaction(Snowflake message_id, Emoji emoji) const;
 
     /** Creates a reaction on a message.
      *
@@ -225,16 +225,16 @@ namespace discord
      * @param emoji The emoji to react with.
      * @return Success status.
      */
-    pplx::task<bool> create_reaction(snowflake message_id, std::string emoji) const;
+    pplx::task<bool> create_reaction(Snowflake message_id, std::string emoji) const;
 
-    /** Deletes a reaction that a user or bot has made.
+    /** Deletes a reaction that a user or Bot has made.
     *
     * @param message_id The message to remove the reaction from.
     * @param emoji The emoji to remove from the reaction list.
-    * @param user_id The id of the user whose reaction will be removed. Defaults to the bot's id.
+    * @param user_id The id of the user whose reaction will be removed. Defaults to the Bot's id.
     * @return Success status.
     */
-    pplx::task<bool> remove_reaction(snowflake message_id, emoji emoji, snowflake user_id = 0) const;
+    pplx::task<bool> remove_reaction(Snowflake message_id, Emoji emoji, Snowflake user_id = 0) const;
 
     /** Get a list of users who reacted with a particular emoji.
     *
@@ -242,13 +242,13 @@ namespace discord
     * @param emoji The emoji that we should get the user list for.
     * @return A list of users who reacted with the given emoji.
     */
-    pplx::task<std::vector<user>> get_reactions(snowflake message_id, emoji emoji) const;
+    pplx::task<std::vector<User>> get_reactions(Snowflake message_id, Emoji emoji) const;
 
     /** Deletes all reactions on a message.
     *
     * @param message_id The message to delete all reactions on.
     */
-    pplx::task<void> remove_all_reactions(snowflake message_id) const;
+    pplx::task<void> remove_all_reactions(Snowflake message_id) const;
 
     /** Edits a message with new information.
     *
@@ -256,25 +256,25 @@ namespace discord
     * @param new_content The new content of the message.
     * @return The message that was edited.
     */
-    pplx::task<message> edit_message(snowflake message_id, std::string new_content) const;
+    pplx::task<Message> edit_message(Snowflake message_id, std::string new_content) const;
 
     /** Delete a message from a channel.
     *
     * @param message_id The message to delete.
     * @return Success status.
     */
-    pplx::task<bool> remove_message(snowflake message_id) const;
+    pplx::task<bool> remove_message(Snowflake message_id) const;
 
     /** Delete a list of messages all at once.
     *
     * @param message_ids A list of message ids to delete. Must be 100 or fewer.
     * @return Success status.
     */
-    pplx::task<bool> remove_messages(std::vector<snowflake> message_ids) const;
+    pplx::task<bool> remove_messages(std::vector<Snowflake> message_ids) const;
 
     /** Delete a set amount of messages from a channel all at once.
     * @param amount The amount of messages to delete. Must be between 2 and 100 inclusive.
-    * @throw discord_exception on invalid amount.
+    * @throw DiscordException on invalid amount.
     */
     pplx::task<bool> remove_messages(int amount = 2) const;
 
@@ -286,13 +286,13 @@ namespace discord
     * @param type The type of permission to edit.
     * @return Success status.
     */
-    pplx::task<bool> edit_permissions(overwrite overwrite, uint32_t allow, uint32_t deny, std::string type) const;
+    pplx::task<bool> edit_permissions(Overwrite overwrite, uint32_t allow, uint32_t deny, std::string type) const;
 
     /** Delete permissions from a channel.
     *
     * @param overwrite The permissions to delete.
     */
-    pplx::task<bool> remove_permission(overwrite overwrite) const;
+    pplx::task<bool> remove_permission(Overwrite overwrite) const;
 
     /** Triggers a typing indicator for the current user.
     *
@@ -304,34 +304,34 @@ namespace discord
     *
     * @return A list of messages that were pinned.
     */
-    pplx::task<std::vector<message>> get_pinned_messages() const;
+    pplx::task<std::vector<Message>> get_pinned_messages() const;
 
     /** Pins a message in a channel.
     *
     * @param message_id The message to pin.
     * @return Success status.
     */
-    pplx::task<bool> pin(snowflake message_id) const;
+    pplx::task<bool> pin(Snowflake message_id) const;
 
     /** Remove a message from the list of pinned messages.
     *
     * @param message_id The message to unpin.
     * @return Success status.
     */
-    pplx::task<bool> unpin(snowflake message_id) const;
+    pplx::task<bool> unpin(Snowflake message_id) const;
 
     /** Add a user to a group DM.
     *
     * @param user_id The id of the user to add.
-    * @param access_token The access token that allows the bot to add a user to a DM.
+    * @param access_token The access token that allows the Bot to add a user to a DM.
     * @param nickname The nickname of the added user.
     */
-    pplx::task<void> add_recipient(snowflake user_id, std::string access_token, std::string nickname) const;
+    pplx::task<void> add_recipient(Snowflake user_id, std::string access_token, std::string nickname) const;
 
     /** Remove a user from a group DM.
     *
     * @param user_id The id of the user to remove.
     */
-    pplx::task<void> remove_recipient(snowflake user_id) const;
+    pplx::task<void> remove_recipient(Snowflake user_id) const;
   };
 }

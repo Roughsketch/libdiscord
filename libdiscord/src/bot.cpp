@@ -13,7 +13,7 @@
 
 namespace discord
 {
-  void bot::on_event(event_type type, rapidjson::Value& data)
+  void Bot::on_event(EventType type, rapidjson::Value& data)
   {
     switch (type)
     {
@@ -27,7 +27,7 @@ namespace discord
       }
     case MessageCreated:
       {
-        message_event event(m_conn_state.get(), data);
+        MessageEvent event(m_conn_state.get(), data);
         auto word = event.content().substr(0, event.content().find_first_of(" \n"));
 
         //  If we have a prefix and it's the start of this message and it's a command
@@ -54,7 +54,7 @@ namespace discord
       {
         if (m_on_message_deleted)
         {
-          message_deleted_event event(m_conn_state.get(), data);
+          MessageDeletedEvent event(m_conn_state.get(), data);
           m_on_message_deleted(event);
         }
         break;
@@ -63,7 +63,7 @@ namespace discord
       {
         if (m_on_message_edited)
         {
-          message_event event(m_conn_state.get(), data);
+          MessageEvent event(m_conn_state.get(), data);
           m_on_message_edited(event);
         }
         break;
@@ -72,8 +72,8 @@ namespace discord
       {
         if (m_on_message_deleted)
         {
-          std::vector<snowflake> ids;
-          snowflake chan_id(data["channel_id"].GetString());
+          std::vector<Snowflake> ids;
+          Snowflake chan_id(data["channel_id"].GetString());
 
           for (const auto& id : data["ids"].GetArray())
           {
@@ -84,7 +84,7 @@ namespace discord
 
           for (const auto& id : ids)
           {
-            message_deleted_event event(m_conn_state.get(), id, chan_id);
+            MessageDeletedEvent event(m_conn_state.get(), id, chan_id);
             m_on_message_deleted(event);
           }
         }
@@ -93,16 +93,16 @@ namespace discord
 	  {
 		if(m_on_guild_created)
 		{
-			guild guild(m_conn_state.get(), data);
+			Guild guild(m_conn_state.get(), data);
 			m_on_guild_created(guild);
 		}
 		break;
 	  }
-    case Presence:
+    case PresenceUpdate:
       {
         if (m_on_presence)
         {
-          presence presence(m_conn_state.get(), data);
+          Presence presence(m_conn_state.get(), data);
           m_on_presence(presence);
         }
         break;
@@ -111,7 +111,7 @@ namespace discord
       {
         if (m_on_typing)
         {
-          typing_event event(m_conn_state.get(), data);
+          TypingEvent event(m_conn_state.get(), data);
           m_on_typing(event);
         }
       }
@@ -122,17 +122,17 @@ namespace discord
     }
   }
 
-  bot::bot(std::string token, std::string prefix, int shards) : m_prefix(prefix)
+  Bot::Bot(std::string token, std::string prefix, int shards) : m_prefix(prefix)
   {
-    m_conn_state = std::make_unique<connection_state>("Bot " + token, shards);
-    m_conn_state->on_event(std::bind(&bot::on_event, this, std::placeholders::_1, std::placeholders::_2));
+    m_conn_state = std::make_unique<ConnectionState>("Bot " + token, shards);
+    m_conn_state->on_event(std::bind(&Bot::on_event, this, std::placeholders::_1, std::placeholders::_2));
   }
 
-  bot::~bot()
+  Bot::~Bot()
   {
   }
 
-  void bot::run(bool async) const
+  void Bot::run(bool async) const
   {
     m_conn_state->connect();
 
@@ -145,24 +145,24 @@ namespace discord
     }
   }
 
-  const std::string& bot::token() const
+  const std::string& Bot::token() const
   {
     return m_conn_state->token();
   }
 
-  const user& bot::profile() const
+  const User& Bot::profile() const
   {
     return m_conn_state->profile();
   }
 
-  std::vector<guild> bot::guilds() const
+  std::vector<Guild> Bot::guilds() const
   {
     return m_conn_state->guilds();
   }
 
-  std::vector<channel> bot::channels() const
+  std::vector<Channel> Bot::channels() const
   {
-    std::vector<channel> channels;
+    std::vector<Channel> channels;
 
     for (const auto& guild : guilds())
     {
@@ -175,62 +175,62 @@ namespace discord
     return channels;
   }
 
-  std::unique_ptr<guild> bot::find_guild(snowflake id) const
+  std::unique_ptr<Guild> Bot::find_guild(Snowflake id) const
   {
     return m_conn_state->find_guild(id);
   }
 
-  void bot::on_ready(std::function<void()> callback)
+  void Bot::on_ready(std::function<void()> callback)
   {
     m_on_ready = callback;
   }
 
-  void bot::on_message(std::function<void(message_event&)> callback)
+  void Bot::on_message(std::function<void(MessageEvent&)> callback)
   {
     m_on_message = callback;
   }
 
-  void bot::on_message_edited(std::function<void(message_event&)> callback)
+  void Bot::on_message_edited(std::function<void(MessageEvent&)> callback)
   {
     m_on_message_edited = callback;
   }
 
-  void bot::on_message_deleted(std::function<void(message_deleted_event&)> callback)
+  void Bot::on_message_deleted(std::function<void(MessageDeletedEvent&)> callback)
   {
     m_on_message_deleted = callback;
   }
 
-  void bot::on_emoji_created(std::function<void(emoji&)> callback)
+  void Bot::on_emoji_created(std::function<void(Emoji&)> callback)
   {
     m_on_emoji_created = callback;
   }
 
-  void bot::on_emoji_deleted(std::function<void(emoji&)> callback)
+  void Bot::on_emoji_deleted(std::function<void(Emoji&)> callback)
   {
     m_on_emoji_deleted = callback;
   }
 
-  void bot::on_emoji_updated(std::function<void(emoji&)> callback)
+  void Bot::on_emoji_updated(std::function<void(Emoji&)> callback)
   {
     m_on_emoji_updated = callback;
   }
 
-  void bot::on_guild_created(std::function<void(guild&)> callback) 
+  void Bot::on_guild_created(std::function<void(Guild&)> callback) 
   {
 	  m_on_guild_created = callback;
   }
 
-  void bot::on_presence(std::function<void(presence&)> callback)
+  void Bot::on_presence(std::function<void(Presence&)> callback)
   {
     m_on_presence = callback;
   }
 
-  void bot::on_typing(std::function<void(typing_event&)> callback)
+  void Bot::on_typing(std::function<void(TypingEvent&)> callback)
   {
     m_on_typing = callback;
   }
 
-  void bot::add_command(std::string name, std::function<void(message_event)> callback)
+  void Bot::add_command(std::string name, std::function<void(MessageEvent)> callback)
   {
     m_commands[name] = callback;
   }

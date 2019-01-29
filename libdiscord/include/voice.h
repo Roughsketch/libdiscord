@@ -4,11 +4,11 @@
 
 namespace discord
 {
-  class voice_state
+  class VoiceState
   {
-    snowflake m_guild_id;
-    snowflake m_channel_id;
-    snowflake m_user_id;
+    Snowflake m_guild_id;
+    Snowflake m_channel_id;
+    Snowflake m_user_id;
     std::string m_session_id;
     bool m_deaf;
     bool m_mute;
@@ -16,11 +16,11 @@ namespace discord
     bool m_self_mute;
     bool m_suppress;
   public:
-    voice_state();
-    explicit voice_state(rapidjson::Value& data);
+    VoiceState();
+    explicit VoiceState(rapidjson::Value& data);
   };
 
-  class voice_region
+  class VoiceRegion
   {
     std::string m_id;
     std::string m_name;
@@ -31,7 +31,7 @@ namespace discord
     bool m_deprecated;
     bool m_custom;
   public:
-    voice_region();
-    explicit voice_region(rapidjson::Value& data);
+    VoiceRegion();
+    explicit VoiceRegion(rapidjson::Value& data);
   };
 }

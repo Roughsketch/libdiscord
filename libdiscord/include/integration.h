@@ -6,41 +6,41 @@
 
 namespace discord
 {
-  class integration_account
+  class IntegrationAccount
   {
     std::string m_id;
     std::string m_name;
   public:
-    integration_account();
-    explicit integration_account(rapidjson::Value& data);
+    IntegrationAccount();
+    explicit IntegrationAccount(rapidjson::Value& data);
 
-    /** Get the id of this integration account.
+    /** Get the id of this Integration account.
 
     @return The id of this account.
     */
     std::string id() const;
 
-    /** Get the name of this integration account.
+    /** Get the name of this Integration account.
 
     @return The name of this account.
     */
     std::string name() const;
   };
 
-  class integration : public identifiable, public connection_object
+  class Integration : public Identifiable, public ConnectionObject
   {
     std::string m_name;
     std::string m_type;
     bool m_enabled;
     bool m_syncing;
-    snowflake m_role_id;
+    Snowflake m_role_id;
     uint32_t m_expire_behavior;
     uint32_t m_expire_grace_period;
-    user m_user;
-    integration_account m_account;
+    User m_user;
+    IntegrationAccount m_account;
     std::string m_timestamp;
   public:
-    integration();
-    explicit integration(connection_state* owner, rapidjson::Value& data);
+    Integration();
+    explicit Integration(ConnectionState* owner, rapidjson::Value& data);
   };
 }

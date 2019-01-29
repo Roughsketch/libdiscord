@@ -2,13 +2,13 @@
 
 namespace discord
 {
-  member::member()
+  Member::Member()
   {
     m_deaf = false;
     m_mute = false;
   }
 
-  member::member(connection_state* owner, rapidjson::Value& data) : connection_object(owner)
+  Member::Member(ConnectionState* owner, rapidjson::Value& data) : ConnectionObject(owner)
   {
     set_from_json(m_nick, "nick", data);
     set_from_json(m_joined_at, "joined_at", data);
@@ -18,7 +18,7 @@ namespace discord
     auto found = data.FindMember("user");
     if (found != data.MemberEnd() && !found->value.IsNull())
     {
-      m_user = discord::user(owner, found->value);
+      m_user = discord::User(owner, found->value);
     }
 
     found = data.FindMember("roles");
@@ -32,22 +32,22 @@ namespace discord
 
   }
 
-  const user& member::user() const
+  const User& Member::user() const
   {
     return m_user;
   }
 
-  void member::set_roles(std::vector<snowflake>& role_ids)
+  void Member::set_roles(std::vector<Snowflake>& role_ids)
   {
     m_roles = role_ids;
   }
 
-  void member::set_user(discord::user& user)
+  void Member::set_user(discord::User& user)
   {
     m_user = user;
   }
 
-  void member::set_nick(std::string nick)
+  void Member::set_nick(std::string nick)
   {
     m_nick = nick;
   }

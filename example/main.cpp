@@ -27,7 +27,7 @@ int main()
 {
   auto settings = read_json_file("settings.json");
 
-  discord::bot bot(settings["token"], settings["prefix"]);
+  discord::Bot bot(settings["token"], settings["prefix"]);
 
   bot.on_ready([]()
   {
@@ -114,7 +114,7 @@ int main()
 
   bot.add_command("embed", [](auto event)
   {
-    event.channel()->send_embed([](discord::embed &e)
+    event.channel()->send_embed([](discord::Embed &e)
     {
       e.set_title("Example embed");
       e.set_description("This is how to use the send_embed callback.");
@@ -125,7 +125,7 @@ int main()
 
   bot.add_command("react", [](auto event)
   {
-    discord::emoji shelterfrog;
+    discord::Emoji shelterfrog;
     bool found = event.guild()->find_emoji("shelterfrog", shelterfrog);
 
     try
@@ -133,7 +133,7 @@ int main()
       //  Try adding the :thinking: emoji as a reaction.
       event.react("%F0%9F%A4%94");
     }
-    catch (discord::unknown_exception&)
+    catch (discord::UnknownException&)
     {
       std::cout << "Could not find thinking emoji." << std::endl;
     }
@@ -145,7 +145,7 @@ int main()
         //  Try adding a custom emoji reaction.
         event.react(shelterfrog);
       }
-      catch (discord::unknown_exception&)
+      catch (discord::UnknownException&)
       {
         std::cout << "Could not find :shelterfrog: emoji." << std::endl;
       }

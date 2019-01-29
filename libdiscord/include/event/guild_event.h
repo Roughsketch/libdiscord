@@ -4,16 +4,16 @@
 
 namespace discord
 {
-	class guild_created : public event
+	class GuildCreated : public Event
 	{
 	public:
-		explicit guild_created(const std::string& token, rapidjson::Value& data);
+		explicit GuildCreated(const std::string& token, rapidjson::Value& data);
 	};
 
-  class presence_event : public event
+  class PresenceEvent : public Event
   {
   public:
-    explicit presence_event(const std::string& token, rapidjson::Value& data);
+    explicit PresenceEvent(const std::string& token, rapidjson::Value& data);
 
   };
 }

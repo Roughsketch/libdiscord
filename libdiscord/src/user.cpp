@@ -3,14 +3,14 @@
 
 namespace discord
 {
-  user::user()
+  User::User()
   {
     m_bot = false;
     m_mfa_enabled = false;
     m_verified = false;
   }
 
-  user::user(connection_state* owner, rapidjson::Value& data) : identifiable(data["id"]), connection_object(owner)
+  User::User(ConnectionState* owner, rapidjson::Value& data) : Identifiable(data["id"]), ConnectionObject(owner)
   {
     set_from_json(m_username, "username", data);
     set_from_json(m_discriminator, "discriminator", data);
@@ -21,17 +21,17 @@ namespace discord
     set_from_json(m_email, "email", data);
   }
 
-  std::string user::name() const
+  std::string User::name() const
   {
     return m_username;
   }
 
-  std::string user::discriminator() const
+  std::string User::discriminator() const
   {
     return m_discriminator;
   }
 
-  std::string user::distinct() const
+  std::string User::distinct() const
   {
     return m_username + "#" + m_discriminator;
   }

@@ -2,7 +2,7 @@
 
 namespace discord
 {
-  voice_state::voice_state()
+  VoiceState::VoiceState()
   {
     m_deaf = false;
     m_mute = false;
@@ -11,7 +11,7 @@ namespace discord
     m_suppress = false;
   }
 
-  voice_state::voice_state(rapidjson::Value& data)
+  VoiceState::VoiceState(rapidjson::Value& data)
   {
     set_from_json(m_guild_id, "guild_id", data);
     set_from_json(m_channel_id, "channel_id", data);
@@ -24,7 +24,7 @@ namespace discord
     set_from_json(m_suppress, "suppress", data);
   }
 
-  voice_region::voice_region()
+  VoiceRegion::VoiceRegion()
   {
     m_sample_port = 0;
     m_vip = false;
@@ -33,7 +33,7 @@ namespace discord
     m_custom = false;
   }
 
-  voice_region::voice_region(rapidjson::Value& data)
+  VoiceRegion::VoiceRegion(rapidjson::Value& data)
   {
     set_from_json(m_id, "id", data);
     set_from_json(m_name, "name", data);

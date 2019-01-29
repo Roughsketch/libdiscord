@@ -5,17 +5,17 @@
 
 namespace discord
 {
-  class connection_state;
+  class ConnectionState;
 
-  /** The footer object of an embed. */
-  class embed_footer : serializable
+  /** The footer object of an Embed. */
+  class EmbedFooter : Serializable
   {
     std::string m_text;
     std::string m_icon_url;
     std::string m_proxy_icon_url;
   public:
-    explicit embed_footer(connection_state* owner, rapidjson::Value& data);
-    explicit embed_footer(std::string text = "", std::string icon_url = "", std::string proxy_icon_url = "");
+    explicit EmbedFooter(ConnectionState* owner, rapidjson::Value& data);
+    explicit EmbedFooter(std::string text = "", std::string icon_url = "", std::string proxy_icon_url = "");
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
@@ -47,16 +47,16 @@ namespace discord
     }
   };
 
-  /** An image object of an embed. */
-  class embed_image : serializable
+  /** An image object of an Embed. */
+  class EmbedImage : Serializable
   {
     std::string m_url;
     std::string m_proxy_url;
     uint32_t m_height;
     uint32_t m_width;
   public:
-    explicit embed_image(connection_state* owner, rapidjson::Value& data);
-    explicit embed_image(std::string url = "", uint32_t width = 0, uint32_t height = 0, std::string proxy_url = "");
+    explicit EmbedImage(ConnectionState* owner, rapidjson::Value& data);
+    explicit EmbedImage(std::string url = "", uint32_t width = 0, uint32_t height = 0, std::string proxy_url = "");
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
@@ -94,18 +94,18 @@ namespace discord
     }
   };
 
-  //  embed_image and embed_thumbnail objects are identical, so just typedef it.
-  typedef embed_image embed_thumbnail;
+  //  EmbedImage and embed_thumbnail objects are identical, so just typedef it.
+  typedef EmbedImage embed_thumbnail;
 
-  /** A video object of an embed. */
-  class embed_video : serializable
+  /** A video object of an Embed. */
+  class EmbedVideo : Serializable
   {
     std::string m_url;
     uint32_t m_height;
     uint32_t m_width;
   public:
-    explicit embed_video(connection_state* owner, rapidjson::Value& data);
-    explicit embed_video(std::string url = "", uint32_t width = 0, uint32_t height = 0);
+    explicit EmbedVideo(ConnectionState* owner, rapidjson::Value& data);
+    explicit EmbedVideo(std::string url = "", uint32_t width = 0, uint32_t height = 0);
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
@@ -137,14 +137,14 @@ namespace discord
     }
   };
 
-  /** Wraps embed provider information */
-  class embed_provider : serializable
+  /** Wraps Embed provider information */
+  class EmbedProvider : Serializable
   {
     std::string m_name;
     std::string m_url;
   public:
-    explicit embed_provider(connection_state* owner, rapidjson::Value& data);
-    explicit embed_provider(std::string name = "", std::string url = "");
+    explicit EmbedProvider(ConnectionState* owner, rapidjson::Value& data);
+    explicit EmbedProvider(std::string name = "", std::string url = "");
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
@@ -170,16 +170,16 @@ namespace discord
     }
   };
 
-  /** Holds information on the listed author of an embed. */
-  class embed_author : serializable
+  /** Holds information on the listed author of an Embed. */
+  class EmbedAuthor : Serializable
   {
     std::string m_name;
     std::string m_url;
     std::string m_icon_url;
     std::string m_proxy_icon_url;
   public:
-    explicit embed_author(connection_state* owner, rapidjson::Value& data);
-    explicit embed_author(std::string name = "", std::string url = "", std::string icon_url = "", std::string proxy_icon_url = "");
+    explicit EmbedAuthor(ConnectionState* owner, rapidjson::Value& data);
+    explicit EmbedAuthor(std::string name = "", std::string url = "", std::string icon_url = "", std::string proxy_icon_url = "");
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
@@ -217,16 +217,16 @@ namespace discord
     }
   };
 
-  /** Represents a field of an embed. */
-  class embed_field : serializable
+  /** Represents a field of an Embed. */
+  class EmbedField : Serializable
   {
     std::string m_name;
     std::string m_value;
     bool m_inline;
   public:
-    embed_field();
-    explicit embed_field(connection_state* owner, rapidjson::Value& data);
-    explicit embed_field(std::string name = "", std::string value = "", bool is_inline = false);
+    EmbedField();
+    explicit EmbedField(ConnectionState* owner, rapidjson::Value& data);
+    explicit EmbedField(std::string name = "", std::string value = "", bool is_inline = false);
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
@@ -258,8 +258,8 @@ namespace discord
     }
   };
 
-  /** Represents a Discord embed object. */
-  class embed : serializable
+  /** Represents a Discord Embed object. */
+  class Embed : Serializable
   {
     std::string m_title;
     std::string m_type;
@@ -267,38 +267,38 @@ namespace discord
     std::string m_url;
     std::string m_timestamp;
     uint32_t m_color;
-    embed_footer m_footer;
-    embed_image m_image;
+    EmbedFooter m_footer;
+    EmbedImage m_image;
     embed_thumbnail m_thumbnail;
-    embed_video m_video;
-    embed_provider m_provider;
-    embed_author m_author;
-    std::vector<embed_field> m_fields;
+    EmbedVideo m_video;
+    EmbedProvider m_provider;
+    EmbedAuthor m_author;
+    std::vector<EmbedField> m_fields;
   public:
-    embed();
-    explicit embed(connection_state* owner, rapidjson::Value& data);
+    Embed();
+    explicit Embed(ConnectionState* owner, rapidjson::Value& data);
 
     void Serialize(rapidjson::Writer<rapidjson::StringBuffer>& writer) const override;
 
-    /** Sets the title of the embed.
+    /** Sets the title of the Embed.
      *
-     * @param title The title for this embed.
+     * @param title The title for this Embed.
      */
     void set_title(std::string title);
 
-    /** Sets the description of the embed.
+    /** Sets the description of the Embed.
      *
-     * @param description The description for this embed.
+     * @param description The description for this Embed.
      */
     void set_description(std::string description);
 
-    /** Sets the url of the embed.
+    /** Sets the url of the Embed.
      *
-     * @param url The url for this embed.
+     * @param url The url for this Embed.
      */
     void set_url(std::string url);
 
-    /** Sets the footer of the embed.
+    /** Sets the footer of the Embed.
      *
      * @param text The text of the footer.
      * @param icon_url The icon to use for the footer.
@@ -306,25 +306,25 @@ namespace discord
      */
     void set_footer(std::string text, std::string icon_url = "", std::string proxy_icon_url = "");
 
-    /** Sets the image of the embed.
+    /** Sets the image of the Embed.
      *
      * @param url A URL to the image.
      */
     void set_image(std::string url);
 
-    /** Sets the thumbnail of the embed.
+    /** Sets the thumbnail of the Embed.
      *
      * @param url A URL to the thumbnail.
      */
     void set_thumbnail(std::string url);
 
-    /** Sets the video of the embed.
+    /** Sets the video of the Embed.
      *
      * @param url A URL to the video.
      */
     void set_video(std::string url);
 
-    /** Sets the author of the embed.
+    /** Sets the author of the Embed.
      *
      * @param name The name of the author.
      * @param url A URL to the author.
@@ -332,10 +332,10 @@ namespace discord
      */
     void set_author(std::string name, std::string url = "", std::string icon_url = "");
 
-    /** Adds a field to the embed.
+    /** Adds a field to the Embed.
      *
      * @param name The name of this field.
-     * @param value The content of this embed.
+     * @param value The content of this Embed.
      * @param is_inline Whether or not this field should be displayed inline or not.
      */
     void add_field(std::string name, std::string value = "", bool is_inline = false);
@@ -346,13 +346,13 @@ namespace discord
     std::string url() const;
     std::string timestamp() const;
     uint32_t color() const;
-    embed_footer& footer();
-    embed_image& image();
+    EmbedFooter& footer();
+    EmbedImage& image();
     embed_thumbnail& thumbnail();
-    embed_video& video();
-    embed_provider& provider();
-    embed_author& author();
-    std::vector<embed_field>& fields();
+    EmbedVideo& video();
+    EmbedProvider& provider();
+    EmbedAuthor& author();
+    std::vector<EmbedField>& fields();
 
     bool empty() const;
   };
