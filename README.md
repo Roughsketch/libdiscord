@@ -66,7 +66,7 @@ int main() {
   std::string token = "YOUR_TOKEN";
   auto bot = discord::bot::create(token);
   
-  bot->on_message([](discord::message_event& event) {
+  bot->on_message([](discord::MessageEvent& event) {
     if (event.content() == "Ping!") {
       event.respond("Pong!");
     }
@@ -87,7 +87,7 @@ int main() {
   auto bot = discord::bot::create(token, "!"); // ! is the prefix
   
   //  This command will respond "Pong!" to any "!ping"
-  bot->add_command("ping", [](discord::message_event& event) {
+  bot->add_command("ping", [](discord::MessageEvent& event) {
     event.respond("Pong!");
   });
   
@@ -99,7 +99,7 @@ int main() {
 You may also respond to events similar to how you would use `std::cout`. An example out put of this command is `Hello Amoo#2681!`.
 
 ```cpp
-bot->add_command("hello", [](discord::message_event& event) {
+bot->add_command("hello", [](discord::MessageEvent& event) {
   event << "Hello " << event.author()->distinct() << "!";
 });
 ```
@@ -107,7 +107,7 @@ bot->add_command("hello", [](discord::message_event& event) {
 You may also queue up several different responses and they will be combined into one single response. This example is another way to write the above.
 
 ```cpp
-bot->add_command("hello", [](discord::message_event& event) {
+bot->add_command("hello", [](discord::MessageEvent& event) {
   event << "Hello ";
   event << event.author()->distinct();
   event << "!";
