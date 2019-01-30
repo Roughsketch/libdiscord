@@ -1,4 +1,4 @@
-This library is no longer being updated or maintained.
+This library is no longer being actively maintained, but pull requests will still be reviewed.
 
 - [Getting Started](#getting-started)
   - [Compiling libdiscord for Windows](#compiling-libdiscord-for-windows)
@@ -56,7 +56,7 @@ The following bot will respond to any `Ping!` with a `Pong!`
 ```cpp
 #include <discord.h>
 
-//  Use this to avoid using Discord:: everywhere
+//  Use this to avoid using discord:: everywhere
 //  using namespace discord;
 
 //  Or use this to shorten it to just ds::
@@ -64,7 +64,7 @@ The following bot will respond to any `Ping!` with a `Pong!`
 
 int main() {
   std::string token = "YOUR_TOKEN";
-  auto bot = discord::bot::create(token);
+  auto bot = discord::Bot(token);
   
   bot->on_message([](discord::MessageEvent& event) {
     if (event.content() == "Ping!") {
@@ -77,14 +77,14 @@ int main() {
 ```
 
 ### Creating a Command
-Creating a command is just like handing `on_message`, except it takes a command name parameter.
+Creating a command is just like handling `on_message`, except it takes a command name parameter.
 
 ```cpp
 #include <discord.h>
 
 int main() {
   std::string token = "YOUR_TOKEN";
-  auto bot = discord::bot::create(token, "!"); // ! is the prefix
+  auto bot = discord::Bot(token, "!"); // ! is the prefix
   
   //  This command will respond "Pong!" to any "!ping"
   bot->add_command("ping", [](discord::MessageEvent& event) {
@@ -96,7 +96,7 @@ int main() {
 ```
 
 ### Respond as a Stream
-You may also respond to events similar to how you would use `std::cout`. An example out put of this command is `Hello Amoo#2681!`.
+You may also respond to events similar to how you would use `std::cout`. An example output of this command is `Hello Amoo#2681!`.
 
 ```cpp
 bot->add_command("hello", [](discord::MessageEvent& event) {
